@@ -34,7 +34,8 @@ Joann spent nearly a decade managing contracts professionally, where no agreemen
 
 ## What "Working" Looks Like
 The demo, in her words and sequence:
-1. Tap the Fine Print icon on a phone home screen; the app opens.
+0. **Video staging (not an app feature):** phone home screen with medium-to-large icons. Page 1 has everyday apps: calendar, email, phone, text, and "a stupid game." Swipe to page 2, where Fine Print sits among relevant apps (e.g. banking, files, wallet).
+1. Tap the Fine Print icon; the app opens.
 2. Switch theme from soothing professional to colourful personality.
 3. Home: "Welcome to your agreements!" — demo agreements listed with a gradient fade, named `date-party-purpose.pdf`. Agent text box at the bottom: "Would you like to upload a new contract?"
 4. Type "yes" → upload (+) and camera icons get circled in yellow.
@@ -48,6 +49,8 @@ The demo, in her words and sequence:
 **The "oh, that's cool" beat:** the agent connects a clause to something you told it at setup — and asks you about it plainly.
 
 ## The POC Boundary
+**Guiding rule (Joann's call):** depth over breadth. Effort goes into the demoable flow that shows how usable Fine Print is. Features outside that flow can appear on screen as non-functional, clearly marked "coming soon," and be explained in the submission — that's preferable to building them half-working.
+
 - One app that runs on a phone (in the browser, saveable to the home screen with its own icon).
 - Short profile setup; relevance tap on highlights.
 - Agent chat box driving the flow; theme switch (at least soothing vs. colourful).
@@ -58,6 +61,7 @@ The demo, in her words and sequence:
 - Mortgage is the showcase contract type.
 
 ## Later
+_Any of these may show up in the app as a visible "coming soon" control, per the guiding rule — which ones gets decided in the PRD._
 - Learning over time from your relevance answers and usage; profile questions revisited at intervals.
 - Calendar integration: suggested date highlights with links back to the contract and clause.
 - Per-user forwarding email address for contracts.

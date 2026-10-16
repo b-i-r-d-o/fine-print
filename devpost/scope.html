@@ -123,6 +123,8 @@ details ul { margin: 0; padding: 0 16px 16px 34px; display: flex; flex-direction
 details li { max-width: 65ch; }
 .why { color: var(--muted); }
 
+.note { background: var(--sheet); border: 1px dashed var(--rule); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.rule { background: var(--teal-soft); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
 footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--rule); padding-top: 16px; }
 
 @media (max-width: 620px) {
@@ -224,6 +226,7 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--ru
   <section aria-labelledby="demo">
     <span class="label">What "working" looks like</span>
     <h2 id="demo">The demo, step by step</h2>
+    <div class="note"><span class="label">Video staging, not an app feature</span><p>Phone home screen with medium-to-large icons. Page 1 has everyday apps: calendar, email, phone, text, and a silly game. Swipe to page 2, where Fine Print sits among related apps such as banking, files and wallet.</p></div>
     <ol class="demo">
       <li><span>Tap the Fine Print icon on a phone home screen. The app opens.</span></li>
       <li><span>Switch the theme from soothing professional to colourful personality.</span></li>
@@ -241,6 +244,7 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--ru
   <section aria-labelledby="bound">
     <span class="label">The boundary</span>
     <h2 id="bound">What's in now, future features, and what's cut</h2>
+    <div class="rule"><span class="label">Guiding rule · Joann's call</span><p><strong>Depth over breadth.</strong> Effort goes into the demo flow that shows how usable Fine Print is. Features outside that flow can appear on screen as non-functional, clearly marked "coming soon," and be explained in the submission. That beats building them half-working.</p></div>
     <div class="filter" role="group" aria-label="Show">
       <button type="button" id="f-all" data-f="all" aria-pressed="true">All</button>
       <button type="button" id="f-now" data-f="now" aria-pressed="false">In now</button>
@@ -263,6 +267,7 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--ru
       </details>
       <details class="later" data-b="later" open>
         <summary><span class="sum-l"><span class="tag">Future features</span><h3>Later, for "What's next"</h3></span><span class="count">7</span></summary>
+        <p class="why" style="padding: 0 16px 10px">Any of these can appear in the app as a "coming soon" control. Which ones gets decided in the next step.</p>
         <ul>
           <li>Learning over time from your relevance answers and usage; profile questions revisited at intervals</li>
           <li>Calendar integration: suggested date highlights with links back to the contract and clause</li>
