@@ -1,0 +1,304 @@
+<title>Fine Print Scope</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single reading column like a reviewed agreement — clauses down the page, key terms marked with a highlighter. */
+:root {
+  --paper: #f5f7f6;
+  --sheet: #ffffff;
+  --ink: #1d2b2a;
+  --muted: #5b6b69;
+  --rule: #d8e0de;
+  --teal: #1f6f68;
+  --teal-soft: #e3f0ee;
+  --mark: #ffe066;
+  --mark-ink: #1d2b2a;
+  --later: #6a5acd;
+  --later-soft: #eceafb;
+  --cut: #b5473a;
+  --cut-soft: #f8e7e4;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121a19; --sheet: #192321; --ink: #e4ecea; --muted: #9aaba8; --rule: #2c3b39;
+    --teal: #6cc3b9; --teal-soft: #1d3330; --mark: #e8c94a; --mark-ink: #1a1a12;
+    --later: #a99cf0; --later-soft: #26233d; --cut: #e8897c; --cut-soft: #3a2320;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121a19; --sheet: #192321; --ink: #e4ecea; --muted: #9aaba8; --rule: #2c3b39;
+  --teal: #6cc3b9; --teal-soft: #1d3330; --mark: #e8c94a; --mark-ink: #1a1a12;
+  --later: #a99cf0; --later-soft: #26233d; --cut: #e8897c; --cut-soft: #3a2320;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font: 16px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 64px;
+}
+main { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(2.4rem, 7vw, 3.4rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: 1.5rem; font-weight: 700; }
+h3 { font-size: 1.05rem; font-weight: 600; font-family: var(--body); }
+p { margin: 0; max-width: 65ch; }
+section { display: flex; flex-direction: column; gap: 16px; }
+.label { font: 500 0.75rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+mark { background: var(--mark); color: var(--mark-ink); padding: 0 3px; border-radius: 2px; }
+code, .file { font-family: var(--mono); font-size: 0.88em; background: var(--teal-soft); color: var(--ink); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+
+header { display: flex; flex-direction: column; gap: 14px; }
+.status { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.pill { font: 500 0.75rem/1 var(--mono); padding: 6px 10px; border-radius: 999px; border: 1px solid var(--rule); color: var(--muted); }
+.pill.draft { border-color: var(--mark); background: var(--mark); color: var(--mark-ink); }
+.lede { font-size: 1.15rem; color: var(--ink); }
+
+/* Kernel: the phone ping */
+.kernel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 260px); gap: 28px; align-items: center; }
+.kernel > div { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.ping { background: var(--sheet); border: 1px solid var(--rule); border-radius: 18px; padding: 16px; box-shadow: 0 10px 30px -18px rgba(0,0,0,.35); display: flex; flex-direction: column; gap: 10px; }
+.ping-top { display: flex; justify-content: space-between; font: 500 0.72rem/1 var(--mono); color: var(--muted); }
+.ping p { font-size: 0.95rem; }
+.ping-actions { display: flex; gap: 8px; }
+.ping-actions span { flex: 1; text-align: center; font-weight: 600; font-size: 0.85rem; padding: 8px; border-radius: 10px; background: var(--teal-soft); color: var(--teal); }
+.ping-actions span:first-child { background: var(--teal); color: var(--sheet); }
+
+/* Diagram */
+.diagram { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 16px; overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 320px; height: auto; }
+.diagram text { font-family: var(--body); }
+.d-box { fill: var(--sheet); stroke: var(--rule); stroke-width: 1.5; }
+.d-key { fill: var(--mark); stroke: none; }
+.d-user { fill: var(--teal-soft); stroke: var(--teal); stroke-width: 1.5; }
+.d-proof { fill: var(--teal); stroke: none; }
+.d-t { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.d-s { fill: var(--muted); font-size: 11px; }
+.d-tk { fill: var(--mark-ink); font-size: 13px; font-weight: 600; }
+.d-sk { fill: var(--mark-ink); font-size: 11px; }
+.d-tp { fill: var(--sheet); font-size: 13px; font-weight: 600; }
+.d-sp { fill: var(--sheet); font-size: 11px; }
+.d-line { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+.d-arrow { fill: var(--muted); }
+.d-loop { stroke: var(--teal); stroke-width: 1.5; fill: none; stroke-dasharray: 4 4; }
+.d-loopt { fill: var(--teal); font-size: 11px; font-weight: 600; }
+
+/* Who / why */
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.two > div { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+blockquote { margin: 0; padding-left: 14px; border-left: 3px solid var(--mark); font-style: italic; color: var(--ink); }
+
+/* Demo script */
+ol.demo { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; counter-reset: s; }
+ol.demo li { counter-increment: s; display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 12px; padding: 12px 0; border-top: 1px solid var(--rule); }
+ol.demo li::before { content: counter(s, decimal-leading-zero); font: 500 0.85rem/1.8 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+ol.demo li.beat { background: linear-gradient(90deg, var(--teal-soft), transparent); }
+.agent { color: var(--teal); font-weight: 500; }
+
+/* Boundary filter */
+.filter { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter button { font: 500 0.85rem/1 var(--body); padding: 9px 14px; border-radius: 999px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); cursor: pointer; }
+.filter button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.filter button:focus-visible, summary:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.buckets { display: flex; flex-direction: column; gap: 14px; }
+details { border: 1px solid var(--rule); border-radius: 12px; background: var(--sheet); }
+summary { cursor: pointer; list-style: none; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "–"; font: 500 1.1rem/1 var(--mono); color: var(--muted); }
+details:not([open]) summary::after { content: "+"; }
+.tag { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 8px; border-radius: 6px; }
+.now .tag { background: var(--teal-soft); color: var(--teal); }
+.later .tag { background: var(--later-soft); color: var(--later); }
+.cut .tag { background: var(--cut-soft); color: var(--cut); }
+.sum-l { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.count { color: var(--muted); font-size: 0.85rem; }
+details ul { margin: 0; padding: 0 16px 16px 34px; display: flex; flex-direction: column; gap: 8px; }
+details li { max-width: 65ch; }
+.why { color: var(--muted); }
+
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--rule); padding-top: 16px; }
+
+@media (max-width: 620px) {
+  .kernel, .two { grid-template-columns: minmax(0, 1fr); }
+  .ping { max-width: 300px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ping { animation: rise .6s ease-out both; }
+  @keyframes rise { from { transform: translateY(8px); } to { transform: none; } }
+}
+</style>
+
+<main>
+  <header>
+    <div class="status"><span class="pill draft">Scope · draft for review</span><span class="pill">Build With AI: Basics</span></div>
+    <h1>Fine Print</h1>
+    <p class="lede">An AI agent on your phone that files your personal contracts and, when you're about to sign, turns the clauses that matter to <em>you</em> into plain yes/no questions.</p>
+  </header>
+
+  <section class="kernel" aria-labelledby="k">
+    <div>
+      <span class="label">The unique kernel</span>
+      <h2 id="k">It knows a little about you, and asks "are you okay with this?"</h2>
+      <p>Fine Print doesn't just summarize a contract. It connects clauses to what you told it about your life, then asks you about them in plain language. It gets more relevant as you tell it what matters.</p>
+    </div>
+    <div class="ping" role="img" aria-label="Example phone notification from Fine Print about a primary residence clause">
+      <div class="ping-top"><span>FINE PRINT</span><span>now</span></div>
+      <p>This lender says the home must be your <mark>primary residence only</mark>. No rental, no short-term rental. You said you might rent it out someday.</p>
+      <p><strong>Are you okay with this?</strong></p>
+      <div class="ping-actions"><span>I'm okay</span><span>Ask the bank</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="loop">
+    <span class="label">How it fits together</span>
+    <h2 id="loop">The person, the core loop, and the proof</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 640 430" role="img" aria-label="Flow: a person about to sign answers setup questions, sends a contract in, the agent files it, gives 5 highlights they mark relevant, offers 3 questions to learn more, asks if they're comfortable, and they leave with peace of mind or a list for the issuer. Their answers feed back into the next contract.">
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="d-arrow"/></marker></defs>
+        <!-- user -->
+        <rect class="d-user" x="20" y="20" width="200" height="64" rx="10"/>
+        <text class="d-t" x="36" y="46">The person</text>
+        <text class="d-s" x="36" y="66">About to sign a mortgage</text>
+        <!-- row 1 -->
+        <rect class="d-box" x="20" y="120" width="180" height="64" rx="10"/>
+        <text class="d-t" x="36" y="146">1 · Quick setup</text>
+        <text class="d-s" x="36" y="166">A few profile questions</text>
+        <rect class="d-box" x="230" y="120" width="180" height="64" rx="10"/>
+        <text class="d-t" x="246" y="146">2 · Contract in</text>
+        <text class="d-s" x="246" y="166">Photos page by page, or upload</text>
+        <rect class="d-box" x="440" y="120" width="180" height="64" rx="10"/>
+        <text class="d-t" x="456" y="146">3 · Filed &amp; checked</text>
+        <text class="d-s" x="456" y="166">Named, signed or unsigned?</text>
+        <!-- row 2 -->
+        <rect class="d-key" x="440" y="220" width="180" height="64" rx="10"/>
+        <text class="d-tk" x="456" y="246">4 · 5 highlights</text>
+        <text class="d-sk" x="456" y="266">+ item of note, tap relevant</text>
+        <rect class="d-box" x="230" y="220" width="180" height="64" rx="10"/>
+        <text class="d-t" x="246" y="246">5 · Learn more</text>
+        <text class="d-s" x="246" y="266">3 questions worth asking</text>
+        <rect class="d-box" x="20" y="220" width="180" height="64" rx="10"/>
+        <text class="d-t" x="36" y="246">6 · Comfortable?</text>
+        <text class="d-s" x="36" y="266">Review more, or wrap up</text>
+        <!-- proof -->
+        <rect class="d-proof" x="20" y="330" width="390" height="70" rx="10"/>
+        <text class="d-tp" x="36" y="358">The proof: peace of mind, or a short list</text>
+        <text class="d-sp" x="36" y="380">of points to raise with the issuer before signing</text>
+        <!-- arrows -->
+        <path class="d-line" d="M110 84 V116" marker-end="url(#ah)"/>
+        <path class="d-line" d="M200 152 H226" marker-end="url(#ah)"/>
+        <path class="d-line" d="M410 152 H436" marker-end="url(#ah)"/>
+        <path class="d-line" d="M530 184 V216" marker-end="url(#ah)"/>
+        <path class="d-line" d="M440 252 H414" marker-end="url(#ah)"/>
+        <path class="d-line" d="M230 252 H204" marker-end="url(#ah)"/>
+        <path class="d-line" d="M110 284 V326" marker-end="url(#ah)"/>
+        <!-- feedback loop -->
+        <path class="d-loop" d="M530 284 V318 Q530 330 518 330 H470 Q458 330 458 318 V110 Q458 100 446 100 H122" marker-end="url(#ah)"/>
+        <text class="d-loopt" x="470" y="318">Your answers</text>
+        <text class="d-loopt" x="250" y="96">make the next contract more personal</text>
+      </svg>
+    </div>
+  </section>
+
+  <section class="two" aria-label="Who it's for and why it matters">
+    <div>
+      <span class="label">Who it's for</span>
+      <h3>Everyday people with a life full of agreements</h3>
+      <p>Leases, mortgages, phone and internet plans, credit cards, warranties. They sign and never reread. The sharpest moment is someone at the lawyer's office about to sign a mortgage, under pressure, with 20+ pages of small print.</p>
+      <p>Today they skim, trust, and hope, or end up "scanning through 20 pages of small print looking for a date or dates, if that even exists."</p>
+    </div>
+    <div>
+      <span class="label">Why it matters to Joann</span>
+      <h3>A decade of contracts work, brought home</h3>
+      <p>In professional contract management, no agreement is signed and forgotten. Fine Print brings that discipline to personal life.</p>
+      <blockquote>"Helping me have an option to organize in my life, do minor actions and get these things off my mind."</blockquote>
+    </div>
+  </section>
+
+  <section aria-labelledby="demo">
+    <span class="label">What "working" looks like</span>
+    <h2 id="demo">The demo, step by step</h2>
+    <ol class="demo">
+      <li><span>Tap the Fine Print icon on a phone home screen. The app opens.</span></li>
+      <li><span>Switch the theme from soothing professional to colourful personality.</span></li>
+      <li><span>Home screen: <span class="agent">"Welcome to your agreements!"</span> Demo agreements fade down the list, named like <span class="file">2026-10-02-xyzbank-mortgage.pdf</span>. Agent box at the bottom: <span class="agent">"Would you like to upload a new contract?"</span></span></li>
+      <li><span>Type "yes". The upload (+) and camera icons get circled in yellow.</span></li>
+      <li><span>Camera mode: framing cues, "next page" prompts, and a "done" button.</span></li>
+      <li><span>Send. <span class="agent">"This is a mortgage agreement with XYZ Bank. Filed as [name]. It isn't signed. Are you reviewing this for signing?"</span></span></li>
+      <li><span>"No." <span class="agent">"Stored as [name]-unsigned."</span> Then "wait, I mean yes," and the review continues.</span></li>
+      <li class="beat"><span><span class="agent">"This is a very standard mortgage agreement…"</span> Amortization, fixed rate (e.g. 4.2%), three more points, and an item of note specific to this mortgage. The agent connects a clause to a setup answer. You mark each highlight relevant or not. <mark>This is the "oh, that's cool" moment.</mark></span></li>
+      <li><span>"Learn more?" Yes. Three questions with answers, such as "How does this compare to other mortgages?": what's typical, and what this one adds.</span></li>
+      <li><span><span class="agent">"Are you comfortable with these points? Review more?"</span> No. A summary of points to raise with the issuer, and "upload the new version when they send one."</span></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="bound">
+    <span class="label">The boundary</span>
+    <h2 id="bound">What's in now, future features, and what's cut</h2>
+    <div class="filter" role="group" aria-label="Show">
+      <button type="button" id="f-all" data-f="all" aria-pressed="true">All</button>
+      <button type="button" id="f-now" data-f="now" aria-pressed="false">In now</button>
+      <button type="button" id="f-later" data-f="later" aria-pressed="false">Future features</button>
+      <button type="button" id="f-cut" data-f="cut" aria-pressed="false">Cut</button>
+    </div>
+    <div class="buckets">
+      <details class="now" data-b="now" open>
+        <summary><span class="sum-l"><span class="tag">In now</span><h3>The proof of concept</h3></span><span class="count">8</span></summary>
+        <ul>
+          <li>One app that runs on a phone, in the browser, saveable to the home screen with its own icon</li>
+          <li>Short profile setup, plus a relevant / not relevant tap on highlights</li>
+          <li>Agent chat box driving the flow; theme switch (at least soothing and colourful)</li>
+          <li>Demo agreement list using the <span class="file">date-party-purpose.pdf</span> naming convention</li>
+          <li>Contract intake by multi-page photo and by upload, with real AI reading of the contract</li>
+          <li>Identify type and issuer, name it, detect signed or unsigned, store it</li>
+          <li>Signing review: 5 highlights + item of note, 3 learn-more questions, comfort check, issuer summary</li>
+          <li>Mortgage as the showcase contract type</li>
+        </ul>
+      </details>
+      <details class="later" data-b="later" open>
+        <summary><span class="sum-l"><span class="tag">Future features</span><h3>Later, for "What's next"</h3></span><span class="count">7</span></summary>
+        <ul>
+          <li>Learning over time from your relevance answers and usage; profile questions revisited at intervals</li>
+          <li>Calendar integration: suggested date highlights with links back to the contract and clause</li>
+          <li>A personal forwarding email address for sending contracts in</li>
+          <li>Real folder linking on desktop, plus Dropbox, Google Drive and phone files storage</li>
+          <li>Comparing a new contract version against the previous one</li>
+          <li>Deep built-in knowledge for every common contract type: rental, credit and bank card, mobile, internet, warranties and more</li>
+          <li>A third theme</li>
+        </ul>
+      </details>
+      <details class="cut" data-b="cut" open>
+        <summary><span class="sum-l"><span class="tag">Cut</span><h3>Not in this build</h3></span><span class="count">1</span></summary>
+        <ul>
+          <li>Separate native iPhone and Android apps. <span class="why">Two builds is weeks of work, and a native iPhone app needs a Mac and an Apple developer account. One phone-ready app shows the same experience.</span></li>
+        </ul>
+      </details>
+    </div>
+  </section>
+
+  <footer>Companion to <code>devpost/scope.md</code>, which is the official copy. Status: draft.</footer>
+</main>
+
+<script>
+(function () {
+  var btns = document.querySelectorAll('.filter button');
+  var buckets = document.querySelectorAll('.buckets details');
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var f = b.getAttribute('data-f');
+      btns.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      buckets.forEach(function (d) {
+        var show = f === 'all' || d.getAttribute('data-b') === f;
+        d.hidden = !show;
+        if (show) d.open = true;
+      });
+    });
+  });
+})();
+</script>
