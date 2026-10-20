@@ -5,7 +5,7 @@ status: approved
 
 # Build Checklist
 
-Build mode: [to be chosen]
+Build mode: learn
 
 **About verification in this build:** this cloud workspace can run the app and helper locally in practice mode, but it can't reach Vercel and has no API key (the key never comes into chat). So the mechanical checks run locally in practice mode, with real code paths, schema checks and browser screenshots. The **real-AI behaviour** is confirmed by Joann on her phone at the live Vercel link, as part of each learner check.
 

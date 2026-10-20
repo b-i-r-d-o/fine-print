@@ -1,0 +1,12 @@
+{
+  "name": "fine-print",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An AI agent on your phone that files your personal agreements, notices what's coming due, and helps you take the next step.",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "dev": "node dev-server.js"
+  }
+}

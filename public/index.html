@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en" data-theme="linen">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Fine Print</title>
+  <meta name="description" content="Your agreements, organized. An AI agent that files your contracts, notices what's coming due, and helps you take the next step.">
+  <meta name="theme-color" content="#F3EDE4">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Fine Print">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="practice-banner" class="practice-banner" hidden>PRACTICE MODE · canned replies, not real AI</div>
+
+  <!-- WELCOME / SIGN-IN -->
+  <section class="screen" id="screen-welcome" data-screen="welcome">
+    <div class="screen-top">
+      <label class="theme-picker">
+        <span class="sr-only">Theme</span>
+        <select class="theme-select" aria-label="Theme">
+          <option value="linen">Linen</option>
+          <option value="midnight">Midnight</option>
+          <option value="heirloom">Heirloom</option>
+        </select>
+      </label>
+    </div>
+    <div class="welcome-body">
+      <div class="brand-mark" aria-hidden="true"><img src="/icons/icon-192.png" alt=""></div>
+      <h1 class="brand-name">Fine Print</h1>
+      <p class="brand-tag">Your agreements, organized.<br>What's due, what's next, what it means.</p>
+      <h2 class="welcome-ask">Welcome! Please sign up or sign in.</h2>
+      <div class="signin-buttons">
+        <button type="button" class="btn btn-signin" data-signin="google">
+          <span class="signin-logo" aria-hidden="true">G</span> Continue with Google <span class="tag tag-demo">Demo</span>
+        </button>
+        <button type="button" class="btn btn-signin" data-signin="facebook">
+          <span class="signin-logo signin-logo-f" aria-hidden="true">f</span> Continue with Facebook <span class="tag tag-demo">Demo</span>
+        </button>
+      </div>
+      <p class="demo-note">Demo sign-in · no account is created.</p>
+    </div>
+    <p class="guidance-line">Fine Print helps you understand your agreements. It's guidance, not legal advice.</p>
+    <button type="button" class="reset-link" id="reset-demo">Reset demo</button>
+  </section>
+
+  <!-- START CHOICE -->
+  <section class="screen" id="screen-start" data-screen="start" hidden>
+    <div class="screen-pad">
+      <h1 class="screen-title">Welcome to Fine Print!</h1>
+      <p class="screen-lede">Would you like to upload documents for storage right now, or set up your user profile?</p>
+      <div class="choice-stack">
+        <button type="button" class="choice-card" data-start="upload">
+          <span class="choice-icon" aria-hidden="true">📄</span>
+          <span><strong>Upload documents</strong><br><span class="muted">Store agreements right now</span></span>
+        </button>
+        <button type="button" class="choice-card" data-start="profile">
+          <span class="choice-icon" aria-hidden="true">🙂</span>
+          <span><strong>Set up my profile</strong><br><span class="muted">Three quick questions</span></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROFILE -->
+  <section class="screen" id="screen-profile" data-screen="profile" hidden>
+    <div class="screen-pad">
+      <div class="progress-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="step-label" id="profile-step-label">Question 1 of 3</p>
+      <h1 class="screen-title" id="profile-question"></h1>
+      <div class="option-grid" id="profile-options"></div>
+      <button type="button" class="btn-text" id="profile-back" hidden>← Back</button>
+    </div>
+  </section>
+
+  <!-- HOME -->
+  <section class="screen screen-home" id="screen-home" data-screen="home" hidden>
+    <header class="home-header">
+      <div class="home-brand"><img src="/icons/icon-192.png" alt="" class="home-logo"> <span>Fine Print</span></div>
+      <label class="theme-picker">
+        <span class="sr-only">Theme</span>
+        <select class="theme-select" aria-label="Theme">
+          <option value="linen">Linen</option>
+          <option value="midnight">Midnight</option>
+          <option value="heirloom">Heirloom</option>
+        </select>
+      </label>
+    </header>
+    <div class="home-scroll" id="home-scroll">
+      <div class="home-intro">
+        <h1 class="home-title">Welcome to your agreements!</h1>
+        <p class="profile-chip" id="profile-chip" hidden></p>
+      </div>
+      <div class="agreement-list" id="agreement-list"></div>
+      <div class="empty-state" id="empty-state">
+        <button type="button" class="empty-upload" id="empty-upload" aria-label="Upload your first agreement">
+          <span aria-hidden="true">＋</span>
+        </button>
+        <p class="empty-title">Upload your first agreement!</p>
+        <p class="muted">A lease, a mortgage, a phone plan, a warranty… anything with terms and conditions.</p>
+      </div>
+      <div class="chat" id="chat" aria-live="polite"></div>
+    </div>
+    <form class="composer" id="composer" autocomplete="off">
+      <button type="button" class="icon-btn" id="btn-upload" aria-label="Upload a file">＋</button>
+      <button type="button" class="icon-btn" id="btn-camera" aria-label="Take a photo">📷</button>
+      <input type="text" id="composer-input" class="composer-input" placeholder="Message Fine Print…" aria-label="Message">
+      <button type="submit" class="send-btn" id="composer-send" aria-label="Send">↑</button>
+    </form>
+    <input type="file" id="file-input" accept="application/pdf,image/*" hidden>
+    <input type="file" id="camera-input" accept="image/*" capture="environment" hidden>
+  </section>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
