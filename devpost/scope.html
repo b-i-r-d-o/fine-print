@@ -137,24 +137,25 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--ru
 }
 </style>
 
+
 <main>
   <header>
-    <div class="status"><span class="pill draft">Scope · approved</span><span class="pill">Build With AI: Basics</span></div>
+    <div class="status"><span class="pill draft">Scope · approved · revised Oct 20</span><span class="pill">Build With AI: Basics</span></div>
     <h1>Fine Print</h1>
-    <p class="lede">An AI agent on your phone that files your personal contracts and, when you're about to sign, turns the clauses that matter to <em>you</em> into plain yes/no questions.</p>
+    <p class="lede">A Swiss Army knife AI agent on your phone for every personal agreement. It files your contracts, notices what's coming up, asks you plain questions about your situation, and helps you take the next step.</p>
   </header>
 
   <section class="kernel" aria-labelledby="k">
     <div>
       <span class="label">The unique kernel</span>
-      <h2 id="k">It knows a little about you, and asks "are you okay with this?"</h2>
-      <p>Fine Print doesn't just summarize a contract. It connects clauses to what you told it about your life, then asks you about them in plain language. It gets more relevant as you tell it what matters.</p>
+      <h2 id="k">It reads, notices, asks, and then helps you act</h2>
+      <p>Fine Print doesn't just store or summarize a contract. It notices what matters for your situation, asks you a plain question, and does the next small task with you.</p>
     </div>
-    <div class="ping" role="img" aria-label="Example phone notification from Fine Print about a primary residence clause">
+    <div class="ping" role="img" aria-label="Example message from Fine Print about an ended rental agreement">
       <div class="ping-top"><span>FINE PRINT</span><span>now</span></div>
-      <p>This lender says the home must be your <mark>primary residence only</mark>. No rental, no short-term rental. You said you might rent it out someday.</p>
-      <p><strong>Are you okay with this?</strong></p>
-      <div class="ping-actions"><span>I'm okay</span><span>Ask the bank</span></div>
+      <p>Looks like you've uploaded a rental agreement. This fixed-term tenancy <mark>ended 2 months ago</mark>.</p>
+      <p><strong>Are you looking to renew with your landlord?</strong></p>
+      <div class="ping-actions"><span>Renew</span><span>Move out</span></div>
     </div>
   </section>
 
@@ -162,48 +163,33 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--ru
     <span class="label">How it fits together</span>
     <h2 id="loop">The person, the core loop, and the proof</h2>
     <div class="diagram">
-      <svg viewBox="0 0 640 430" role="img" aria-label="Flow: a person about to sign answers setup questions, sends a contract in, the agent files it, gives 5 highlights they mark relevant, offers 3 questions to learn more, asks if they're comfortable, and they leave with peace of mind or a list for the issuer. Their answers feed back into the next contract.">
+      <svg viewBox="0 0 640 330" role="img" aria-label="Flow: a person with agreements signs in and answers profile questions, uploads an agreement, the agent identifies it and notes dates, asks a plain question, explains options and does the next action, and the agreement sits on the home list with status and pending action.">
         <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="d-arrow"/></marker></defs>
-        <!-- user -->
-        <rect class="d-user" x="20" y="20" width="200" height="64" rx="10"/>
+        <rect class="d-user" x="20" y="20" width="240" height="64" rx="10"/>
         <text class="d-t" x="36" y="46">The person</text>
-        <text class="d-s" x="36" y="66">About to sign a mortgage</text>
-        <!-- row 1 -->
+        <text class="d-s" x="36" y="66">A life full of agreements, never reread</text>
         <rect class="d-box" x="20" y="120" width="180" height="64" rx="10"/>
-        <text class="d-t" x="36" y="146">1 · Quick setup</text>
-        <text class="d-s" x="36" y="166">A few profile questions</text>
+        <text class="d-t" x="36" y="146">1 · Sign in + profile</text>
+        <text class="d-s" x="36" y="166">Demo sign-in, 3 questions</text>
         <rect class="d-box" x="230" y="120" width="180" height="64" rx="10"/>
-        <text class="d-t" x="246" y="146">2 · Contract in</text>
-        <text class="d-s" x="246" y="166">Photos page by page, or upload</text>
+        <text class="d-t" x="246" y="146">2 · Upload</text>
+        <text class="d-s" x="246" y="166">File or photos</text>
         <rect class="d-box" x="440" y="120" width="180" height="64" rx="10"/>
-        <text class="d-t" x="456" y="146">3 · Filed &amp; checked</text>
-        <text class="d-s" x="456" y="166">Named, signed or unsigned?</text>
-        <!-- row 2 -->
+        <text class="d-t" x="456" y="146">3 · Reads + asks</text>
+        <text class="d-s" x="456" y="166">"Looking to renew?"</text>
         <rect class="d-key" x="440" y="220" width="180" height="64" rx="10"/>
-        <text class="d-tk" x="456" y="246">4 · 5 highlights</text>
-        <text class="d-sk" x="456" y="266">+ item of note, tap relevant</text>
-        <rect class="d-box" x="230" y="220" width="180" height="64" rx="10"/>
-        <text class="d-t" x="246" y="246">5 · Learn more</text>
-        <text class="d-s" x="246" y="266">3 questions worth asking</text>
-        <rect class="d-box" x="20" y="220" width="180" height="64" rx="10"/>
-        <text class="d-t" x="36" y="246">6 · Comfortable?</text>
-        <text class="d-s" x="36" y="266">Review more, or wrap up</text>
-        <!-- proof -->
-        <rect class="d-proof" x="20" y="330" width="390" height="70" rx="10"/>
-        <text class="d-tp" x="36" y="358">The proof: peace of mind, or a short list</text>
-        <text class="d-sp" x="36" y="380">of points to raise with the issuer before signing</text>
-        <!-- arrows -->
+        <text class="d-tk" x="456" y="246">4 · Helps you act</text>
+        <text class="d-sk" x="456" y="266">Explains rule, drafts notice</text>
+        <rect class="d-proof" x="20" y="220" width="390" height="64" rx="10"/>
+        <text class="d-tp" x="36" y="246">5 · On the home list, off your mind</text>
+        <text class="d-sp" x="36" y="266">Status and pending actions for every agreement</text>
         <path class="d-line" d="M110 84 V116" marker-end="url(#ah)"/>
         <path class="d-line" d="M200 152 H226" marker-end="url(#ah)"/>
         <path class="d-line" d="M410 152 H436" marker-end="url(#ah)"/>
         <path class="d-line" d="M530 184 V216" marker-end="url(#ah)"/>
         <path class="d-line" d="M440 252 H414" marker-end="url(#ah)"/>
-        <path class="d-line" d="M230 252 H204" marker-end="url(#ah)"/>
-        <path class="d-line" d="M110 284 V326" marker-end="url(#ah)"/>
-        <!-- feedback loop -->
-        <path class="d-loop" d="M530 284 V318 Q530 330 518 330 H470 Q458 330 458 318 V110 Q458 100 446 100 H122" marker-end="url(#ah)"/>
-        <text class="d-loopt" x="470" y="318">Your answers</text>
-        <text class="d-loopt" x="250" y="96">make the next contract more personal</text>
+        <path class="d-loop" d="M215 284 V310 H320 Q330 310 330 300 V184" marker-end="url(#ah)"/>
+        <text class="d-loopt" x="340" y="306">Next agreement, same way</text>
       </svg>
     </div>
   </section>
@@ -212,8 +198,7 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--ru
     <div>
       <span class="label">Who it's for</span>
       <h3>Everyday people with a life full of agreements</h3>
-      <p>Leases, mortgages, phone and internet plans, credit cards, warranties. They sign and never reread. The sharpest moment is someone at the lawyer's office about to sign a mortgage, under pressure, with 20+ pages of small print.</p>
-      <p>Today they skim, trust, and hope, or end up "scanning through 20 pages of small print looking for a date or dates, if that even exists."</p>
+      <p>Leases, mortgages, phone and internet plans, credit cards, warranties. They sign, never reread, then scramble when something comes due, "scanning through 20 pages of small print looking for a date or dates, if that even exists."</p>
     </div>
     <div>
       <span class="label">Why it matters to Joann</span>
@@ -228,23 +213,23 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--ru
     <h2 id="demo">The demo, step by step</h2>
     <div class="note"><span class="label">Video staging, not an app feature</span><p>Phone home screen with medium-to-large icons. Page 1 has everyday apps: calendar, email, phone, text, and a silly game. Swipe to page 2, where Fine Print sits among related apps such as banking, files and wallet.</p></div>
     <ol class="demo">
-      <li><span>Tap the Fine Print icon on a phone home screen. The app opens.</span></li>
-      <li><span>Switch the theme from soothing professional to colourful personality.</span></li>
-      <li><span>Home screen: <span class="agent">"Welcome to your agreements!"</span> Demo agreements fade down the list, named like <span class="file">2026-10-02-xyzbank-mortgage.pdf</span>. Agent box at the bottom: <span class="agent">"Would you like to upload a new contract?"</span></span></li>
-      <li><span>Type "yes". The upload (+) and camera icons get circled in yellow.</span></li>
-      <li><span>Camera mode: framing cues, "next page" prompts, and a "done" button.</span></li>
-      <li><span>Send. <span class="agent">"This is a mortgage agreement with XYZ Bank. Filed as [name]. It isn't signed. Are you reviewing this for signing?"</span></span></li>
-      <li><span>"No." <span class="agent">"Stored as [name]-unsigned."</span> Then "wait, I mean yes," and the review continues.</span></li>
-      <li class="beat"><span><span class="agent">"This is a very standard mortgage agreement…"</span> Amortization, fixed rate (e.g. 4.2%), three more points, and an item of note specific to this mortgage. The agent connects a clause to a setup answer. You mark each highlight relevant or not. <mark>This is the "oh, that's cool" moment.</mark></span></li>
-      <li><span>"Learn more?" Yes. Three questions with answers, such as "How does this compare to other mortgages?": what's typical, and what this one adds.</span></li>
-      <li><span><span class="agent">"Are you comfortable with these points? Review more?"</span> No. A summary of points to raise with the issuer, and "upload the new version when they send one."</span></li>
+      <li><span>Tap the Fine Print icon. The app opens.</span></li>
+      <li><span><span class="agent">"Welcome! Please sign up or sign in."</span> Google and Facebook buttons, labelled as demo.</span></li>
+      <li><span><span class="agent">"Upload documents for storage now, or set up your user profile?"</span> Profile.</span></li>
+      <li><span>Profile: yourself or household, age range, learn or review. Review.</span></li>
+      <li><span><span class="agent">"Connect your email (coming soon), or upload agreements for review."</span> Upload a rental agreement.</span></li>
+      <li class="beat"><span><span class="agent">"This fixed-term tenancy ended 2 months ago. Are you looking to renew with your landlord?"</span> "No, I want to move out." <mark>The "oh, that's cool" moment.</mark></span></li>
+      <li><span>The agent explains Alberta's rule, one full tenancy month's written notice, and offers to draft it. Yes.</span></li>
+      <li class="beat"><span><span class="agent">"I've drafted the notice for you, please review. Next step: deliver it to your landlord."</span> Printed and mailed off-app.</span></li>
+      <li><span>Home: the rental agreement is highlighted with "action pending."</span></li>
+      <li><span>Upload a signed mortgage. <span class="agent">"I've noted these dates and actions…"</span> Store.</span></li>
     </ol>
   </section>
 
   <section aria-labelledby="bound">
     <span class="label">The boundary</span>
     <h2 id="bound">What's in now, future features, and what's cut</h2>
-    <div class="rule"><span class="label">Guiding rule · Joann's call</span><p><strong>Depth over breadth.</strong> Effort goes into the demo flow that shows how usable Fine Print is. Features outside that flow can appear on screen as non-functional, clearly marked "coming soon," and be explained in the submission. That beats building them half-working.</p></div>
+    <div class="rule"><span class="label">Guiding rule · Joann's call</span><p><strong>Depth over breadth.</strong> Effort goes into the demo flow that shows how usable Fine Print is. Features outside that flow can appear as non-functional, clearly marked "coming soon" or "demo," and be explained in the submission.</p></div>
     <div class="filter" role="group" aria-label="Show">
       <button type="button" id="f-all" data-f="all" aria-pressed="true">All</button>
       <button type="button" id="f-now" data-f="now" aria-pressed="false">In now</button>
@@ -253,41 +238,43 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--ru
     </div>
     <div class="buckets">
       <details class="now" data-b="now" open>
-        <summary><span class="sum-l"><span class="tag">In now</span><h3>The proof of concept</h3></span><span class="count">8</span></summary>
+        <summary><span class="sum-l"><span class="tag">In now</span><h3>The proof of concept</h3></span><span class="count">7</span></summary>
         <ul>
           <li>One app that runs on a phone, in the browser, saveable to the home screen with its own icon</li>
-          <li>Short profile setup, plus a relevant / not relevant tap on highlights</li>
-          <li>Agent chat box driving the flow; theme switch (at least soothing and colourful)</li>
-          <li>Demo agreement list using the <span class="file">date-party-purpose.pdf</span> naming convention</li>
-          <li>Contract intake by multi-page photo and by upload, with real AI reading of the contract</li>
-          <li>Identify type and issuer, name it, detect signed or unsigned, store it</li>
-          <li>Signing review: 5 highlights + item of note, 3 learn-more questions, comfort check, issuer summary</li>
-          <li>Mortgage as the showcase contract type</li>
+          <li>Sign-in screen (demo, no real accounts) and profile questions</li>
+          <li>Agent chat driving the flow; three themes (beige default, blue and black, maroon and olive with a serif font)</li>
+          <li>Upload an agreement, with real AI reading of it</li>
+          <li>Rental agreement, the full showcase: spot the ended term, ask intent, explain the Alberta notice rule, draft the notice</li>
+          <li>Mortgage agreement, the "half": identify as signed, list key dates and actions, store</li>
+          <li>Home list of agreements with status and pending actions</li>
         </ul>
       </details>
       <details class="later" data-b="later" open>
-        <summary><span class="sum-l"><span class="tag">Future features</span><h3>Later, for "What's next"</h3></span><span class="count">7</span></summary>
-        <p class="why" style="padding: 0 16px 10px">Any of these can appear in the app as a "coming soon" control. Which ones gets decided in the next step.</p>
+        <summary><span class="sum-l"><span class="tag">Future features</span><h3>Later, for "What's next"</h3></span><span class="count">9</span></summary>
+        <p class="why" style="padding: 0 16px 10px">Any of these can appear in the app as a "coming soon" control.</p>
         <ul>
-          <li>Learning over time from your relevance answers and usage; profile questions revisited at intervals</li>
-          <li>Calendar integration: suggested date highlights with links back to the contract and clause</li>
-          <li>A personal forwarding email address for sending contracts in</li>
+          <li>Connecting email to find agreements automatically, plus a personal forwarding address</li>
+          <li>Full pre-signing review: 5 highlights tied to your profile, relevance taps, "are you okay with this?", issuer summary</li>
+          <li>"Learn about contract topics" path</li>
+          <li>Real Google and Facebook sign-in and accounts</li>
+          <li>Learning over time from your answers and usage</li>
+          <li>Calendar integration for key dates, linked to the contract and clause</li>
           <li>Real folder linking on desktop, plus Dropbox, Google Drive and phone files storage</li>
           <li>Comparing a new contract version against the previous one</li>
-          <li>Deep built-in knowledge for every common contract type: rental, credit and bank card, mobile, internet, warranties and more</li>
-          <li>A third theme</li>
+          <li>Deep built-in knowledge for every common contract type and province</li>
         </ul>
       </details>
       <details class="cut" data-b="cut" open>
-        <summary><span class="sum-l"><span class="tag">Cut</span><h3>Not in this build</h3></span><span class="count">1</span></summary>
+        <summary><span class="sum-l"><span class="tag">Cut</span><h3>Not in this build</h3></span><span class="count">2</span></summary>
         <ul>
-          <li>Separate native iPhone and Android apps. <span class="why">Two builds is weeks of work, and a native iPhone app needs a Mac and an Apple developer account. One phone-ready app shows the same experience.</span></li>
+          <li>Separate native iPhone and Android apps. <span class="why">Weeks of work, plus a Mac and developer accounts. One phone-ready app shows the same experience.</span></li>
+          <li>Installing from the Play Store in the demo. <span class="why">Needs a published native app. The demo starts at the home-screen icon instead.</span></li>
         </ul>
       </details>
     </div>
   </section>
 
-  <footer>Companion to <code>devpost/scope.md</code>, which is the official copy. Status: approved.</footer>
+  <footer>Companion to <code>devpost/scope.md</code>, which is the official copy. Status: approved, revised during the requirements step.</footer>
 </main>
 
 <script>

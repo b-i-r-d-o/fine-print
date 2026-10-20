@@ -1,0 +1,348 @@
+<title>Fine Print PRD</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; a phone-sized journey stepper up top, then requirement clauses with checkable criteria. */
+:root {
+  --paper: #f5f7f6; --sheet: #ffffff; --ink: #1d2b2a; --muted: #5b6b69; --rule: #d8e0de;
+  --teal: #1f6f68; --teal-soft: #e3f0ee; --mark: #ffe066; --mark-ink: #1d2b2a;
+  --later: #6a5acd; --later-soft: #eceafb; --cut: #b5473a; --cut-soft: #f8e7e4;
+  --bubble: #eef2f1;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121a19; --sheet: #192321; --ink: #e4ecea; --muted: #9aaba8; --rule: #2c3b39;
+    --teal: #6cc3b9; --teal-soft: #1d3330; --mark: #e8c94a; --mark-ink: #1a1a12;
+    --later: #a99cf0; --later-soft: #26233d; --cut: #e8897c; --cut-soft: #3a2320; --bubble: #22302e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121a19; --sheet: #192321; --ink: #e4ecea; --muted: #9aaba8; --rule: #2c3b39;
+  --teal: #6cc3b9; --teal-soft: #1d3330; --mark: #e8c94a; --mark-ink: #1a1a12;
+  --later: #a99cf0; --later-soft: #26233d; --cut: #e8897c; --cut-soft: #3a2320; --bubble: #22302e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 32px 64px; }
+main { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(2.2rem, 6.5vw, 3.2rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: 1.5rem; font-weight: 700; }
+h3 { font-size: 1.05rem; font-weight: 600; font-family: var(--body); }
+p { margin: 0; max-width: 65ch; }
+section { display: flex; flex-direction: column; gap: 16px; }
+.label { font: 500 0.75rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+mark { background: var(--mark); color: var(--mark-ink); padding: 0 3px; border-radius: 2px; }
+code, .file { font-family: var(--mono); font-size: 0.88em; background: var(--teal-soft); color: var(--ink); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+header { display: flex; flex-direction: column; gap: 14px; }
+.status { display: flex; gap: 10px; flex-wrap: wrap; }
+.pill { font: 500 0.75rem/1 var(--mono); padding: 6px 10px; border-radius: 999px; border: 1px solid var(--rule); color: var(--muted); }
+.pill.draft { border-color: var(--mark); background: var(--mark); color: var(--mark-ink); }
+.lede { font-size: 1.12rem; }
+
+.expand { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+.expand > div { min-width: 0; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.expand .was { background: var(--sheet); border: 1px dashed var(--rule); }
+.expand .now { background: var(--teal-soft); }
+
+/* Journey diagram */
+.diagram { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 16px; overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.d-box { fill: var(--sheet); stroke: var(--rule); stroke-width: 1.5; }
+.d-key { fill: var(--mark); }
+.d-done { fill: var(--teal); }
+.d-t { fill: var(--ink); font: 600 13px var(--body); }
+.d-s { fill: var(--muted); font: 11px var(--body); }
+.d-tk { fill: var(--mark-ink); font: 600 13px var(--body); }
+.d-sk { fill: var(--mark-ink); font: 11px var(--body); }
+.d-tp { fill: var(--sheet); font: 600 13px var(--body); }
+.d-sp { fill: var(--sheet); font: 11px var(--body); }
+.d-line { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+.d-arrow { fill: var(--muted); }
+
+/* Stepper */
+.stepper { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.phone { background: var(--sheet); border: 1px solid var(--rule); border-radius: 28px; padding: 18px 14px; min-height: 360px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 16px 40px -28px rgba(0,0,0,.4); }
+.phone-top { display: flex; justify-content: space-between; font: 500 0.72rem/1 var(--mono); color: var(--muted); }
+.screen-name { font: 600 0.9rem/1.2 var(--display); }
+.msg { padding: 9px 12px; border-radius: 14px; font-size: 0.9rem; max-width: 92%; }
+.msg.agent { background: var(--bubble); align-self: flex-start; border-bottom-left-radius: 4px; }
+.msg.user { background: var(--teal); color: var(--sheet); align-self: flex-end; border-bottom-right-radius: 4px; }
+.msg.sys { align-self: center; font: 500 0.75rem/1.4 var(--mono); color: var(--muted); text-align: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { font-size: 0.78rem; padding: 5px 9px; border: 1px solid var(--rule); border-radius: 999px; }
+.step-side { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.step-count { font: 500 0.85rem var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; }
+button { font: 500 0.88rem/1 var(--body); padding: 10px 14px; border-radius: 999px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); cursor: pointer; }
+button.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+button:disabled { opacity: .4; cursor: default; }
+button:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+input[type="range"] { width: 100%; accent-color: var(--teal); }
+
+/* Features */
+.features { display: flex; flex-direction: column; gap: 12px; }
+details { border: 1px solid var(--rule); border-radius: 12px; background: var(--sheet); }
+summary { cursor: pointer; list-style: none; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "–"; font: 500 1.1rem/1 var(--mono); color: var(--muted); }
+details:not([open]) summary::after { content: "+"; }
+.det-body { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+.crit { display: grid; grid-template-columns: 22px minmax(0,1fr); gap: 8px; align-items: start; font-size: 0.95rem; }
+.crit input { margin-top: 5px; width: 16px; height: 16px; accent-color: var(--teal); }
+.assume { font: 500 0.7rem/1 var(--mono); text-transform: uppercase; letter-spacing: .06em; background: var(--mark); color: var(--mark-ink); padding: 3px 6px; border-radius: 4px; margin-left: 6px; white-space: nowrap; }
+.src { font: 0.78rem var(--mono); color: var(--muted); }
+.progress { font: 500 0.8rem var(--mono); color: var(--muted); }
+
+.states { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.states > div { min-width: 0; border: 1px solid var(--rule); border-radius: 12px; padding: 14px; background: var(--sheet); display: flex; flex-direction: column; gap: 4px; }
+
+ul.plain { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+ul.plain li { max-width: 65ch; }
+.tag { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 8px; border-radius: 6px; }
+.t-def { background: var(--cut-soft); color: var(--cut); }
+.t-later { background: var(--later-soft); color: var(--later); }
+.t-non { background: var(--bubble); color: var(--muted); }
+.oq { background: var(--sheet); border: 2px solid var(--mark); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--rule); padding-top: 16px; }
+
+@media (max-width: 640px) {
+  .stepper, .expand, .states { grid-template-columns: minmax(0,1fr); }
+  .phone { max-width: 340px; }
+}
+</style>
+
+<main>
+  <header>
+    <div class="status"><span class="pill draft">PRD · draft for review</span><span class="pill">Build With AI: Basics</span></div>
+    <h1>Fine Print: what it does</h1>
+    <p class="lede">A phone app with an AI agent that files your personal agreements, notices what's coming due, asks you plain questions about your situation, and does the next small task for you. It's a Swiss Army knife for everyday contracts, not a rentals app.</p>
+  </header>
+
+  <section aria-labelledby="grew">
+    <span class="label">From sketch to spec</span>
+    <h2 id="grew">What the scope said, and what we know now</h2>
+    <div class="expand">
+      <div class="was"><span class="label">Scope said</span><p>"Upload an agreement; the agent asks a plain question and helps you act."</p></div>
+      <div class="now"><span class="label">Now we know</span><p>It spots that the lease ended 2 months ago, asks if you'll renew, explains Alberta's one-month notice rule, asks for the landlord's missing address, and hands you an editable PDF notice.</p></div>
+      <div class="was"><span class="label">Scope said</span><p>"A few quick profile questions."</p></div>
+      <div class="now"><span class="label">Now we know</span><p>Three tap questions: self or household, age range, learn or review. They're for show in this build, and their future jobs are written down.</p></div>
+      <div class="was"><span class="label">Scope said</span><p>"Themes for mass appeal."</p></div>
+      <div class="now"><span class="label">Now we know</span><p>Beige by default, then blue and black, then maroon and olive with a serif font, which stays for the demo.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="journey">
+    <span class="label">The core journey</span>
+    <h2 id="journey">Blank app to ready-to-send notice</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 760 300" role="img" aria-label="Journey: open and pick theme, demo sign-in, profile questions, empty home, upload rental, agent asks about renewal, explains Alberta rule, drafts and edits notice, PDF ready; home shows action pending; upload mortgage, dates and actions listed, store; home lists both.">
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="d-arrow"/></marker></defs>
+        <rect class="d-box" x="10" y="20" width="160" height="60" rx="10"/><text class="d-t" x="24" y="45">Open + theme</text><text class="d-s" x="24" y="64">Beige → maroon &amp; olive</text>
+        <rect class="d-box" x="200" y="20" width="160" height="60" rx="10"/><text class="d-t" x="214" y="45">Sign in (demo)</text><text class="d-s" x="214" y="64">Google / Facebook</text>
+        <rect class="d-box" x="390" y="20" width="160" height="60" rx="10"/><text class="d-t" x="404" y="45">Profile</text><text class="d-s" x="404" y="64">3 tap questions → Review</text>
+        <rect class="d-box" x="580" y="20" width="170" height="60" rx="10"/><text class="d-t" x="594" y="45">Empty home</text><text class="d-s" x="594" y="64">"Upload your first agreement!"</text>
+        <rect class="d-key" x="580" y="120" width="170" height="60" rx="10"/><text class="d-tk" x="594" y="145">Rental: ended 2 mo ago</text><text class="d-sk" x="594" y="164">"Looking to renew?" → no</text>
+        <rect class="d-key" x="390" y="120" width="160" height="60" rx="10"/><text class="d-tk" x="404" y="145">Alberta rule</text><text class="d-sk" x="404" y="164">1 full month, in writing</text>
+        <rect class="d-key" x="200" y="120" width="160" height="60" rx="10"/><text class="d-tk" x="214" y="145">Draft notice</text><text class="d-sk" x="214" y="164">Asks for landlord address</text>
+        <rect class="d-key" x="10" y="120" width="160" height="60" rx="10"/><text class="d-tk" x="24" y="145">Edit → PDF</text><text class="d-sk" x="24" y="164">Print, drop off or email</text>
+        <rect class="d-box" x="10" y="220" width="220" height="60" rx="10"/><text class="d-t" x="24" y="245">Home: action pending</text><text class="d-s" x="24" y="264">Rental highlighted</text>
+        <rect class="d-box" x="260" y="220" width="220" height="60" rx="10"/><text class="d-t" x="274" y="245">Mortgage uploaded</text><text class="d-s" x="274" y="264">Signed · dates + actions · Store</text>
+        <rect class="d-done" x="510" y="220" width="240" height="60" rx="10"/><text class="d-tp" x="524" y="245">Two agreements on file</text><text class="d-sp" x="524" y="264">Swiss Army knife, not a rentals app</text>
+        <path class="d-line" d="M170 50 H196" marker-end="url(#ah)"/>
+        <path class="d-line" d="M360 50 H386" marker-end="url(#ah)"/>
+        <path class="d-line" d="M550 50 H576" marker-end="url(#ah)"/>
+        <path class="d-line" d="M665 80 V116" marker-end="url(#ah)"/>
+        <path class="d-line" d="M580 150 H554" marker-end="url(#ah)"/>
+        <path class="d-line" d="M390 150 H364" marker-end="url(#ah)"/>
+        <path class="d-line" d="M200 150 H174" marker-end="url(#ah)"/>
+        <path class="d-line" d="M90 180 V216" marker-end="url(#ah)"/>
+        <path class="d-line" d="M230 250 H256" marker-end="url(#ah)"/>
+        <path class="d-line" d="M480 250 H506" marker-end="url(#ah)"/>
+      </svg>
+    </div>
+
+    <div class="stepper">
+      <div class="phone" aria-live="polite">
+        <div class="phone-top"><span id="ph-screen">Welcome</span><span>9:41</span></div>
+        <div id="ph-body" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+      <div class="step-side">
+        <span class="step-count" id="st-count">Step 1 of 16</span>
+        <h3 id="st-title">Open</h3>
+        <p id="st-desc"></p>
+        <label class="label" for="st-range">Step through the journey</label>
+        <input type="range" id="st-range" min="1" max="16" value="1">
+        <div class="controls">
+          <button type="button" id="st-prev">Back</button>
+          <button type="button" id="st-next" class="primary">Next step</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="feat">
+    <span class="label">Features and behavior</span>
+    <h2 id="feat">How we'll know each part works</h2>
+    <p>Each line is something you can check by looking at the screen during the build. Tick them as you test; ticks only stay in this browser.</p>
+    <span class="progress" id="prog">0 of 0 checked</span>
+    <div class="features" id="features"></div>
+  </section>
+
+  <section aria-labelledby="states">
+    <span class="label">States and boundaries</span>
+    <h2 id="states">The "what if" moments</h2>
+    <div class="states">
+      <div><h3>First use</h3><p>Empty home with an upload icon and "Upload your first agreement!" The demo starts blank on purpose.</p></div>
+      <div><h3>Blurry photo</h3><p>"This photo is unfocused. Please retake it so the text is clear."</p></div>
+      <div><h3>Not an agreement <span class="assume">assumption</span></h3><p>The agent says this doesn't look like an agreement and asks for another file.</p></div>
+      <div><h3>Missing details</h3><p>The agent asks, for example about the landlord's address. If the answer is no, that line is left blank on the notice.</p></div>
+      <div><h3>Coming-soon controls</h3><p>Email connect, the Learn path, and mortgage Review are visible and marked. Tapping them explains they're coming soon.</p></div>
+      <div><h3>What stays</h3><p>Theme, profile answers, agreements and pending actions stay during the demo. Lasting storage is decided in the technical plan.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="dec">
+    <span class="label">Product decisions</span>
+    <h2 id="dec">Joann's calls</h2>
+    <ul class="plain">
+      <li><strong>The rental is the full showcase and the mortgage is the half.</strong> Two agreement types keep it a Swiss Army knife, not a rentals app.</li>
+      <li><strong>The demo starts from a blank first use.</strong> Real first-time use matters more than demo data.</li>
+      <li><strong>Sign-in is labelled as demo, email is coming soon, and there's no Play Store install.</strong> Depth over breadth, and honesty with judges.</li>
+      <li><strong>Profile answers are for show for now.</strong> Their real roles are written down for later.</li>
+      <li><strong>Follow Alberta rules.</strong> The notice has to be legally right.</li>
+      <li><strong>Three themes, female-friendly,</strong> with neutral theme names.</li>
+      <li><strong>Ask about missing details instead of guessing.</strong></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="out">
+    <span class="label">Outside this build</span>
+    <h2 id="out">Deferred, later, and never</h2>
+    <details open><summary><span><span class="tag t-def">Deferred</span> Implied but not built now</span></summary><div class="det-body"><ul class="plain">
+      <li>Real Google or Facebook accounts. Infrastructure that doesn't prove the idea.</li>
+      <li>Email connection and a forwarding address. Needs email access and a mail service.</li>
+      <li>The Learn path. Needs its own lesson content.</li>
+      <li>Full mortgage review. The depth goes to the rental this time.</li>
+      <li>Preloaded demo agreements. The video shows blank first use.</li>
+    </ul></div></details>
+    <details open><summary><span><span class="tag t-later">Future features</span> Possible later enhancements</span></summary><div class="det-body"><ul class="plain">
+      <li>Household accounts: one custodian managing agreements for several people, shareable.</li>
+      <li>Age range tunes which agreements to expect and how much to explain.</li>
+      <li>Learn path with topics matched to life stage, like RRSP agreements versus truck lease payments.</li>
+      <li>Pre-signing review: 5 highlights, relevance taps, "are you okay with this?", issuer summary.</li>
+      <li>Calendar integration for key dates, linked to the contract and clause.</li>
+      <li>Learning over time from answers and usage.</li>
+      <li>Folder linking and Dropbox, Google Drive or phone files storage.</li>
+      <li>Comparing a new contract version against the old one.</li>
+      <li>Every province and contract type.</li>
+    </ul></div></details>
+    <details open><summary><span><span class="tag t-non">Non-goals</span> Things this project won't do</span></summary><div class="det-body"><ul class="plain">
+      <li>Native iPhone or Android apps, or app store installs.</li>
+      <li>Legal advice. It explains public rules and drafts a standard notice; it doesn't replace a lawyer.</li>
+      <li>Sending the notice for you. Delivery stays with the user.</li>
+      <li>Provinces other than Alberta for the tenancy rule, for now.</li>
+    </ul></div></details>
+  </section>
+
+  <section class="oq" aria-labelledby="oq">
+    <span class="label">Open questions</span>
+    <h2 id="oq">Two to confirm before the technical plan</h2>
+    <ul class="plain">
+      <li><strong>Not an agreement:</strong> I've assumed the agent says so and asks for another file.</li>
+      <li><strong>Mortgage "Review":</strong> I've assumed it shows "coming soon."</li>
+    </ul>
+    <p class="src">Can wait: where exactly the theme dropdown sits, and the realistic but fictional sample documents for the video.</p>
+  </section>
+
+  <footer>Companion to <code>devpost/prd.md</code>, which is the official copy. Status: draft.</footer>
+</main>
+
+<script>
+(function () {
+  var steps = [
+    { s: "Home screen", t: "Open", d: "Tap the Fine Print icon on the phone's home screen. The app opens in the beige theme.", m: [["sys","Fine Print opens · beige theme"]] },
+    { s: "Welcome", t: "Pick a theme", d: "Try blue and black, then pick maroon and olive with a serif font. It stays for the rest of the session.", m: [["sys","Theme ▾  Beige · Blue & black · Maroon & olive"],["user","Maroon & olive"]] },
+    { s: "Welcome", t: "Sign in (demo)", d: "Google and Facebook buttons, labelled as demo. Either one continues without a real account.", m: [["agent","Welcome! Please sign up or sign in."],["chips","Google (demo)|Facebook (demo)"]] },
+    { s: "Start", t: "Choose a start", d: "Upload documents for storage now, or set up a profile. The user picks profile.", m: [["agent","Welcome to Fine Print! Would you like to upload documents for storage right now, or set up your user profile?"],["user","Set up my profile"]] },
+    { s: "Profile", t: "Profile questions", d: "Three tap questions, one at a time. For show in this build.", m: [["agent","Support with contracts for yourself or your household?"],["chips","Self|Household"],["agent","Your age range?"],["chips","18–25|25–35|35–45|45–65|65+"],["agent","Learn about contract topics, or review your own contracts?"],["user","Review"]] },
+    { s: "Home", t: "Empty home", d: "Upload icon and \"Upload your first agreement!\" Email connect is visible and marked coming soon.", m: [["sys","⬆  Upload your first agreement!"],["agent","You can connect your email for us to sift through (coming soon), or upload any agreements for review."]] },
+    { s: "Home", t: "Upload the rental", d: "Upload a file, or take photos page by page. A blurry photo gets a retake prompt.", m: [["user","📎 lease.pdf"]] },
+    { s: "Chat", t: "Agent reads and asks", d: "The agent identifies the agreement from the real document and notices that the term ended.", m: [["agent","Looks like you've uploaded a rental agreement. This fixed-term tenancy ended 2 months ago. Are you looking to renew with your landlord?"]] },
+    { s: "Chat", t: "User answers freely", d: "Typed in the user's own words. The agent has to understand it.", m: [["user","No, I want to move out."]] },
+    { s: "Chat", t: "Explain the rule", d: "Alberta: one full tenancy month's written notice, including the address, end date and signature.", m: [["agent","In Alberta, you need to give your landlord one full month's notice in writing, with the rental address, the end date and your signature. Would you like me to draft the notice?"],["user","Yes"]] },
+    { s: "Chat", t: "Fill the gaps", d: "Asks about required details the lease doesn't have.", m: [["agent","The lease doesn't list an address for the landlord. Do you have this?"],["user","No"]] },
+    { s: "Notice", t: "Notice drafted", d: "Pulls names, address, lease identifiers and dates. Calculates the end date. The user can edit it.", m: [["sys","📄 Notice to End Tenancy · draft"],["agent","I've drafted the notice for you, please review. Would you like to edit the notice?"]] },
+    { s: "Notice", t: "Ready to send", d: "PDF ready. Delivery happens off-app.", m: [["agent","The notice is ready as a PDF to print and mail or drop off, or email if that's the agreed contact method. Next step: deliver it to your landlord."]] },
+    { s: "Home", t: "Action pending", d: "The rental is listed and highlighted with its pending action.", m: [["sys","2024-…-landlord-residential-lease.pdf · Term ended"],["sys","⚑ Action pending: deliver notice to landlord"]] },
+    { s: "Chat", t: "Upload the mortgage", d: "Identified as signed. Key dates and actions listed. Store, or Review (coming soon).", m: [["user","📎 mortgage.pdf"],["agent","This looks like a signed mortgage agreement. I've noted these dates and actions: …"],["chips","Store|Review"],["user","Store"]] },
+    { s: "Home", t: "Two agreements on file", d: "Both agreements listed with their status. A Swiss Army knife, not a rentals app.", m: [["sys","Rental · Term ended · ⚑ action pending"],["sys","Mortgage · Signed · stored"]] }
+  ];
+  var i = 0, body = document.getElementById('ph-body');
+  function render() {
+    var st = steps[i];
+    document.getElementById('ph-screen').textContent = st.s;
+    document.getElementById('st-count').textContent = 'Step ' + (i + 1) + ' of ' + steps.length;
+    document.getElementById('st-title').textContent = st.t;
+    document.getElementById('st-desc').textContent = st.d;
+    document.getElementById('st-range').value = i + 1;
+    document.getElementById('st-prev').disabled = i === 0;
+    document.getElementById('st-next').disabled = i === steps.length - 1;
+    body.innerHTML = '';
+    st.m.forEach(function (m) {
+      var el = document.createElement('div');
+      if (m[0] === 'chips') {
+        el.className = 'chips';
+        m[1].split('|').forEach(function (c) { var s = document.createElement('span'); s.textContent = c; el.appendChild(s); });
+      } else { el.className = 'msg ' + m[0]; el.textContent = m[1]; }
+      body.appendChild(el);
+    });
+  }
+  document.getElementById('st-prev').onclick = function () { if (i > 0) { i--; render(); } };
+  document.getElementById('st-next').onclick = function () { if (i < steps.length - 1) { i++; render(); } };
+  document.getElementById('st-range').oninput = function (e) { i = +e.target.value - 1; render(); };
+  render();
+
+  var feats = [
+    ["Theme Switching", [["Opens in the beige theme."],["Dropdown lists three themes; picking one restyles every screen right away."],["Maroon and olive uses a serif font and stays while moving through the app."]]],
+    ["Demo Sign-In", [["Google and Facebook buttons are visibly labelled as demo."],["Tapping either continues; no account is created or needed."]]],
+    ["Profile Setup", [["Three questions, one at a time, with the exact choices."],["Review leads to the empty home and upload prompt."],["Answers are remembered but don't change the agent's replies yet."],["Learn shows \"coming soon\" and offers Review instead."]]],
+    ["Agreement Upload", [["Upload a PDF or image, or take photos page by page with \"next page\" and \"done\"."],["Email option visible and marked coming soon."],["Blurry photo: \"unfocused, please retake for clear text.\""],["Not an agreement: the agent says so and asks for another file.", true]]],
+    ["Agreement Reading", [["Names the agreement type and other party from the real document, not a script."],["Files it as date-party-purpose.pdf."],["Detects whether it's signed."]]],
+    ["Rental Agreement: Move-Out Help", [["Notices the fixed term ended and says how long ago, then asks about renewing."],["Understands a free-typed \"no, I want to move out.\""],["States Alberta's rule correctly: one full tenancy month, in writing, with address, end date and signature."],["Draft pulls lease identifiers, names, address and dates, and calculates the end date as the last day of the next full tenancy month."],["Asks about missing details; \"no\" leaves that line blank."],["Asks to edit; the user's edits show in the final notice."],["Notice saves as a PDF, with delivery guidance."]]],
+    ["Mortgage Agreement: Dates and Actions", [["Identifies a signed mortgage and the lender."],["Lists key dates and actions found in the document."],["Store files it on the home list; Review shows coming soon.", true]]],
+    ["Home List", [["Each row shows file name, type and party, and status."],["An agreement with something to do is highlighted with its pending action."]]]
+  ];
+  var host = document.getElementById('features'), total = 0, saved = {};
+  try { saved = JSON.parse(localStorage.getItem('fp-prd-checks') || '{}'); } catch (e) { saved = {}; }
+  feats.forEach(function (f, fi) {
+    var d = document.createElement('details'); d.open = true;
+    var s = document.createElement('summary');
+    var h = document.createElement('h3'); h.textContent = f[0];
+    s.appendChild(h); d.appendChild(s);
+    var b = document.createElement('div'); b.className = 'det-body';
+    f[1].forEach(function (c, ci) {
+      total++;
+      var id = 'c-' + fi + '-' + ci;
+      var row = document.createElement('label'); row.className = 'crit'; row.htmlFor = id;
+      var cb = document.createElement('input'); cb.type = 'checkbox'; cb.id = id; cb.checked = !!saved[id];
+      cb.onchange = function () { saved[id] = cb.checked; try { localStorage.setItem('fp-prd-checks', JSON.stringify(saved)); } catch (e) {} count(); };
+      var t = document.createElement('span'); t.textContent = c[0];
+      if (c[1]) { var a = document.createElement('span'); a.className = 'assume'; a.textContent = 'assumption'; t.appendChild(a); }
+      row.appendChild(cb); row.appendChild(t); b.appendChild(row);
+    });
+    d.appendChild(b); host.appendChild(d);
+  });
+  function count() {
+    var n = document.querySelectorAll('#features input:checked').length;
+    document.getElementById('prog').textContent = n + ' of ' + total + ' checked';
+  }
+  count();
+})();
+</script>

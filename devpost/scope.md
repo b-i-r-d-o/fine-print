@@ -27,7 +27,7 @@ Why you come back: every new agreement gets filed and checked the same way, and 
 ## Inspiration & Identity
 - Feels like a calm, helpful agent in a chat box — not a legal tool.
 - A Swiss Army knife for agreements, not a rentals app — the demo shows two contract types on purpose.
-- Default theme: "nice soothing professional." Alternate: "more colourful personality." (3 themes in the full vision.)
+- Three themes, female-friendly with neutral names: neutral beige (default), blue and black, maroon and olive with a serif font. Details in `prd.md > Look and Feel`.
 - Summary tone: "quite simple and casual," emojis welcome.
 
 ## Why This Matters to the Learner
@@ -53,7 +53,7 @@ The demo, in Joann's sequence:
 
 - One app that runs on a phone (in the browser, saveable to the home screen with its own icon).
 - Sign-in screen (demo, no real accounts) and profile questions.
-- Agent chat driving the flow.
+- Agent chat driving the flow; three themes.
 - Upload an agreement; real AI reading of it.
 - Rental agreement (full showcase): identify, spot the ended term, ask intent, explain Alberta notice rule, draft the notice.
 - Mortgage agreement (the "half"): identify as signed, list key dates and actions, store.
@@ -70,7 +70,6 @@ _Any of these may appear in the app as a visible "coming soon" control, per the 
 - Real folder linking (desktop), Dropbox / Google Drive / phone files storage.
 - Comparing a new contract version against the previous one.
 - Deep built-in knowledge for every common contract type and province.
-- A third theme.
 
 ## Explicitly Cut
 - **Separate native iPhone and Android apps** — weeks of work, plus a Mac and developer accounts; one phone-ready app shows the same experience.
