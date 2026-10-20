@@ -2,73 +2,76 @@
 doc: scope
 status: approved
 ---
+<!-- Revised 2026-10-20 at Joann's direction during 3-prd: rental agreement becomes the full showcase,
+     mortgage the "half" example; Play Store install dropped; sign-in shown as demo; email connect "coming soon". -->
 
 # Fine Print
 
-An AI agent on your phone that files your personal contracts and, when you're about to sign, turns the clauses that matter to *you* into plain yes/no questions.
+A "Swiss Army knife" AI agent on your phone for every personal agreement: it files your contracts, notices what's coming up, asks you plain questions about your situation, and helps you take the next step.
 
 ## The Unique Kernel
-Fine Print doesn't just summarize a contract — it knows a little about you and asks, in plain language, "are you okay with this?" about the clauses that affect your life. Example: at the lawyer's office, your phone pings: *this lender says the home must be your primary residence — no rental, no short-term rental. Are you okay with this?* It gets more relevant as you tell it what matters to you.
+Fine Print doesn't just store or summarize a contract — it reads it, notices what matters for *your* situation, asks you a plain question, and then helps you act. Example: you upload a rental agreement and it says *this fixed-term tenancy ended 2 months ago — are you looking to renew with your landlord?* You say "no, I want to move out," and it explains the Alberta notice rule and drafts the notice for you.
 
 ## Who It's For
-Everyday people with a life full of agreements — leases, mortgages, phone and internet plans, credit cards, warranties — who sign them and never reread them. The sharpest moment: someone about to sign a mortgage, under pressure, with 20+ pages of small print and no time to find what matters. Today they skim, trust, and hope — or scan page after page "looking for a date or dates, if that even exists."
+Everyday people with a life full of agreements — leases, mortgages, phone and internet plans, credit cards, warranties — who sign them and never reread them, then scramble when something comes due. Today they skim, trust, and hope, or scan "20 pages of small print looking for a date or dates, if that even exists."
 
 ## The Core Loop
-1. Quick setup: a few general profile questions so the agent knows what's relevant to you.
-2. A contract comes in (photo, page by page, or upload).
-3. The agent identifies it (type, issuer), files it with a clean name (`date-party-purpose.pdf`), and checks whether it's signed.
-4. If you're reviewing it to sign: 5 key highlights in a simple, casual tone, plus one "item of note," and you tap whether each is relevant to you.
-5. Want to learn more? 3 questions/notes worth asking — then "are you comfortable with these points?"
-6. You leave with either peace of mind or a short list to take to the issuer.
+1. Sign in (demo) and answer a few quick profile questions.
+2. Upload an agreement.
+3. The agent identifies it, notes key dates and actions, and asks a plain question about where you stand.
+4. You answer in your own words; the agent explains your options and offers to do the next minor action (e.g. draft a notice).
+5. The agreement sits on your home list with its status and any pending action.
 
 Why you come back: every new agreement gets filed and checked the same way, and it gets off your mind.
 
 ## Inspiration & Identity
 - Feels like a calm, helpful agent in a chat box — not a legal tool.
-- Default theme: "nice soothing professional." Alternate: "more colourful personality." Themes for mass appeal (3 in the full vision).
+- A Swiss Army knife for agreements, not a rentals app — the demo shows two contract types on purpose.
+- Default theme: "nice soothing professional." Alternate: "more colourful personality." (3 themes in the full vision.)
 - Summary tone: "quite simple and casual," emojis welcome.
-- Profile questions set up "the way Muse is" — light, general, revisited over time. (Reference to clarify in PRD.)
 
 ## Why This Matters to the Learner
 Joann spent nearly a decade managing contracts professionally, where no agreement is signed and forgotten. Fine Print brings that discipline to personal life: "helping me have an option to organize in my life, do minor actions and get these things off my mind." She also wants hands-on practice building with AI and a clear grasp of the stages from idea to shipped product.
 
 ## What "Working" Looks Like
-The demo, in her words and sequence:
-0. **Video staging (not an app feature):** phone home screen with medium-to-large icons. Page 1 has everyday apps: calendar, email, phone, text, and "a stupid game." Swipe to page 2, where Fine Print sits among relevant apps (e.g. banking, files, wallet).
-1. Tap the Fine Print icon; the app opens.
-2. Switch theme from soothing professional to colourful personality.
-3. Home: "Welcome to your agreements!" — demo agreements listed with a gradient fade, named `date-party-purpose.pdf`. Agent text box at the bottom: "Would you like to upload a new contract?"
-4. Type "yes" → upload (+) and camera icons get circled in yellow.
-5. Camera: framing cues, "next page" prompts, and a "done" button.
-6. Send → "This is a mortgage agreement with XYZ Bank. Filed as `[name]`. It isn't signed — are you reviewing this for signing?"
-7. "No" → "Stored as `[name]-unsigned`." Then "wait, I mean yes" → review continues.
-8. "This is a very standard mortgage agreement…" — amortization, fixed rate (e.g., 4.2%), 3 more points, plus an item of note specific to this mortgage. User marks highlights relevant / not relevant.
-9. "Learn more?" → yes → 3 questions with answers (e.g., "How does this compare to other mortgages?" → what's typical, and what this one adds).
-10. "Are you comfortable with these points? Review more?" → no → summary of points to raise with the issuer, and "upload the new version when they send one."
+The demo, in Joann's sequence:
+1. Tap the Fine Print icon on the phone home screen (video staging: everyday apps on page 1, swipe to page 2 where Fine Print sits among related apps).
+2. "Welcome! Please sign up or sign in" with Google / Facebook buttons — labelled as demo.
+3. "Welcome to Fine Print — upload documents for storage now, or set up your user profile?" → profile.
+4. Profile questions: support for yourself or your household; age range; learn about contract topics or review your own contracts → Review.
+5. "Connect your email for us to sift through (coming soon), or upload agreements for review." → upload a rental agreement.
+6. "Looks like you've uploaded a rental agreement. This fixed-term tenancy ended 2 months ago — are you looking to renew with your landlord?" → "No, I want to move out."
+7. The agent explains Alberta's rule (one full tenancy month's written notice) and asks "Would you like me to draft the notice?" → yes.
+8. The agent drafts the notice to the landlord: "I've drafted the notice for you, please review. Next step: deliver it to your landlord." (User prints and mails it — off-app.)
+9. Home view: the rental agreement listed with a highlight and "action pending."
+10. Upload a signed mortgage agreement → "This looks like a signed mortgage agreement. I've noted these dates and actions…" → Store or Review → Store.
 
-**The "oh, that's cool" beat:** the agent connects a clause to something you told it at setup — and asks you about it plainly.
+**The "oh, that's cool" beat:** the agent spots that the lease already ended, asks what you want, and hands you a ready-to-send notice.
 
 ## The POC Boundary
-**Guiding rule (Joann's call):** depth over breadth. Effort goes into the demoable flow that shows how usable Fine Print is. Features outside that flow can appear on screen as non-functional, clearly marked "coming soon," and be explained in the submission — that's preferable to building them half-working.
+**Guiding rule (Joann's call):** depth over breadth. Effort goes into the demoable flow that shows how usable Fine Print is. Features outside that flow can appear on screen as non-functional, clearly marked "coming soon" or "demo," and be explained in the submission — that's preferable to building them half-working.
 
 - One app that runs on a phone (in the browser, saveable to the home screen with its own icon).
-- Short profile setup; relevance tap on highlights.
-- Agent chat box driving the flow; theme switch (at least soothing vs. colourful).
-- Demo agreement list with the naming convention.
-- Contract intake by multi-page photo and by upload; real AI reading of the contract.
-- Identify type + issuer, name it, detect signed/unsigned, store.
-- Signing review: 5 highlights + item of note, 3 learn-more Q&As, comfort check, issuer summary.
-- Mortgage is the showcase contract type.
+- Sign-in screen (demo, no real accounts) and profile questions.
+- Agent chat driving the flow.
+- Upload an agreement; real AI reading of it.
+- Rental agreement (full showcase): identify, spot the ended term, ask intent, explain Alberta notice rule, draft the notice.
+- Mortgage agreement (the "half"): identify as signed, list key dates and actions, store.
+- Home list of agreements with status and pending actions.
 
 ## Later
-_Any of these may show up in the app as a visible "coming soon" control, per the guiding rule — which ones gets decided in the PRD._
-- Learning over time from your relevance answers and usage; profile questions revisited at intervals.
-- Calendar integration: suggested date highlights with links back to the contract and clause.
-- Per-user forwarding email address for contracts.
-- Real folder linking (desktop) and Dropbox / Google Drive / phone files storage.
+_Any of these may appear in the app as a visible "coming soon" control, per the guiding rule._
+- Connecting email to find agreements automatically; per-user forwarding address.
+- Full pre-signing review: 5 highlights tied to your profile, relevance taps, "are you okay with this?" questions, issuer summary.
+- "Learn about contract topics" path.
+- Real Google / Facebook sign-in and accounts.
+- Learning over time from your answers and usage.
+- Calendar integration for key dates, linked to the contract and clause.
+- Real folder linking (desktop), Dropbox / Google Drive / phone files storage.
 - Comparing a new contract version against the previous one.
-- Deep built-in knowledge for every common contract type (rental, credit card, mobile, internet, warranties…).
+- Deep built-in knowledge for every common contract type and province.
 - A third theme.
 
 ## Explicitly Cut
-- **Separate native iPhone and Android apps** — two builds is weeks of work and a native iPhone app needs a Mac and Apple developer account; one phone-ready app shows the same experience.
+- **Separate native iPhone and Android apps** — weeks of work, plus a Mac and developer accounts; one phone-ready app shows the same experience.
+- **Installing from the Play Store in the demo** — requires a published native app; the demo starts at the home-screen icon instead.
