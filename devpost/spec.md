@@ -89,9 +89,9 @@ PRD ref: `prd.md > Agreement Reading`, `prd.md > Rental Agreement: Move-Out Help
 
 ### Agent Instructions
 `lib/prompts.js`. The system prompts for `read`, `chat` and `draft`, covering:
-- **The agent's job and tone:** simple, casual, emojis welcome. It never claims to give legal advice, and it ends any rule explanation with a short guidance reminder (see `Guidance Notice`).
+- **The agent's job and tone:** simple, casual, emojis welcome. It never claims to give legal advice. It sets `explains_rule: true` when a reply explains a law or rule, so the app can show its one-time guidance caption (see `Guidance Notice`).
 - **The reply format.** Every reply is one JSON object:
-  `{ "message": "...", "choices": ["Yes","No"] | null, "action": "none" | "offer_draft" | "ask_missing" | "store_prompt" | "retake_photo", "facts": {...} | null }`
+  `{ "message": "...", "choices": ["Yes","No"] | null, "action": "none" | "offer_draft" | "ask_missing" | "store_prompt" | "retake_photo", "explains_rule": true | false, "facts": {...} | null }`
 - **The Alberta rule, word for word**, from the [Government of Alberta](https://www.alberta.ca/ending-a-tenancy.aspx). A fixed-term tenancy ends on its stated date. If both sides continue without renewing, it becomes periodic. To end a monthly periodic tenancy, the tenant gives one full tenancy month's written notice. The notice must include the rental address, the end date, and the signature of the person giving notice. Tenants don't need to give a reason.
 - **What to extract in `read`:** `is_agreement`, `readable`, `type`, `party_name`, `user_name`, `rental_address`, `other_party_address` (or null), `agreement_date`, `term_start`, `term_end`, `rent_day`, `lease_identifiers`, `signed`, `summary`, `key_dates_and_actions` (for the mortgage), and `first_question`.
 
@@ -107,7 +107,7 @@ PRD ref: `prd.md > Agreement Reading`, `prd.md > Rental Agreement: Move-Out Help
 ### Guidance Notice
 `public/index.html`, `public/notice.js`, `lib/prompts.js`. Implements `prd.md > Guidance, Not Legal Advice`.
 - **Welcome screen:** a fixed line under the sign-in buttons: "Fine Print helps you understand your agreements. It's guidance, not legal advice."
-- **Rule explanations:** the agent instructions require that any message explaining a law or rule ends with a short "general guidance, not legal advice" reminder pointing to a lawyer or Alberta's official tenancy resources. The instructions also forbid claiming to give legal advice.
+- **Rule explanations (subtle):** the app, not the AI, adds a small, muted caption, "General guidance, not legal advice," under the agent's message the first time per session that a reply includes a rule explanation. The reply flags this with `"explains_rule": true`. It isn't repeated after that, so it doesn't distract (Joann's call). The agent instructions still forbid claiming to give legal advice.
 - **Notice view:** a line above the notice: "Drafted as a guide. Review it before you send it." It's not printed on the PDF.
 - **README:** a short "Not legal advice" section.
 

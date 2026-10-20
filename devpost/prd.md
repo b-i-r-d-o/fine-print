@@ -98,7 +98,7 @@ Source: `scope.md > The Unique Kernel`.
 ### Guidance, Not Legal Advice
 Joann's call: this is "a pretty important piece for what this is." Fine Print supports the user's understanding. It isn't legal advice.
 - [ ] The Welcome screen shows one plain line: "Fine Print helps you understand your agreements. It's guidance, not legal advice."
-- [ ] When the agent explains a rule (such as Alberta's notice rule), its message ends with a short reminder that this is general guidance, and that for their specific situation the user can check with a lawyer or Alberta's official tenancy resources.
+- [ ] Rule explanations stay uncluttered. The first time in a session that the agent explains a rule, a small, muted one-line caption appears under its message: "General guidance, not legal advice." It doesn't repeat after that. Joann: periodic reminders are fine, but they shouldn't distract a user who already understands. How to fine-tune this is a later enhancement.
 - [ ] The notice view shows "Drafted as a guide. Review it before you send it." The reminder doesn't appear on the PDF itself, since that goes to the landlord.
 - [ ] The agent never says or implies it's giving legal advice.
 
@@ -121,7 +121,7 @@ Joann's call: this is "a pretty important piece for what this is." Fine Print su
 - **Profile answers are for show in this proof of concept.** Their real effects come later (see Possible Later Enhancements).
 - **Follow Alberta rules** for the tenancy notice. It needs to be legally right.
 - **Three themes:** beige by default, blue and black, and maroon and olive with a serif font. The product is female-friendly but the theme names aren't gendered.
-- **Guidance, not legal advice, stated clearly in the app** on the Welcome screen, with rule explanations, and on the notice view. Joann sees this as central to what Fine Print is.
+- **Guidance, not legal advice, stated clearly in the app**, mainly on the Welcome screen, on the notice view and in the README. In the chat it's a subtle, occasional reminder only. Joann sees this as central to what Fine Print is.
 - **Ask about missing details instead of guessing,** such as the landlord's address.
 - **A non-agreement upload is just offered for storage.** No review, no rejection.
 
@@ -140,6 +140,7 @@ Theme switching, demo sign-in, profile setup, agreement upload (file or page-by-
 - **Preloaded demo agreements.** The video shows blank first use.
 
 ## Possible Later Enhancements
+- **A refined in-chat guidance reminder,** for example based on how often it's shown or whether the user has acknowledged it.
 - **Household accounts:** one custodian managing agreements for several people, shareable with other users.
 - **Age range:** tunes which agreements to expect and how much to explain, without being presumptuous.
 - **Learn path:** contract topics matched to life stage, such as RRSP agreements versus truck lease payments.
