@@ -1,0 +1,456 @@
+<title>Fine Print Spec</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; a phone-sized journey stepper up top, then requirement clauses with checkable criteria. */
+:root {
+  --paper: #f5f7f6; --sheet: #ffffff; --ink: #1d2b2a; --muted: #5b6b69; --rule: #d8e0de;
+  --teal: #1f6f68; --teal-soft: #e3f0ee; --mark: #ffe066; --mark-ink: #1d2b2a;
+  --later: #6a5acd; --later-soft: #eceafb; --cut: #b5473a; --cut-soft: #f8e7e4;
+  --bubble: #eef2f1;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121a19; --sheet: #192321; --ink: #e4ecea; --muted: #9aaba8; --rule: #2c3b39;
+    --teal: #6cc3b9; --teal-soft: #1d3330; --mark: #e8c94a; --mark-ink: #1a1a12;
+    --later: #a99cf0; --later-soft: #26233d; --cut: #e8897c; --cut-soft: #3a2320; --bubble: #22302e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121a19; --sheet: #192321; --ink: #e4ecea; --muted: #9aaba8; --rule: #2c3b39;
+  --teal: #6cc3b9; --teal-soft: #1d3330; --mark: #e8c94a; --mark-ink: #1a1a12;
+  --later: #a99cf0; --later-soft: #26233d; --cut: #e8897c; --cut-soft: #3a2320; --bubble: #22302e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 32px 64px; }
+main { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(2.2rem, 6.5vw, 3.2rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: 1.5rem; font-weight: 700; }
+h3 { font-size: 1.05rem; font-weight: 600; font-family: var(--body); }
+p { margin: 0; max-width: 65ch; }
+section { display: flex; flex-direction: column; gap: 16px; }
+.label { font: 500 0.75rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+mark { background: var(--mark); color: var(--mark-ink); padding: 0 3px; border-radius: 2px; }
+code, .file { font-family: var(--mono); font-size: 0.88em; background: var(--teal-soft); color: var(--ink); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+header { display: flex; flex-direction: column; gap: 14px; }
+.status { display: flex; gap: 10px; flex-wrap: wrap; }
+.pill { font: 500 0.75rem/1 var(--mono); padding: 6px 10px; border-radius: 999px; border: 1px solid var(--rule); color: var(--muted); }
+.pill.draft { border-color: var(--mark); background: var(--mark); color: var(--mark-ink); }
+.lede { font-size: 1.12rem; }
+
+.expand { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+.expand > div { min-width: 0; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.expand .was { background: var(--sheet); border: 1px dashed var(--rule); }
+.expand .now { background: var(--teal-soft); }
+
+/* Journey diagram */
+.diagram { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 16px; overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.d-box { fill: var(--sheet); stroke: var(--rule); stroke-width: 1.5; }
+.d-key { fill: var(--mark); }
+.d-done { fill: var(--teal); }
+.d-t { fill: var(--ink); font: 600 13px var(--body); }
+.d-s { fill: var(--muted); font: 11px var(--body); }
+.d-tk { fill: var(--mark-ink); font: 600 13px var(--body); }
+.d-sk { fill: var(--mark-ink); font: 11px var(--body); }
+.d-tp { fill: var(--sheet); font: 600 13px var(--body); }
+.d-sp { fill: var(--sheet); font: 11px var(--body); }
+.d-line { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+.d-arrow { fill: var(--muted); }
+
+/* Stepper */
+.stepper { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.phone { background: var(--sheet); border: 1px solid var(--rule); border-radius: 28px; padding: 18px 14px; min-height: 360px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 16px 40px -28px rgba(0,0,0,.4); }
+.phone-top { display: flex; justify-content: space-between; font: 500 0.72rem/1 var(--mono); color: var(--muted); }
+.screen-name { font: 600 0.9rem/1.2 var(--display); }
+.msg { padding: 9px 12px; border-radius: 14px; font-size: 0.9rem; max-width: 92%; }
+.msg.agent { background: var(--bubble); align-self: flex-start; border-bottom-left-radius: 4px; }
+.msg.user { background: var(--teal); color: var(--sheet); align-self: flex-end; border-bottom-right-radius: 4px; }
+.msg.sys { align-self: center; font: 500 0.75rem/1.4 var(--mono); color: var(--muted); text-align: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { font-size: 0.78rem; padding: 5px 9px; border: 1px solid var(--rule); border-radius: 999px; }
+.step-side { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.step-count { font: 500 0.85rem var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; }
+button { font: 500 0.88rem/1 var(--body); padding: 10px 14px; border-radius: 999px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); cursor: pointer; }
+button.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+button:disabled { opacity: .4; cursor: default; }
+button:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+input[type="range"] { width: 100%; accent-color: var(--teal); }
+
+/* Features */
+.features { display: flex; flex-direction: column; gap: 12px; }
+details { border: 1px solid var(--rule); border-radius: 12px; background: var(--sheet); }
+summary { cursor: pointer; list-style: none; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "–"; font: 500 1.1rem/1 var(--mono); color: var(--muted); }
+details:not([open]) summary::after { content: "+"; }
+.det-body { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+.crit { display: grid; grid-template-columns: 22px minmax(0,1fr); gap: 8px; align-items: start; font-size: 0.95rem; }
+.crit input { margin-top: 5px; width: 16px; height: 16px; accent-color: var(--teal); }
+.assume { font: 500 0.7rem/1 var(--mono); text-transform: uppercase; letter-spacing: .06em; background: var(--mark); color: var(--mark-ink); padding: 3px 6px; border-radius: 4px; margin-left: 6px; white-space: nowrap; }
+.src { font: 0.78rem var(--mono); color: var(--muted); }
+.progress { font: 500 0.8rem var(--mono); color: var(--muted); }
+
+.states { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.states > div { min-width: 0; border: 1px solid var(--rule); border-radius: 12px; padding: 14px; background: var(--sheet); display: flex; flex-direction: column; gap: 4px; }
+
+ul.plain { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+ul.plain li { max-width: 65ch; }
+.tag { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 8px; border-radius: 6px; }
+.t-def { background: var(--cut-soft); color: var(--cut); }
+.t-later { background: var(--later-soft); color: var(--later); }
+.t-non { background: var(--bubble); color: var(--muted); }
+.oq { background: var(--sheet); border: 2px solid var(--mark); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--rule); padding-top: 16px; }
+
+@media (max-width: 640px) {
+  .stepper, .expand, .states { grid-template-columns: minmax(0,1fr); }
+  .phone { max-width: 340px; }
+}
+/* Spec additions */
+.arch { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 16px; overflow-x: auto; }
+.arch svg { display: block; width: 100%; min-width: 600px; height: auto; }
+.a-zone { fill: var(--paper); stroke: var(--rule); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.a-zl { fill: var(--muted); font: 500 11px var(--mono); letter-spacing: .06em; }
+.a-box { fill: var(--sheet); stroke: var(--rule); stroke-width: 1.5; }
+.a-hot { fill: var(--mark); stroke: none; }
+.a-ai { fill: var(--teal); stroke: none; }
+.a-lock { fill: var(--teal-soft); stroke: var(--teal); stroke-width: 1.5; }
+.a-t { fill: var(--ink); font: 600 13px var(--body); }
+.a-s { fill: var(--muted); font: 11px var(--body); }
+.a-tw { fill: var(--sheet); font: 600 13px var(--body); }
+.a-sw { fill: var(--sheet); font: 11px var(--body); }
+.a-tk { fill: var(--mark-ink); font: 600 13px var(--body); }
+.a-sk { fill: var(--mark-ink); font: 11px var(--body); }
+.a-line { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+.a-lab { fill: var(--muted); font: 500 10.5px var(--mono); }
+.rule-of-thumb { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+.rule-of-thumb > div { min-width: 0; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.rot-ai { background: var(--teal-soft); }
+.rot-app { background: var(--sheet); border: 1px solid var(--rule); }
+.rot-ai ul, .rot-app ul { margin: 0; padding-left: 18px; }
+.trace { display: flex; flex-wrap: wrap; gap: 6px; }
+.trace span { font: 500 0.75rem/1 var(--mono); padding: 6px 9px; border-radius: 999px; border: 1px solid var(--rule); color: var(--muted); }
+.trace span.on { background: var(--mark); color: var(--mark-ink); border-color: var(--mark); }
+.req { font: 0.78rem var(--mono); color: var(--muted); }
+.comp-files { font: 0.82rem var(--mono); color: var(--muted); }
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 12px; background: var(--sheet); }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 0.9rem; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font: 500 0.72rem var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+pre.tree { margin: 0; background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; overflow-x: auto; font: 0.8rem/1.55 var(--mono); color: var(--ink); }
+.fail { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; }
+.fail > div { display: grid; grid-template-columns: minmax(0, 220px) minmax(0,1fr); gap: 12px; border-top: 1px solid var(--rule); padding-top: 10px; }
+.fail strong { font-weight: 600; }
+.rule { background: var(--teal-soft); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+@media (max-width: 640px) {
+  .rule-of-thumb { grid-template-columns: minmax(0,1fr); }
+  .fail > div { grid-template-columns: minmax(0,1fr); gap: 4px; }
+}
+</style>
+
+<main>
+  <header>
+    <div class="status"><span class="pill draft">Spec · draft for review</span><span class="pill">Build With AI: Basics</span></div>
+    <h1>Fine Print: how it's built</h1>
+    <p class="lede">The blueprint for turning your requirements into a working app. It covers three pieces, what each one does, and how your lease travels from your phone to the AI and back as a ready-to-send notice.</p>
+  </header>
+
+  <section aria-labelledby="pieces">
+    <span class="label">How this works, in plain language</span>
+    <h2 id="pieces">Three pieces</h2>
+    <div class="arch">
+      <svg viewBox="0 0 760 330" role="img" aria-label="Architecture: on your phone, the Fine Print app with local storage. It sends requests over the internet to the helper on Vercel, which holds the hidden API key and the agent instructions. The helper asks Claude, which reads the contract and returns structured replies.">
+        <defs><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="d-arrow"/></marker></defs>
+        <rect class="a-zone" x="10" y="20" width="250" height="290" rx="14"/><text class="a-zl" x="26" y="42">YOUR PHONE</text>
+        <rect class="a-zone" x="290" y="20" width="250" height="290" rx="14"/><text class="a-zl" x="306" y="42">VERCEL · FREE HOSTING</text>
+        <rect class="a-zone" x="570" y="20" width="180" height="290" rx="14"/><text class="a-zl" x="586" y="42">ANTHROPIC</text>
+
+        <rect class="a-hot" x="30" y="60" width="210" height="110" rx="10"/>
+        <text class="a-tk" x="46" y="86">1 · The app</text>
+        <text class="a-sk" x="46" y="106">Screens, themes, chat bubbles</text>
+        <text class="a-sk" x="46" y="124">Upload + camera, photo shrinking</text>
+        <text class="a-sk" x="46" y="142">Notice end date + PDF</text>
+        <text class="a-sk" x="46" y="160">Home list</text>
+
+        <rect class="a-box" x="30" y="200" width="210" height="90" rx="10"/>
+        <text class="a-t" x="46" y="226">Local storage</text>
+        <text class="a-s" x="46" y="246">The browser's notebook for this site:</text>
+        <text class="a-s" x="46" y="264">theme, profile, agreements, notice</text>
+        <text class="a-s" x="46" y="280">Survives closing the app</text>
+
+        <rect class="a-box" x="310" y="60" width="210" height="110" rx="10"/>
+        <text class="a-t" x="326" y="86">2 · The helper</text>
+        <text class="a-s" x="326" y="106">Receives read / chat / draft</text>
+        <text class="a-s" x="326" y="124">Adds the agent instructions</text>
+        <text class="a-s" x="326" y="142">Checks the reply's format</text>
+        <text class="a-s" x="326" y="160">Stores nothing</text>
+
+        <rect class="a-lock" x="310" y="200" width="210" height="90" rx="10"/>
+        <text class="a-t" x="326" y="226">🔒 Hidden key + instructions</text>
+        <text class="a-s" x="326" y="246">API key in Vercel settings only</text>
+        <text class="a-s" x="326" y="264">Alberta rule written word for word</text>
+        <text class="a-s" x="326" y="280">Never in the public repo</text>
+
+        <rect class="a-ai" x="590" y="60" width="140" height="230" rx="10"/>
+        <text class="a-tw" x="606" y="86">3 · Claude</text>
+        <text class="a-sw" x="606" y="110">Reads the contract</text>
+        <text class="a-sw" x="606" y="128">once, writes down</text>
+        <text class="a-sw" x="606" y="146">the facts</text>
+        <text class="a-sw" x="606" y="176">Understands replies</text>
+        <text class="a-sw" x="606" y="206">Writes the notice</text>
+        <text class="a-sw" x="606" y="236">Answers in a format</text>
+        <text class="a-sw" x="606" y="254">the app can act on</text>
+
+        <path class="a-line" d="M240 100 H306" marker-end="url(#aa)"/><text class="a-lab" x="246" y="92">request</text>
+        <path class="a-line" d="M306 135 H244" marker-end="url(#aa)"/><text class="a-lab" x="250" y="152">reply</text>
+        <path class="a-line" d="M520 100 H586" marker-end="url(#aa)"/>
+        <path class="a-line" d="M586 135 H524" marker-end="url(#aa)"/>
+        <path class="a-line" d="M135 170 V196" marker-end="url(#aa)"/>
+        <path class="a-line" d="M415 196 V174" marker-end="url(#aa)"/>
+      </svg>
+    </div>
+    <div class="rule"><span class="label">The agent rule of thumb</span><p><strong>The AI decides what to say. The app decides what's allowed.</strong></p></div>
+    <div class="rule-of-thumb">
+      <div class="rot-ai"><span class="label">The AI does</span><ul><li>Reading the contract</li><li>Understanding "no, I want to move out"</li><li>Explaining the rule in casual words</li><li>Writing the notice wording</li><li>Summarizing the mortgage dates</li></ul></div>
+      <div class="rot-app"><span class="label">The app does</span><ul><li>Sign-in, profile, every button</li><li>The home list and saving</li><li>The notice end date, calculated in code</li><li>Making the PDF</li><li>Deciding which buttons may appear</li></ul></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="trace">
+    <span class="label">The core journey through the system</span>
+    <h2 id="trace">Follow your lease through the pieces</h2>
+    <div class="stepper">
+      <div class="phone" aria-live="polite">
+        <div class="phone-top"><span id="ph-screen">Welcome</span><span>9:41</span></div>
+        <div id="ph-body" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+      <div class="step-side">
+        <span class="step-count" id="st-count">Step 1 of 15</span>
+        <h3 id="st-title"></h3>
+        <p id="st-desc"></p>
+        <div class="trace" id="st-trace" aria-label="Pieces involved"></div>
+        <span class="req" id="st-req"></span>
+        <label class="label" for="st-range">Step through</label>
+        <input type="range" id="st-range" min="1" max="15" value="1">
+        <div class="controls">
+          <button type="button" id="st-prev">Back</button>
+          <button type="button" id="st-next" class="primary">Next step</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="stack">
+    <span class="label">Stack</span>
+    <h2 id="stack">What it's made with</h2>
+    <div class="features">
+      <details open><summary><h3>App: plain HTML, CSS and JavaScript</h3></summary><div class="det-body"><p>No framework and no build step, so every file stays readable for a first-time builder. Tradeoff: a bit more hand-written code, which is fine at this size.</p></div></details>
+      <details open><summary><h3>Helper: one Vercel Function</h3></summary><div class="det-body"><p>Node.js on Vercel's free Hobby plan, using the built-in <code>fetch</code> to call the AI. There's no AI library, so switching providers later touches one file. <a href="https://vercel.com/docs/functions">Vercel Functions docs</a></p></div></details>
+      <details open><summary><h3>AI: Claude, with Gemini possible later</h3></summary><div class="det-body"><p><strong>Sonnet 5.5</strong> for the careful first read, <strong>Haiku 5.5</strong> for quick chat and drafting. Likely under $5 for the whole hackathon. Your plan to switch to Gemini's free tier later only changes <code>lib/ai.js</code>. <a href="https://docs.claude.com/en/api/messages">Messages API</a> · <a href="https://platform.claude.com/docs/en/about-claude/pricing">Pricing</a></p></div></details>
+      <details open><summary><h3>PDF: jsPDF 2.5.1</h3></summary><div class="det-body"><p>Makes the notice PDF right on the phone. <a href="https://artskydj.github.io/jsPDF/docs/">jsPDF docs</a></p></div></details>
+    </div>
+  </section>
+
+  <section aria-labelledby="runs">
+    <span class="label">Where it runs and how someone tries it</span>
+    <h2 id="runs">From GitHub to your home screen</h2>
+    <ol class="plain" style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">
+      <li>Create a free Vercel account by signing in with GitHub.</li>
+      <li>Get a Claude API key from the Claude Console and add a few dollars of credit.</li>
+      <li>In Vercel: Add New → Project → import <code>b-i-r-d-o/fine-print</code> → add <code>ANTHROPIC_API_KEY</code> → Deploy.</li>
+      <li>Open the Vercel link on your phone → browser menu → Add to Home Screen.</li>
+      <li>Tap the Fine Print icon. Every push to GitHub redeploys automatically.</li>
+    </ol>
+    <div class="rule"><span class="label">Practice mode, for building only</span><p>While building, I can run the app without the key using canned replies clearly labelled "PRACTICE MODE." You never paste your key into chat. The demo is always recorded on the real link with real AI.</p></div>
+  </section>
+
+  <section aria-labelledby="look">
+    <span class="label">Look and feel</span>
+    <h2 id="look">Three themes, neutral names</h2>
+    <p>Names are proposals you can rename during the build.</p>
+    <div class="states">
+      <div><h3>Linen (default)</h3><p>Warm beige, soft taupe, deep brown-grey text, a muted sage or clay accent. Clean sans-serif. Calm and roomy.</p></div>
+      <div><h3>Midnight</h3><p>Near-black, deep navy surfaces, crisp blue accent, white text.</p></div>
+      <div><h3>Heirloom</h3><p>Cream paper, maroon and olive, serif print-style font. The demo ends in this one.</p></div>
+      <div><h3>Everywhere</h3><p>Female-friendly, feels like messaging rather than legal software, thumb-sized buttons, casual agent voice with a few emojis, and small honest "Demo" and "Coming soon" tags.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="comp">
+    <span class="label">Components</span>
+    <h2 id="comp">Every piece, its files, and what it serves</h2>
+    <div class="features" id="components"></div>
+  </section>
+
+  <section aria-labelledby="data">
+    <span class="label">Data model</span>
+    <h2 id="data">What the app remembers</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Data</th><th>Where</th><th>Updated when</th><th>Close and reopen</th></tr></thead>
+      <tbody>
+        <tr><td>Theme</td><td>Local storage</td><td>A theme is picked</td><td>Stays</td></tr>
+        <tr><td>Profile answers</td><td>Local storage</td><td>Questions answered</td><td>Stays</td></tr>
+        <tr><td>Agreements: name, type, party, status, pending action, facts</td><td>Local storage</td><td>After each read, draft or store</td><td>Stays</td></tr>
+        <tr><td>Conversation</td><td>Memory + local storage</td><td>Each message</td><td>Stays for the current agreement</td></tr>
+        <tr><td>Notice draft and end date</td><td>Local storage</td><td>Drafted or edited</td><td>Stays</td></tr>
+        <tr><td>The uploaded file itself</td><td>Memory only</td><td>Sent once to the helper</td><td><mark>Not kept</mark>; too big for phone storage</td></tr>
+      </tbody>
+    </table></div>
+    <p>A hidden "Reset demo" link clears everything so the video can be filmed again from a blank first use.</p>
+  </section>
+
+  <section aria-labelledby="files">
+    <span class="label">File structure</span>
+    <h2 id="files">Where everything lives</h2>
+<pre class="tree">fine-print/
+├── public/                  # Everything the phone downloads
+│   ├── index.html           # The single page; all screens live here
+│   ├── styles.css           # Layout + Linen, Midnight, Heirloom
+│   ├── app.js               # Screen flow, profile, home list, buttons
+│   ├── agent.js             # Talks to /api/agent; replies → bubbles/buttons
+│   ├── upload.js            # File picker, camera pages, photo shrinking
+│   ├── notice.js            # End-date calculation, notice view, PDF
+│   ├── storage.js           # Save/load on the phone
+│   ├── manifest.webmanifest # "Add to Home Screen" looks like an app
+│   └── icons/
+├── api/
+│   └── agent.js             # The helper: read / chat / draft
+├── lib/
+│   ├── ai.js                # The ONLY file that knows it's Claude
+│   ├── prompts.js           # Agent instructions + Alberta rule + reply format
+│   └── practice.js          # Canned replies for building without a key
+├── samples/                 # FICTIONAL demo documents
+│   ├── sample-alberta-lease.pdf
+│   └── sample-mortgage.pdf
+├── tools/make-samples.py    # Generates the sample PDFs
+├── dev-server.js            # Local test server (practice mode)
+├── package.json
+├── .env.example             # ANTHROPIC_API_KEY= (no real value)
+├── devpost/                 # Planning docs
+├── LICENSE                  # MIT
+└── README.md</pre>
+  </section>
+
+  <section aria-labelledby="fail">
+    <span class="label">Important failure modes</span>
+    <h2 id="fail">Where it could break in front of someone</h2>
+    <div class="fail">
+      <div><strong>AI is slow</strong><span>"Reading your agreement… 📄" with a gentle animation. After 60 seconds, a retry button.</span></div>
+      <div><strong>AI reply in the wrong format</strong><span>The helper retries once automatically, then "Something went wrong reading that — try again?"</span></div>
+      <div><strong>Blurry or huge upload</strong><span>Photos are shrunk automatically. Unreadable: "This photo is unfocused 📷 — please retake it." A PDF that's too big: try photos of the key pages.</span></div>
+      <div><strong>Key missing or out of credit</strong><span>"The AI isn't connected right now."</span></div>
+      <div><strong>Wrong notice end date</strong><span>Avoided by calculating it in code and checking it with test dates.</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="simp">
+    <span class="label">What was simplified and why</span>
+    <h2 id="simp">Engineering judgment on the page</h2>
+    <ul class="plain">
+      <li><strong>Demo sign-in</strong> instead of real accounts. Accounts don't prove the idea.</li>
+      <li><strong>Saved on the phone</strong> instead of a cloud database. One user, one demo.</li>
+      <li><strong>Filed by name and facts</strong>, not by keeping the original file. Phone storage is too small for PDFs; cloud storage is already on the Later list.</li>
+      <li><strong>Read once, then only facts are sent on</strong>, so follow-up chat is fast and cheap.</li>
+      <li><strong>End date calculated in code</strong>, because legal correctness shouldn't rest on AI arithmetic.</li>
+      <li><strong>Practice mode for building</strong>, never for the demo.</li>
+    </ul>
+  </section>
+
+  <section class="oq" aria-labelledby="dec">
+    <span class="label">Decisions and open issues</span>
+    <h2 id="dec">Your calls, and what to check early</h2>
+    <ul class="plain">
+      <li><strong>Vercel hosting</strong>: you agreed.</li>
+      <li><strong>Claude for the demo, maybe Gemini later</strong>: your choice. Only one file changes.</li>
+      <li><strong>No framework</strong>: recommended for readability, and you accepted it.</li>
+      <li><strong>Design details</strong>: you expect strong first-pass choices and will fine-tune after seeing them.</li>
+      <li><strong>Your learning approach</strong>: see it, then ask. We'll pause at the first screen on your phone, the first real AI read, and the notice PDF.</li>
+    </ul>
+    <p class="src">Check early in the build: exact Claude model IDs and document format, Vercel size and time limits, and how "Add to Home Screen" looks on your actual phone.</p>
+  </section>
+
+  <footer>Companion to <code>devpost/spec.md</code>, which is the official copy. Status: draft.</footer>
+</main>
+
+<script>
+(function () {
+  var P = { app: "App", store: "Local storage", helper: "Helper", key: "Hidden key", ai: "Claude", code: "App code (not AI)" };
+  var steps = [
+    { s: "Welcome", t: "Open + theme", d: "Tap the icon; the app loads from Vercel. Picking a theme saves it on the phone.", p: ["app","store"], r: "Theme Switching", m: [["sys","Theme ▾ Linen · Midnight · Heirloom"]] },
+    { s: "Welcome", t: "Sign in (demo)", d: "Demo buttons just move on. Nothing is sent anywhere.", p: ["app"], r: "Demo Sign-In", m: [["chips","Google (demo)|Facebook (demo)"]] },
+    { s: "Profile", t: "Profile questions", d: "Three questions, saved on the phone. The AI isn't involved.", p: ["app","store"], r: "Profile Setup", m: [["chips","Self|Household"],["chips","18–25|25–35|35–45|45–65|65+"],["user","Review"]] },
+    { s: "Home", t: "Empty home", d: "No saved agreements yet, so the app shows the empty state and the fixed upload message.", p: ["app","store"], r: "States and Boundaries", m: [["sys","⬆ Upload your first agreement!"]] },
+    { s: "Home", t: "Upload → \"read\" request", d: "Photos are shrunk. The file and today's date go to the helper.", p: ["app","helper"], r: "Agreement Upload", m: [["user","📎 sample-alberta-lease.pdf"],["sys","Reading your agreement… 📄"]] },
+    { s: "Home", t: "Claude reads it once", d: "The helper adds instructions and the hidden key. Claude returns the facts: names, address, term, rent day, signed, and the first question. The app saves the facts and files it as date-party-purpose.pdf.", p: ["helper","key","ai","store"], r: "Agreement Reading", m: [["sys","facts saved · 2025-09-01-landlord-residential-lease.pdf"]] },
+    { s: "Chat", t: "Agent asks", d: "The app shows Claude's message with buttons it allows.", p: ["app"], r: "Rental Agreement: Move-Out Help", m: [["agent","This fixed-term tenancy ended 2 months ago. Are you looking to renew with your landlord?"]] },
+    { s: "Chat", t: "Reply → \"chat\" request", d: "Your words, the saved facts and the conversation go to Claude, not the whole document again.", p: ["app","helper","ai"], r: "Rental Agreement: Move-Out Help", m: [["user","No, I want to move out."],["agent","In Alberta you give one full month's written notice… Want me to draft it?"],["chips","Yes|No"]] },
+    { s: "Chat", t: "Fill the gaps", d: "Claude flagged the landlord address as missing; the app asks with Yes/No.", p: ["ai","app"], r: "Rental Agreement: Move-Out Help", m: [["agent","The lease doesn't list an address for the landlord. Do you have this?"],["user","No"]] },
+    { s: "Notice", t: "End date in code, wording by AI", d: "The app calculates the end date itself (notice Oct 20, rent due the 1st → Nov 30). Then a \"draft\" request: Claude writes the wording.", p: ["code","helper","ai"], r: "Rental Agreement: Move-Out Help", m: [["sys","End date: Nov 30 (calculated)"],["agent","I've drafted the notice for you, please review."]] },
+    { s: "Notice", t: "Edit + PDF", d: "Editing happens on the phone. jsPDF builds the PDF on the phone.", p: ["app","code"], r: "Rental Agreement: Move-Out Help", m: [["agent","Would you like to edit the notice?"],["sys","📄 Notice-to-End-Tenancy.pdf"]] },
+    { s: "Home", t: "Action pending", d: "The rental is saved with status and pending action.", p: ["app","store"], r: "Home List", m: [["sys","Term ended · ⚑ Action pending: deliver notice to landlord"]] },
+    { s: "Chat", t: "Mortgage → \"read\"", d: "Claude returns the type, the lender, signed = yes, and key dates and actions. Store saves it; Review shows coming soon.", p: ["helper","ai","app","store"], r: "Mortgage Agreement: Dates and Actions", m: [["agent","This looks like a signed mortgage agreement. I've noted these dates and actions…"],["chips","Store|Review"]] },
+    { s: "Chat", t: "If it's not an agreement", d: "\"read\" returns is_agreement = false and a short description.", p: ["ai","app"], r: "Agreement Upload", m: [["agent","The document you've uploaded looks like a grocery receipt. Would you like to continue to store this document?"]] },
+    { s: "Camera", t: "If a photo is blurry", d: "\"read\" returns readable = false; the app asks for a retake.", p: ["ai","app"], r: "Agreement Upload", m: [["agent","This photo is unfocused 📷. Please retake it for clear text."]] }
+  ];
+  var i = 0, body = document.getElementById('ph-body');
+  function render() {
+    var st = steps[i];
+    document.getElementById('ph-screen').textContent = st.s;
+    document.getElementById('st-count').textContent = 'Step ' + (i + 1) + ' of ' + steps.length;
+    document.getElementById('st-title').textContent = st.t;
+    document.getElementById('st-desc').textContent = st.d;
+    document.getElementById('st-req').textContent = 'Implements prd.md > ' + st.r;
+    var tr = document.getElementById('st-trace'); tr.innerHTML = '';
+    Object.keys(P).forEach(function (k) { var s = document.createElement('span'); s.textContent = P[k]; if (st.p.indexOf(k) > -1) s.className = 'on'; tr.appendChild(s); });
+    document.getElementById('st-range').value = i + 1;
+    document.getElementById('st-prev').disabled = i === 0;
+    document.getElementById('st-next').disabled = i === steps.length - 1;
+    body.innerHTML = '';
+    st.m.forEach(function (m) {
+      var el = document.createElement('div');
+      if (m[0] === 'chips') { el.className = 'chips'; m[1].split('|').forEach(function (c) { var s = document.createElement('span'); s.textContent = c; el.appendChild(s); }); }
+      else { el.className = 'msg ' + m[0]; el.textContent = m[1]; }
+      body.appendChild(el);
+    });
+  }
+  document.getElementById('st-prev').onclick = function () { if (i > 0) { i--; render(); } };
+  document.getElementById('st-next').onclick = function () { if (i < steps.length - 1) { i++; render(); } };
+  document.getElementById('st-range').oninput = function (e) { i = +e.target.value - 1; render(); };
+  render();
+
+  var comps = [
+    ["App Shell and Screens", "public/index.html · public/app.js", "One page that swaps between Welcome, Start Choice, Profile, Home with chat, Notice and Camera. It holds the step-by-step flow and decides which buttons appear.", "Screens and Layout · Demo Sign-In · Profile Setup"],
+    ["Theme Switcher", "public/styles.css · public/app.js", "A dropdown on the welcome screen and home header. Sets the theme on the page and saves it.", "Theme Switching"],
+    ["Upload and Camera", "public/upload.js", "File picker for PDFs and images. The phone camera page by page with next page and done. Photos are shrunk to stay under the hosting size limit. Email is tagged coming soon.", "Agreement Upload"],
+    ["Agent Client", "public/agent.js", "Sends read, chat or draft requests to the helper. Shows the loader. Turns the structured reply into bubbles and buttons.", "Agreement Reading · Rental Agreement: Move-Out Help · Mortgage Agreement: Dates and Actions"],
+    ["Helper (Vercel Function)", "api/agent.js", "Picks the instructions for the request, calls the AI, checks the reply's format, retries once. Stores nothing. Practice mode when there's no key.", "All AI behaviour"],
+    ["Agent Instructions", "lib/prompts.js", "The agent's job and casual tone, the one reply format every answer uses, the Alberta rule word for word from the Government of Alberta, and the list of facts to pull from a contract.", "Agreement Reading · Rental Agreement: Move-Out Help"],
+    ["AI Connector", "lib/ai.js", "The only file that knows it's Claude. Swap this one file for Gemini later.", "Your Gemini plan"],
+    ["Notice Builder", "public/notice.js", "Calculates the end date in code: the end of the next complete tenancy month. Shows the notice with names, addresses, lease identifiers, end date and signature line. Editable on request. Makes the PDF.", "Rental Agreement: Move-Out Help"],
+    ["Home List", "public/app.js · public/storage.js", "Rows with file name, type and party, status, and a highlighted action-pending line. Empty state when nothing's uploaded.", "Home List · States and Boundaries"],
+    ["Phone App Feel", "public/manifest.webmanifest · public/icons/", "Name, icon and colour so Add to Home Screen gives a proper Fine Print icon that opens full-screen.", "Core Journey step 1"],
+    ["Sample Documents", "samples/ · tools/make-samples.py", "Fictional Alberta lease (fixed term ended about two months before the demo, rent on the 1st, no landlord address) and a fictional signed mortgage with dates and requirements.", "The demo itself"]
+  ];
+  var host = document.getElementById('components');
+  comps.forEach(function (c) {
+    var d = document.createElement('details');
+    var s = document.createElement('summary'); var h = document.createElement('h3'); h.textContent = c[0]; s.appendChild(h); d.appendChild(s);
+    var b = document.createElement('div'); b.className = 'det-body';
+    var f = document.createElement('span'); f.className = 'comp-files'; f.textContent = c[1];
+    var p = document.createElement('p'); p.textContent = c[2];
+    var r = document.createElement('span'); r.className = 'req'; r.textContent = 'Serves: ' + c[3];
+    b.appendChild(f); b.appendChild(p); b.appendChild(r); d.appendChild(b); host.appendChild(d);
+  });
+})();
+</script>
