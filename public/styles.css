@@ -59,26 +59,27 @@
 }
 
 [data-theme="heirloom"] {
-  --bg: #F7F1E6;
-  --surface: #FFFBF3;
-  --surface-2: #EFE5D2;
-  --ink: #2E1F1B;
-  --muted: #6F5E55;
-  --line: #E2D4BE;
-  --accent: #7A2335;        /* maroon */
-  --accent-ink: #FFF8EE;
-  --accent-soft: #F1DCDD;
-  --second: #6B7041;        /* olive */
-  --flag: #6B7041;
-  --flag-soft: #E7E8D3;
-  --bubble-agent: #FFFBF3;
-  --bubble-user: #7A2335;
-  --bubble-user-ink: #FFF8EE;
+  /* Dusky and vampire-y: plum-mauve night, wine maroon, olive, candlelit cream text. */
+  --bg: #2A1823;
+  --surface: #3A2330;
+  --surface-2: #4A2D3D;
+  --ink: #F3E4E6;
+  --muted: #C4A9B6;
+  --line: #5A3A4B;
+  --accent: #A8324D;        /* wine maroon */
+  --accent-ink: #FFF1F3;
+  --accent-soft: #5C2638;
+  --second: #8F9459;        /* olive */
+  --flag: #A9AE6C;
+  --flag-soft: #4A4A2A;
+  --bubble-agent: #3A2330;
+  --bubble-user: #A8324D;
+  --bubble-user-ink: #FFF1F3;
   --font: "Lora", Georgia, "Times New Roman", serif;
   --font-display: "Lora", Georgia, "Times New Roman", serif;
   --display-weight: 600;
-  --shadow: 0 10px 26px -18px rgba(46, 31, 27, .45);
-  color-scheme: light;
+  --shadow: 0 12px 30px -16px rgba(10, 2, 8, .75);
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -170,6 +171,17 @@ body.has-banner .screen, body.has-banner .home-header { padding-top: 16px; }
   padding: 16px 12px; font-weight: 600; text-align: center; box-shadow: var(--shadow);
 }
 .option-btn.selected { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.back-top { margin-bottom: 4px; }
+.header-actions { display: flex; align-items: center; gap: 8px; }
+.home-header { position: relative; }
+.menu-btn { width: 38px; height: 38px; font-size: 1rem; }
+.menu-panel {
+  position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); top: calc(100% - 4px); z-index: 20;
+  display: flex; flex-direction: column; min-width: 190px; padding: 6px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow);
+}
+.menu-panel button { display: flex; align-items: center; justify-content: space-between; gap: 10px; text-align: left; background: none; border: 0; padding: 11px 12px; border-radius: 10px; font-weight: 500; }
+.menu-panel button:hover, .menu-panel button:focus-visible { background: var(--surface-2); }
 .btn-text { align-self: flex-start; background: none; border: 0; color: var(--muted); padding: 6px 0; }
 
 /* ---------- Home ---------- */

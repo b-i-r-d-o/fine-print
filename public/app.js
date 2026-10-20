@@ -5,7 +5,7 @@
 import { load, save, clearAll } from './storage.js';
 
 /* ---------- Themes ---------- */
-const THEME_COLOURS = { linen: '#F3EDE4', midnight: '#0B0D12', heirloom: '#F7F1E6' };
+const THEME_COLOURS = { linen: '#F3EDE4', midnight: '#0B0D12', heirloom: '#2A1823' };
 
 function applyTheme(name) {
   if (!THEME_COLOURS[name]) name = 'linen';
@@ -20,12 +20,26 @@ document.querySelectorAll('.theme-select').forEach((select) => {
 });
 
 /* ---------- Screens ---------- */
-function show(name) {
+// Each screen change is added to the browser's history, so the phone's back
+// gesture/button steps back through the screens instead of leaving the app.
+function show(name, { push = true } = {}) {
   document.querySelectorAll('.screen').forEach((el) => { el.hidden = el.dataset.screen !== name; });
   save('screen', name);
+  if (push && history.state?.screen !== name) history.pushState({ screen: name }, '', '#' + name);
   if (name === 'home') renderHome();
+  closeMenu();
   window.scrollTo(0, 0);
 }
+
+window.addEventListener('popstate', (e) => {
+  const name = e.state?.screen || 'welcome';
+  if (name === 'profile') { startProfile({ push: false }); return; }
+  show(name, { push: false });
+});
+
+document.querySelectorAll('[data-back]').forEach((btn) => {
+  btn.addEventListener('click', () => history.back());
+});
 
 /* ---------- Welcome / demo sign-in ---------- */
 document.querySelectorAll('[data-signin]').forEach((btn) => {
@@ -48,7 +62,7 @@ document.querySelectorAll('[data-start]').forEach((btn) => {
     } else {
       save('onboarded', true);
       show('home');
-      uploadPrompt();
+      if (!chatLog.length) uploadPrompt();
     }
   });
 });
@@ -62,10 +76,10 @@ const QUESTIONS = [
 let qIndex = 0;
 let profile = load('profile', {});
 
-function startProfile() {
+function startProfile({ push = true } = {}) {
   qIndex = 0;
-  profile = {};
-  show('profile');
+  profile = load('profile', {}) || {};
+  show('profile', { push });
   renderQuestion();
 }
 
@@ -74,7 +88,6 @@ function renderQuestion() {
   document.getElementById('profile-step-label').textContent = `Question ${qIndex + 1} of ${QUESTIONS.length}`;
   document.getElementById('profile-question').textContent = q.text;
   document.querySelectorAll('.progress-dots span').forEach((dot, i) => dot.classList.toggle('on', i <= qIndex));
-  document.getElementById('profile-back').hidden = qIndex === 0;
   const grid = document.getElementById('profile-options');
   grid.innerHTML = '';
   q.options.forEach((opt) => {
@@ -95,8 +108,11 @@ function answer(key, value) {
     renderQuestion();
   } else {
     save('onboarded', true);
+    const firstTime = chatLog.length === 0;
     show('home');
-    if (profile.goal === 'Learn') {
+    if (!firstTime) {
+      agentSay('Profile updated ✓');
+    } else if (profile.goal === 'Learn') {
       agentSay("Learning about contract topics is coming soon 📚. In the meantime, would you like to review your own contracts?", [
         { label: 'Review my contracts', onClick: () => { profile.goal = 'Review'; save('profile', profile); uploadPrompt(); } },
       ]);
@@ -107,7 +123,22 @@ function answer(key, value) {
 }
 
 document.getElementById('profile-back').addEventListener('click', () => {
-  if (qIndex > 0) { qIndex -= 1; renderQuestion(); }
+  if (qIndex > 0) { qIndex -= 1; renderQuestion(); } else { history.back(); }
+});
+
+/* ---------- Home menu ---------- */
+const menuBtn = document.getElementById('menu-btn');
+const menuPanel = document.getElementById('menu-panel');
+function closeMenu() { menuPanel.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); }
+menuBtn.addEventListener('click', () => {
+  const open = menuPanel.hidden;
+  menuPanel.hidden = !open;
+  menuBtn.setAttribute('aria-expanded', String(open));
+});
+document.getElementById('menu-profile').addEventListener('click', () => startProfile());
+document.getElementById('menu-signout').addEventListener('click', () => {
+  save('onboarded', false); // demo sign-out: your agreements stay saved on this phone
+  show('welcome');
 });
 
 /* ---------- Home ---------- */
@@ -168,9 +199,9 @@ function scrollDown() {
   requestAnimationFrame(() => { s.scrollTop = s.scrollHeight; });
 }
 
-export function agentSay(text, choices) {
+export function agentSay(text, choices, kind) {
   bubble('agent', text);
-  chatLog.push({ role: 'agent', text });
+  chatLog.push({ role: 'agent', text, kind });
   save('chat', chatLog);
   if (choices && choices.length) chipsRow(choices);
 }
@@ -182,7 +213,10 @@ export function userSay(text) {
 }
 
 function restoreChat() {
-  chatLog.forEach((m) => bubble(m.role, m.text));
+  chatLog.forEach((m) => {
+    bubble(m.role, m.text);
+    if (m.kind === 'upload-prompt') chipsRow([emailChip()]);
+  });
   if (!chatLog.length) uploadPrompt();
 }
 
@@ -190,10 +224,12 @@ function circleUploadIcons(on) {
   ['btn-upload', 'btn-camera'].forEach((id) => document.getElementById(id).classList.toggle('circled', on));
 }
 
+function emailChip() {
+  return { label: 'Connect email', soon: true, keep: true, onClick: () => agentSay('Connecting your email is coming soon ✉️. For now, tap ＋ to upload a file or 📷 to take photos.') };
+}
+
 function uploadPrompt() {
-  agentSay('You can connect your email for us to sift through and pull out agreements in there, or manually upload any agreements for review.', [
-    { label: 'Connect email', soon: true, keep: true, onClick: () => agentSay('Connecting your email is coming soon ✉️. For now, tap ＋ to upload a file or 📷 to take photos.') },
-  ]);
+  agentSay('You can connect your email for us to sift through and pull out agreements in there, or manually upload any agreements for review.', [emailChip()], 'upload-prompt');
   circleUploadIcons(true);
 }
 
@@ -227,5 +263,6 @@ fetch('/api/agent')
 /* ---------- Boot ---------- */
 applyTheme(load('theme', 'linen'));
 const startScreen = load('onboarded', false) ? 'home' : (load('screen', 'welcome') === 'start' ? 'start' : 'welcome');
-show(startScreen);
+history.replaceState({ screen: startScreen }, '', '#' + startScreen);
+show(startScreen, { push: false });
 if (startScreen === 'home') restoreChat();
