@@ -73,7 +73,7 @@ Source: `scope.md > Inspiration & Identity`.
 - [ ] The user can upload a file (PDF or image) from the phone, or take photos page by page with "next page" and "done."
 - [ ] The email option is visible and marked "coming soon."
 - [ ] If a photo is too blurry to read, the agent says the photo is unfocused and asks the user to retake it for clear text.
-- [ ] If the upload isn't an agreement, the agent says so and asks for another file. *(Assumption. See Open Questions.)*
+- [ ] If the upload isn't an agreement, the agent says: "The document you've uploaded looks like [a short summary of what it is]. Would you like to continue to store this document?" It stores it if the user says yes. It doesn't offer a review and doesn't reject the file (Joann's call).
 
 ### Agreement Reading
 - [ ] The agent correctly names the agreement type and the other party (landlord or lender) from the actual document, not a script.
@@ -102,7 +102,7 @@ Source: `scope.md > The Unique Kernel`.
 ## States and Boundaries
 - **First use:** an empty home with an upload icon and "Upload your first agreement!" The demo starts from blank on purpose, with no preloaded examples.
 - **Blurry photo:** a retake prompt (see Agreement Upload).
-- **Not an agreement:** the agent says so and asks for another file *(assumption)*.
+- **Not an agreement:** the agent briefly says what the document looks like and asks whether to store it. No review, no rejection.
 - **Missing details in the lease:** the agent asks. If the answer is no, the field is left blank on the notice.
 - **Coming-soon controls:** email connect, the Learn path, and the mortgage Review are visible but marked, and tapping them explains they're coming soon.
 - **What persists:** the theme, profile answers, agreements and pending actions stay while the app is open in the demo. Lasting storage between sessions is a `4-spec` decision.
@@ -115,9 +115,13 @@ Source: `scope.md > The Unique Kernel`.
 - **Follow Alberta rules** for the tenancy notice. It needs to be legally right.
 - **Three themes:** beige by default, blue and black, and maroon and olive with a serif font. The product is female-friendly but the theme names aren't gendered.
 - **Ask about missing details instead of guessing,** such as the landlord's address.
+- **A non-agreement upload is just offered for storage.** No review, no rejection.
 
 ## What We're Building
 Theme switching, demo sign-in, profile setup, agreement upload (file or page-by-page photos) with a blurry-photo retake, real AI reading of uploaded agreements, the rental move-out flow ending in an editable, legally complete notice as a PDF, the mortgage dates-and-actions summary with Store, and a home list showing status and pending actions.
+
+## Submission Notes
+- In the Devpost write-up, add a line on what the profile questions will do later (household management, age-tuned explanations, the Learn path), so judges see they're intentional and not unfinished. Joann: "I feel like I'm expecting it to do too much right now for a demo."
 
 ## Deferred From the POC
 - **Real Google or Facebook accounts.** These are infrastructure that doesn't prove the idea.
@@ -144,7 +148,6 @@ Theme switching, demo sign-in, profile setup, agreement upload (file or page-by-
 - **Provinces other than Alberta** for the tenancy rule in this proof of concept.
 
 ## Open Questions
-- **Not an agreement:** I've assumed the agent says so and asks for another file. Confirm or change before `4-spec`.
-- **Mortgage "Review":** I've assumed it shows "coming soon." Confirm before `4-spec`.
+- **Mortgage "Review":** shows "coming soon" (assumption carried from the draft; Joann didn't object).
 - **Where the theme dropdown sits:** on the welcome screen and in the home header. This can be settled during the build.
 - **The sample rental and mortgage documents for the video:** they'll need to be realistic but fictional. This gets settled in `4-spec`/`5-build`.

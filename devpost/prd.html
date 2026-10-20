@@ -201,7 +201,7 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--ru
     <div class="states">
       <div><h3>First use</h3><p>Empty home with an upload icon and "Upload your first agreement!" The demo starts blank on purpose.</p></div>
       <div><h3>Blurry photo</h3><p>"This photo is unfocused. Please retake it so the text is clear."</p></div>
-      <div><h3>Not an agreement <span class="assume">assumption</span></h3><p>The agent says this doesn't look like an agreement and asks for another file.</p></div>
+      <div><h3>Not an agreement</h3><p>"The document you've uploaded looks like [short summary]. Would you like to continue to store this document?" No review, no rejection.</p></div>
       <div><h3>Missing details</h3><p>The agent asks, for example about the landlord's address. If the answer is no, that line is left blank on the notice.</p></div>
       <div><h3>Coming-soon controls</h3><p>Email connect, the Learn path, and mortgage Review are visible and marked. Tapping them explains they're coming soon.</p></div>
       <div><h3>What stays</h3><p>Theme, profile answers, agreements and pending actions stay during the demo. Lasting storage is decided in the technical plan.</p></div>
@@ -219,6 +219,7 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--ru
       <li><strong>Follow Alberta rules.</strong> The notice has to be legally right.</li>
       <li><strong>Three themes, female-friendly,</strong> with neutral theme names.</li>
       <li><strong>Ask about missing details instead of guessing.</strong></li>
+      <li><strong>A non-agreement upload is just offered for storage.</strong> No review, no rejection.</li>
     </ul>
   </section>
 
@@ -251,12 +252,17 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--ru
     </ul></div></details>
   </section>
 
+  <section aria-labelledby="sub">
+    <span class="label">Submission notes</span>
+    <h2 id="sub">For the Devpost write-up</h2>
+    <div class="rule" style="background:var(--teal-soft);border-radius:12px;padding:14px 16px"><p>Add a line on what the profile questions will do later: household management, age-tuned explanations, and the Learn path. That way judges see they're intentional, not unfinished.</p></div>
+  </section>
+
   <section class="oq" aria-labelledby="oq">
     <span class="label">Open questions</span>
-    <h2 id="oq">Two to confirm before the technical plan</h2>
+    <h2 id="oq">One assumption still standing</h2>
     <ul class="plain">
-      <li><strong>Not an agreement:</strong> I've assumed the agent says so and asks for another file.</li>
-      <li><strong>Mortgage "Review":</strong> I've assumed it shows "coming soon."</li>
+      <li><strong>Mortgage "Review":</strong> shows "coming soon." Carried from the draft.</li>
     </ul>
     <p class="src">Can wait: where exactly the theme dropdown sits, and the realistic but fictional sample documents for the video.</p>
   </section>
@@ -313,7 +319,7 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--ru
     ["Theme Switching", [["Opens in the beige theme."],["Dropdown lists three themes; picking one restyles every screen right away."],["Maroon and olive uses a serif font and stays while moving through the app."]]],
     ["Demo Sign-In", [["Google and Facebook buttons are visibly labelled as demo."],["Tapping either continues; no account is created or needed."]]],
     ["Profile Setup", [["Three questions, one at a time, with the exact choices."],["Review leads to the empty home and upload prompt."],["Answers are remembered but don't change the agent's replies yet."],["Learn shows \"coming soon\" and offers Review instead."]]],
-    ["Agreement Upload", [["Upload a PDF or image, or take photos page by page with \"next page\" and \"done\"."],["Email option visible and marked coming soon."],["Blurry photo: \"unfocused, please retake for clear text.\""],["Not an agreement: the agent says so and asks for another file.", true]]],
+    ["Agreement Upload", [["Upload a PDF or image, or take photos page by page with \"next page\" and \"done\"."],["Email option visible and marked coming soon."],["Blurry photo: \"unfocused, please retake for clear text.\""],["Not an agreement: says what it looks like and asks whether to store it. No review, no rejection."]]],
     ["Agreement Reading", [["Names the agreement type and other party from the real document, not a script."],["Files it as date-party-purpose.pdf."],["Detects whether it's signed."]]],
     ["Rental Agreement: Move-Out Help", [["Notices the fixed term ended and says how long ago, then asks about renewing."],["Understands a free-typed \"no, I want to move out.\""],["States Alberta's rule correctly: one full tenancy month, in writing, with address, end date and signature."],["Draft pulls lease identifiers, names, address and dates, and calculates the end date as the last day of the next full tenancy month."],["Asks about missing details; \"no\" leaves that line blank."],["Asks to edit; the user's edits show in the final notice."],["Notice saves as a PDF, with delivery guidance."]]],
     ["Mortgage Agreement: Dates and Actions", [["Identifies a signed mortgage and the lender."],["Lists key dates and actions found in the document."],["Store files it on the home list; Review shows coming soon.", true]]],
