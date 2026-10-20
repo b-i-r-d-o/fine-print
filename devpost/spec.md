@@ -89,7 +89,7 @@ PRD ref: `prd.md > Agreement Reading`, `prd.md > Rental Agreement: Move-Out Help
 
 ### Agent Instructions
 `lib/prompts.js`. The system prompts for `read`, `chat` and `draft`, covering:
-- **The agent's job and tone:** simple, casual, emojis welcome, and it never claims to give legal advice.
+- **The agent's job and tone:** simple, casual, emojis welcome. It never claims to give legal advice, and it ends any rule explanation with a short guidance reminder (see `Guidance Notice`).
 - **The reply format.** Every reply is one JSON object:
   `{ "message": "...", "choices": ["Yes","No"] | null, "action": "none" | "offer_draft" | "ask_missing" | "store_prompt" | "retake_photo", "facts": {...} | null }`
 - **The Alberta rule, word for word**, from the [Government of Alberta](https://www.alberta.ca/ending-a-tenancy.aspx). A fixed-term tenancy ends on its stated date. If both sides continue without renewing, it becomes periodic. To end a monthly periodic tenancy, the tenant gives one full tenancy month's written notice. The notice must include the rental address, the end date, and the signature of the person giving notice. Tenants don't need to give a reason.
@@ -103,6 +103,13 @@ PRD ref: `prd.md > Agreement Reading`, `prd.md > Rental Agreement: Move-Out Help
 - **End-date calculation (code, not AI):** from today and the rent day, it finds the end of the next complete tenancy month. Example: with rent due on the 1st and notice given Oct 20, the end date is Nov 30. If notice were given on the 1st itself, it would be the last day of that month. The rule is verified with a few test dates during the build.
 - **Notice view:** title, date, tenant and landlord names, landlord address (or a blank line), rental address, lease identifiers, "This is my notice to end the tenancy on [end date]," and a signature line. Text becomes editable after "Yes" to edit.
 - **PDF:** jsPDF turns the (possibly edited) notice into `Notice-to-End-Tenancy.pdf` for the user to save or print.
+
+### Guidance Notice
+`public/index.html`, `public/notice.js`, `lib/prompts.js`. Implements `prd.md > Guidance, Not Legal Advice`.
+- **Welcome screen:** a fixed line under the sign-in buttons: "Fine Print helps you understand your agreements. It's guidance, not legal advice."
+- **Rule explanations:** the agent instructions require that any message explaining a law or rule ends with a short "general guidance, not legal advice" reminder pointing to a lawyer or Alberta's official tenancy resources. The instructions also forbid claiming to give legal advice.
+- **Notice view:** a line above the notice: "Drafted as a guide. Review it before you send it." It's not printed on the PDF.
+- **README:** a short "Not legal advice" section.
 
 ### Home List
 `public/app.js`, `public/storage.js`. Rows show the file name (`date-party-purpose.pdf`), type and party, a status ("Term ended," "Signed · stored," "Stored"), and a highlighted "Action pending: …" line when relevant. Empty state per `prd.md > States and Boundaries`.
@@ -135,7 +142,7 @@ A small "Reset demo" link in a corner (hidden in the video) clears everything so
 ```
 fine-print/
 ├── public/                     # Everything the phone downloads
-│   ├── index.html              # The single page; all screens live here
+│   ├── index.html              # The single page; all screens live here (incl. the guidance line)
 │   ├── styles.css              # Layout + the three themes (Linen, Midnight, Heirloom)
 │   ├── app.js                  # Screen flow, profile, home list, buttons
 │   ├── agent.js                # Talks to /api/agent; turns replies into bubbles/buttons
@@ -198,6 +205,7 @@ fine-print/
 ## Decisions and Open Issues
 
 ### Decisions
+- **Guidance, not legal advice** is stated in the app, in the agent's instructions and in the README (Joann's call; see `Guidance Notice`).
 - **Hosted on Vercel**, so the app reaches the phone and the key stays hidden (Joann agreed).
 - **Claude for the demo,** with a possible switch to Gemini's free tier later for a public showcase (Joann's choice). Built so that only `lib/ai.js` changes.
 - **No framework:** plain HTML/CSS/JS. This was recommended for readability, and Joann accepted the recommended approach.

@@ -95,6 +95,13 @@ Source: `scope.md > The Unique Kernel`.
 - [ ] It lists the key dates and actions found in the document, such as payment dates, the term end or renewal date, and insurance or tax requirements.
 - [ ] It offers **Store** or **Review**. Store files it on the home list. Review shows "coming soon." *(Assumption.)*
 
+### Guidance, Not Legal Advice
+Joann's call: this is "a pretty important piece for what this is." Fine Print supports the user's understanding. It isn't legal advice.
+- [ ] The Welcome screen shows one plain line: "Fine Print helps you understand your agreements. It's guidance, not legal advice."
+- [ ] When the agent explains a rule (such as Alberta's notice rule), its message ends with a short reminder that this is general guidance, and that for their specific situation the user can check with a lawyer or Alberta's official tenancy resources.
+- [ ] The notice view shows "Drafted as a guide. Review it before you send it." The reminder doesn't appear on the PDF itself, since that goes to the landlord.
+- [ ] The agent never says or implies it's giving legal advice.
+
 ### Home List
 - [ ] Each row shows the agreement's file name, its type and party, and its status, such as "Signed" or "Term ended."
 - [ ] An agreement with something to do is highlighted with its pending action, for example "Action pending: deliver notice to landlord."
@@ -114,6 +121,7 @@ Source: `scope.md > The Unique Kernel`.
 - **Profile answers are for show in this proof of concept.** Their real effects come later (see Possible Later Enhancements).
 - **Follow Alberta rules** for the tenancy notice. It needs to be legally right.
 - **Three themes:** beige by default, blue and black, and maroon and olive with a serif font. The product is female-friendly but the theme names aren't gendered.
+- **Guidance, not legal advice, stated clearly in the app** on the Welcome screen, with rule explanations, and on the notice view. Joann sees this as central to what Fine Print is.
 - **Ask about missing details instead of guessing,** such as the landlord's address.
 - **A non-agreement upload is just offered for storage.** No review, no rejection.
 
@@ -121,6 +129,7 @@ Source: `scope.md > The Unique Kernel`.
 Theme switching, demo sign-in, profile setup, agreement upload (file or page-by-page photos) with a blurry-photo retake, real AI reading of uploaded agreements, the rental move-out flow ending in an editable, legally complete notice as a PDF, the mortgage dates-and-actions summary with Store, and a home list showing status and pending actions.
 
 ## Submission Notes
+- In the Devpost write-up and README, state that Fine Print is a comprehension and guidance tool, not legal advice.
 - In the Devpost write-up, add a line on what the profile questions will do later (household management, age-tuned explanations, the Learn path), so judges see they're intentional and not unfinished. Joann: "I feel like I'm expecting it to do too much right now for a demo."
 
 ## Deferred From the POC

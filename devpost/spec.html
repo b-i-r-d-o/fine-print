@@ -221,6 +221,7 @@ pre.tree { margin: 0; background: var(--sheet); border: 1px solid var(--rule); b
       </svg>
     </div>
     <div class="rule"><span class="label">The agent rule of thumb</span><p><strong>The AI decides what to say. The app decides what's allowed.</strong></p></div>
+    <div class="rule"><span class="label">What Fine Print is</span><p><strong>A comprehension and guidance tool, not legal advice.</strong> This is said plainly on the Welcome screen, after any rule explanation, and on the notice view.</p></div>
     <div class="rule-of-thumb">
       <div class="rot-ai"><span class="label">The AI does</span><ul><li>Reading the contract</li><li>Understanding "no, I want to move out"</li><li>Explaining the rule in casual words</li><li>Writing the notice wording</li><li>Summarizing the mortgage dates</li></ul></div>
       <div class="rot-app"><span class="label">The app does</span><ul><li>Sign-in, profile, every button</li><li>The home list and saving</li><li>The notice end date, calculated in code</li><li>Making the PDF</li><li>Deciding which buttons may appear</li></ul></div>
@@ -371,6 +372,7 @@ pre.tree { margin: 0; background: var(--sheet); border: 1px solid var(--rule); b
     <span class="label">Decisions and open issues</span>
     <h2 id="dec">Your calls, and what to check early</h2>
     <ul class="plain">
+      <li><strong>Guidance, not legal advice</strong>: stated in the app, the agent's instructions and the README. Your call.</li>
       <li><strong>Vercel hosting</strong>: you agreed.</li>
       <li><strong>Claude for the demo, maybe Gemini later</strong>: your choice. Only one file changes.</li>
       <li><strong>No framework</strong>: recommended for readability, and you accepted it.</li>
@@ -438,6 +440,7 @@ pre.tree { margin: 0; background: var(--sheet); border: 1px solid var(--rule); b
     ["Agent Instructions", "lib/prompts.js", "The agent's job and casual tone, the one reply format every answer uses, the Alberta rule word for word from the Government of Alberta, and the list of facts to pull from a contract.", "Agreement Reading · Rental Agreement: Move-Out Help"],
     ["AI Connector", "lib/ai.js", "The only file that knows it's Claude. Swap this one file for Gemini later.", "Your Gemini plan"],
     ["Notice Builder", "public/notice.js", "Calculates the end date in code: the end of the next complete tenancy month. Shows the notice with names, addresses, lease identifiers, end date and signature line. Editable on request. Makes the PDF.", "Rental Agreement: Move-Out Help"],
+    ["Guidance Notice", "public/index.html · public/notice.js · lib/prompts.js", "Welcome screen line: 'Fine Print helps you understand your agreements. It’s guidance, not legal advice.' Rule explanations end with a short guidance reminder pointing to a lawyer or Alberta’s official tenancy resources. The notice view says 'Drafted as a guide. Review it before you send it.' (not printed on the PDF). README has a Not legal advice section.", "Guidance, Not Legal Advice"],
     ["Home List", "public/app.js · public/storage.js", "Rows with file name, type and party, status, and a highlighted action-pending line. Empty state when nothing's uploaded.", "Home List · States and Boundaries"],
     ["Phone App Feel", "public/manifest.webmanifest · public/icons/", "Name, icon and colour so Add to Home Screen gives a proper Fine Print icon that opens full-screen.", "Core Journey step 1"],
     ["Sample Documents", "samples/ · tools/make-samples.py", "Fictional Alberta lease (fixed term ended about two months before the demo, rent on the 1st, no landlord address) and a fictional signed mortgage with dates and requirements.", "The demo itself"]
