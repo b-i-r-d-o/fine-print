@@ -36,7 +36,7 @@ Build mode: learn
   Why now: It completes the kernel, the demo's payoff, right after the first read works. It's built on the facts slice 2 saves.
   PRD ref: `prd.md > The Core Journey` (steps 9–14), `prd.md > Rental Agreement: Move-Out Help`, `prd.md > Guidance, Not Legal Advice`, `prd.md > Home List`
   Spec ref: `spec.md > Notice Builder`, `spec.md > Agent Instructions`, `spec.md > Agent Client`, `spec.md > Guidance Notice`, `spec.md > Data Model`
-  Build: Add the `chat` and `draft` helper modes and prompts (Alberta rule word for word), free-text reply handling, the missing-details question, the end-date function, the notice view with the "Drafted as a guide" line, edit mode, jsPDF output, the one-time guidance caption, and the pending-action status on the home list.
+  Build: Add the `chat` and `draft` helper modes and prompts (Alberta rule word for word), general questions with no document (`prd.md > Ask Before Uploading`), free-text reply handling, the missing-details question, the end-date function, the notice view with the "Drafted as a guide" line, edit mode, jsPDF output, the one-time guidance caption, and the pending-action status on the home list.
   Verify (mechanical): Run the end-date function against test dates: Oct 20 with rent on the 1st → Nov 30; Nov 1 → Nov 30; Dec 15 → Jan 31; Feb 2 → Mar 31. In the headless browser (practice mode), go through move-out → yes → no address → notice. Confirm the notice includes the address, end date and signature line, edits persist into the PDF, a PDF file is produced, the caption appears only once, and the home row shows the pending action.
   Learner check: On your phone, reply "No, I want to move out." Does the rule explanation read right to you as a contracts person? Does the notice have everything a valid notice needs? Edit a word, save the PDF, and open it. Does your home list now show the action pending?
   Commit: `Draft editable Alberta move-out notice with PDF and pending action`
@@ -83,3 +83,7 @@ Reflection:
 Activity mode:
 
 ## Revisions
+
+- Learner checks happen on the live Vercel link, so each slice is committed and pushed after mechanical verification and before the learner check. Fixes from the check become follow-up commits, and the box is ticked once the check passes. This workspace can't reach Vercel, and the key never enters chat.
+- Slice 1 learner feedback: added phone back navigation, on-screen Back buttons, and a home menu (Edit profile, Sign out demo); reworked Heirloom into a dusky plum and wine theme; swapped the profile icon to 😘. Joann found she couldn't get back from home, and that Heirloom was too close to Linen.
+- Added `prd.md > Ask Before Uploading`: a chat box on the start-choice screen for asking a contract question right away. Real answers get wired up with the slice 3 `chat` mode. Joann pointed out that people may have a question before uploading anything.

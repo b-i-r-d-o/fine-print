@@ -69,6 +69,11 @@ Source: `scope.md > Inspiration & Identity`.
 - [ ] The answers are collected and shown as remembered. In this proof of concept they don't change what the agent says (Joann's call: "for show").
 - [ ] Choosing **Learn** shows a "coming soon" message and offers to review instead.
 
+### Ask Before Uploading
+Added during the build at Joann's request: "A person might right away have a contract question."
+- [ ] The start-choice screen (upload documents / set up profile) has a "Message Fine Print…" chat box at the bottom.
+- [ ] Typing a question there opens the home chat with the question, and the agent answers it in plain language. This is general guidance, with the same one-time caption rule as other rule explanations, and no contract is needed.
+
 ### Agreement Upload
 - [ ] The user can upload a file (PDF or image) from the phone, or take photos page by page with "next page" and "done."
 - [ ] The email option is visible and marked "coming soon."

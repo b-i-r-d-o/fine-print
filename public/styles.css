@@ -227,5 +227,6 @@ body.has-banner .screen, body.has-banner .home-header { padding-top: 16px; }
 .icon-btn.circled { box-shadow: 0 0 0 3px var(--bg), 0 0 0 6px #F2C94C; animation: ring 1.4s ease-in-out infinite; }
 @keyframes ring { 50% { box-shadow: 0 0 0 3px var(--bg), 0 0 0 8px #F2C94C; } }
 @media (prefers-reduced-motion: reduce) { .icon-btn.circled { animation: none; } }
+.composer-start { margin: auto calc(-1 * max(20px, env(safe-area-inset-left, 0px))) calc(-1 * (env(safe-area-inset-bottom, 0px) + 20px)); border-radius: 0; }
 .composer-input { flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 11px 14px; font-size: 1rem; }
 .send-btn { flex: none; width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); font-size: 1.15rem; font-weight: 700; }

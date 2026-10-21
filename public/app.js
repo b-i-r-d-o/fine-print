@@ -67,6 +67,18 @@ document.querySelectorAll('[data-start]').forEach((btn) => {
   });
 });
 
+// A question typed on the start screen goes straight into the chat on home.
+document.getElementById('start-composer').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const input = document.getElementById('start-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  save('onboarded', true);
+  show('home');
+  handleUserMessage(text);
+});
+
 /* ---------- Profile ---------- */
 const QUESTIONS = [
   { key: 'for', text: 'Are you looking to be supported with your contracts for yourself or your household?', options: ['Self', 'Household'] },
@@ -247,9 +259,14 @@ document.getElementById('composer').addEventListener('submit', (e) => {
   const text = input.value.trim();
   if (!text) return;
   input.value = '';
-  userSay(text);
-  agentSay('Upload an agreement first and I can help with it 📄.');
+  handleUserMessage(text);
 });
+
+// Slice 1 placeholder: the AI conversation is connected in a later build step.
+function handleUserMessage(text) {
+  userSay(text);
+  agentSay("Great question! Answering contract questions arrives in an upcoming build step 🛠️. You can also upload an agreement with ＋ or 📷.");
+}
 
 /* ---------- Practice mode banner ---------- */
 fetch('/api/agent')
