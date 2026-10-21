@@ -64,15 +64,26 @@ Source: `scope.md > Inspiration & Identity`.
 - [ ] Tapping either continues to the start choice. No account is created or required.
 
 ### Profile Setup
-- [ ] The three questions appear one at a time with the exact choices listed in The Core Journey.
-- [ ] Choosing **Review** leads to the empty home screen and the upload prompt.
-- [ ] The answers are collected and shown as remembered. In this proof of concept they don't change what the agent says (Joann's call: "for show").
-- [ ] Choosing **Learn** shows a "coming soon" message and offers to review instead.
+Revised during the build at Joann's direction: a household needs different questions from one person.
+- [ ] Question 1: "Are you looking to be supported with your contracts for yourself or your household?" → *Self / Household*.
+- [ ] **Self:** "What is your age range?" → *18–25 / 25–35 / 35–45 / 45–65 / 65+*.
+- [ ] **Household:** "How many people are in your household?" → *2–6* (typing up to 10 works). Then one question per person: "Person N: what is their age range?" → *1–20 / 20–40 / 40–60 / 60+*. Then "Would you like individual profiles set up, or keep all the contracts together for this household?" → *Individual profiles / Keep together*.
+- [ ] Last question for both: learn about contract topics, or review your own contracts → *Learn / Review*.
+- [ ] Every question has the chat box. A typed answer counts the same as tapping. Anything else typed goes to the home chat as a question.
+- [ ] Choosing **Review** leads to the empty home screen and the upload prompt. Choosing **Learn** shows "coming soon" and offers Review instead.
+- [ ] The answers are saved and summarized (e.g. "Household of 3 · contracts together"). In this proof of concept they don't change what the agent says (Joann's call: "for show").
 
 ### Ask Before Uploading
 Added during the build at Joann's request: "A person might right away have a contract question."
 - [ ] The start-choice screen (upload documents / set up profile) has a "Message Fine Print…" chat box at the bottom.
 - [ ] Typing a question there opens the home chat with the question, and the agent answers it in plain language. This is general guidance, with the same one-time caption rule as other rule explanations, and no contract is needed.
+
+### Side Menu
+Added during the build at Joann's request, to "make it seem more app-y."
+- [ ] Tapping the Fine Print logo (top left of home) slides in a side menu with **Home**, **Profile** (showing a profile summary) and **All agreements ▾**.
+- [ ] All agreements expands to **Housing, Medical, Financial, Marriage, Estate planning**, each with a count. Tapping one shows only those agreements, or "None yet in [category]."
+- [ ] Each agreement gets one category when the AI reads it. Leases and mortgages go under Housing. Financial means insurance and investments (Joann's call).
+- [ ] Sign out (demo) lives in the side menu.
 
 ### Agreement Upload
 - [ ] The user can upload a file (PDF or image) from the phone, or take photos page by page with "next page" and "done."

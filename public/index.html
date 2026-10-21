@@ -81,12 +81,16 @@
       <div class="option-grid" id="profile-options"></div>
       <button type="button" class="btn-text" id="profile-back">← Back</button>
     </div>
+    <form class="composer composer-start" id="profile-composer" autocomplete="off">
+      <input type="text" id="profile-input" class="composer-input" placeholder="Type an answer or ask Fine Print…" aria-label="Type an answer or ask a question">
+      <button type="submit" class="send-btn" aria-label="Send">↑</button>
+    </form>
   </section>
 
   <!-- HOME -->
   <section class="screen screen-home" id="screen-home" data-screen="home" hidden>
     <header class="home-header">
-      <div class="home-brand"><img src="/icons/icon-192.png" alt="" class="home-logo"> <span>Fine Print</span></div>
+      <button type="button" class="home-brand" id="drawer-btn" aria-label="Open menu" aria-expanded="false" aria-controls="drawer"><img src="/icons/icon-192.png" alt="" class="home-logo"> <span>Fine Print</span> <span class="brand-caret" aria-hidden="true">☰</span></button>
       <div class="header-actions">
         <label class="theme-picker">
           <span class="sr-only">Theme</span>
@@ -96,16 +100,11 @@
             <option value="heirloom">Heirloom</option>
           </select>
         </label>
-        <button type="button" class="icon-btn menu-btn" id="menu-btn" aria-label="Menu" aria-expanded="false" aria-controls="menu-panel">☰</button>
-      </div>
-      <div class="menu-panel" id="menu-panel" hidden>
-        <button type="button" id="menu-profile">Edit profile</button>
-        <button type="button" id="menu-signout">Sign out <span class="tag tag-demo">Demo</span></button>
       </div>
     </header>
     <div class="home-scroll" id="home-scroll">
       <div class="home-intro">
-        <h1 class="home-title">Welcome to your agreements!</h1>
+        <h1 class="home-title" id="home-title">Welcome to your agreements!</h1>
         <p class="profile-chip" id="profile-chip" hidden></p>
       </div>
       <div class="agreement-list" id="agreement-list"></div>
@@ -116,6 +115,7 @@
         <p class="empty-title">Upload your first agreement!</p>
         <p class="muted">A lease, a mortgage, a phone plan, a warranty… anything with terms and conditions.</p>
       </div>
+      <div class="cat-empty" id="cat-empty" hidden><p id="cat-empty-text"></p></div>
       <div class="chat" id="chat" aria-live="polite"></div>
     </div>
     <form class="composer" id="composer" autocomplete="off">
@@ -127,6 +127,20 @@
     <input type="file" id="file-input" accept="application/pdf,image/*" hidden>
     <input type="file" id="camera-input" accept="image/*" capture="environment" hidden>
   </section>
+
+  <!-- SIDE MENU -->
+  <div class="drawer-scrim" id="drawer-scrim" hidden></div>
+  <nav class="drawer" id="drawer" aria-label="Main menu" hidden>
+    <div class="drawer-head"><img src="/icons/icon-192.png" alt="" class="home-logo"> <span>Fine Print</span></div>
+    <button type="button" class="drawer-item" id="drawer-home"><span class="drawer-ico" aria-hidden="true">⌂</span> Home</button>
+    <button type="button" class="drawer-item" id="drawer-profile"><span class="drawer-ico" aria-hidden="true">😘</span> <span class="drawer-label">Profile<small id="drawer-profile-sub"></small></span></button>
+    <button type="button" class="drawer-item" id="drawer-agreements" aria-expanded="false" aria-controls="drawer-cats"><span class="drawer-ico" aria-hidden="true">📄</span> <span class="drawer-label">All agreements</span> <span class="drawer-count" id="drawer-all-count">0</span> <span class="drawer-arrow" aria-hidden="true">▾</span></button>
+    <div class="drawer-cats" id="drawer-cats" hidden></div>
+    <div class="drawer-foot">
+      <button type="button" class="drawer-item drawer-quiet" id="drawer-signout">Sign out <span class="tag tag-demo">Demo</span></button>
+      <p class="drawer-note">Guidance, not legal advice.</p>
+    </div>
+  </nav>
 
   <script type="module" src="/app.js"></script>
 </body>

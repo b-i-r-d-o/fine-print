@@ -1,4 +1,4 @@
-// app.js — the screen flow: welcome → start choice → profile → home.
+// app.js — the screen flow: welcome → start choice → profile → home, plus the side menu.
 // The app decides which screen shows and which buttons appear.
 // (Later slices add the AI conversation through agent.js.)
 
@@ -19,6 +19,17 @@ document.querySelectorAll('.theme-select').forEach((select) => {
   select.addEventListener('change', (e) => applyTheme(e.target.value));
 });
 
+/* ---------- Agreement categories (side menu) ---------- */
+// The AI picks one of these when it reads an agreement (slice 2).
+export const CATEGORIES = [
+  { id: 'housing', label: 'Housing', hint: 'Leases, mortgages, property' },
+  { id: 'medical', label: 'Medical', hint: 'Health plans, care agreements' },
+  { id: 'financial', label: 'Financial', hint: 'Insurance, investments' },
+  { id: 'marriage', label: 'Marriage', hint: 'Prenups, separation agreements' },
+  { id: 'estate', label: 'Estate planning', hint: 'Wills, powers of attorney' },
+];
+let filter = null; // null = all agreements, or a category id
+
 /* ---------- Screens ---------- */
 // Each screen change is added to the browser's history, so the phone's back
 // gesture/button steps back through the screens instead of leaving the app.
@@ -27,11 +38,12 @@ function show(name, { push = true } = {}) {
   save('screen', name);
   if (push && history.state?.screen !== name) history.pushState({ screen: name }, '', '#' + name);
   if (name === 'home') renderHome();
-  closeMenu();
+  closeDrawer();
   window.scrollTo(0, 0);
 }
 
 window.addEventListener('popstate', (e) => {
+  if (!drawer.hidden) { closeDrawer(); }
   const name = e.state?.screen || 'welcome';
   if (name === 'profile') { startProfile({ push: false }); return; }
   show(name, { push: false });
@@ -60,33 +72,62 @@ document.querySelectorAll('[data-start]').forEach((btn) => {
     if (btn.dataset.start === 'profile') {
       startProfile();
     } else {
-      save('onboarded', true);
-      show('home');
-      if (!chatLog.length) uploadPrompt();
+      goHome();
     }
   });
 });
 
-// A question typed on the start screen goes straight into the chat on home.
+function goHome() {
+  save('onboarded', true);
+  filter = null;
+  show('home');
+  if (!chatLog.length) uploadPrompt();
+}
+
+// A question typed on the start or profile screen goes straight into the chat on home.
+function askFromOutside(text) {
+  save('onboarded', true);
+  filter = null;
+  show('home');
+  handleUserMessage(text);
+}
+
 document.getElementById('start-composer').addEventListener('submit', (e) => {
   e.preventDefault();
   const input = document.getElementById('start-input');
   const text = input.value.trim();
   if (!text) return;
   input.value = '';
-  save('onboarded', true);
-  show('home');
-  handleUserMessage(text);
+  askFromOutside(text);
 });
 
 /* ---------- Profile ---------- */
-const QUESTIONS = [
-  { key: 'for', text: 'Are you looking to be supported with your contracts for yourself or your household?', options: ['Self', 'Household'] },
-  { key: 'age', text: 'What is your age range?', options: ['18–25', '25–35', '35–45', '45–65', '65+'] },
-  { key: 'goal', text: 'Would you like to learn about some contract topics, or review your own contracts?', options: ['Learn', 'Review'] },
-];
+// The questions depend on earlier answers: "Self" asks one age range;
+// "Household" asks how many people, each person's age range, and how to organize.
+const AGES_SELF = ['18–25', '25–35', '35–45', '45–65', '65+'];
+const AGES_PERSON = ['1–20', '20–40', '40–60', '60+'];
+const SIZES = ['2', '3', '4', '5', '6'];
+
+function buildSteps(p) {
+  const steps = [{ key: 'for', text: 'Are you looking to be supported with your contracts for yourself or your household?', options: ['Self', 'Household'] }];
+  if (p.for === 'Household') {
+    steps.push({ key: 'size', text: 'How many people are in your household?', options: SIZES });
+    const n = Math.min(parseInt(p.size, 10) || 0, 10);
+    for (let i = 1; i <= n; i++) {
+      steps.push({ key: `person${i}`, text: `Person ${i}: what is their age range?`, options: AGES_PERSON });
+    }
+    if (n) steps.push({ key: 'setup', text: 'Would you like individual profiles set up, or keep all the contracts together for this household?', options: ['Individual profiles', 'Keep together'] });
+  } else {
+    steps.push({ key: 'age', text: 'What is your age range?', options: AGES_SELF });
+  }
+  if (p.for !== 'Household' || p.size) {
+    steps.push({ key: 'goal', text: 'Would you like to learn about some contract topics, or review your own contracts?', options: ['Learn', 'Review'] });
+  }
+  return steps;
+}
+
 let qIndex = 0;
-let profile = load('profile', {});
+let profile = {};
 
 function startProfile({ push = true } = {}) {
   qIndex = 0;
@@ -96,10 +137,19 @@ function startProfile({ push = true } = {}) {
 }
 
 function renderQuestion() {
-  const q = QUESTIONS[qIndex];
-  document.getElementById('profile-step-label').textContent = `Question ${qIndex + 1} of ${QUESTIONS.length}`;
+  const steps = buildSteps(profile);
+  const q = steps[qIndex];
+  // Household totals aren't known until "how many" is answered, so show a running count.
+  const total = steps.length + (profile.for === 'Household' && !profile.size ? 3 : 0);
+  document.getElementById('profile-step-label').textContent = `Question ${qIndex + 1} of ${total}`;
   document.getElementById('profile-question').textContent = q.text;
-  document.querySelectorAll('.progress-dots span').forEach((dot, i) => dot.classList.toggle('on', i <= qIndex));
+  const dots = document.querySelector('.progress-dots');
+  dots.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('span');
+    if (i <= qIndex) d.className = 'on';
+    dots.appendChild(d);
+  }
   const grid = document.getElementById('profile-options');
   grid.innerHTML = '';
   q.options.forEach((opt) => {
@@ -113,42 +163,132 @@ function renderQuestion() {
 }
 
 function answer(key, value) {
+  const changedBranch = (key === 'for' || key === 'size') && profile[key] !== value;
   profile[key] = value;
+  if (changedBranch) {
+    // Clear answers that belonged to the other branch.
+    Object.keys(profile).forEach((k) => {
+      if (key === 'for' && !['for'].includes(k)) delete profile[k];
+      if (key === 'size' && (/^person\d+$/.test(k) || k === 'setup' || k === 'goal')) delete profile[k];
+    });
+    profile[key] = value;
+  }
   save('profile', profile);
-  if (qIndex < QUESTIONS.length - 1) {
+  const steps = buildSteps(profile);
+  if (qIndex < steps.length - 1) {
     qIndex += 1;
     renderQuestion();
   } else {
-    save('onboarded', true);
-    const firstTime = chatLog.length === 0;
-    show('home');
-    if (!firstTime) {
-      agentSay('Profile updated ✓');
-    } else if (profile.goal === 'Learn') {
-      agentSay("Learning about contract topics is coming soon 📚. In the meantime, would you like to review your own contracts?", [
-        { label: 'Review my contracts', onClick: () => { profile.goal = 'Review'; save('profile', profile); uploadPrompt(); } },
-      ]);
-    } else {
-      uploadPrompt();
-    }
+    finishProfile();
   }
 }
+
+function finishProfile() {
+  save('onboarded', true);
+  const firstTime = chatLog.length === 0;
+  filter = null;
+  show('home');
+  if (!firstTime) {
+    agentSay('Profile updated ✓');
+  } else if (profile.goal === 'Learn') {
+    agentSay("Learning about contract topics is coming soon 📚. In the meantime, would you like to review your own contracts?", [
+      { label: 'Review my contracts', onClick: () => { profile.goal = 'Review'; save('profile', profile); uploadPrompt(); } },
+    ]);
+  } else {
+    uploadPrompt();
+  }
+}
+
+// Typed answers count the same as tapping; anything else is treated as a question.
+function matchOption(text, options) {
+  const t = text.trim().toLowerCase().replace(/\s+/g, ' ');
+  const plain = (s) => s.toLowerCase().replace(/[–—]/g, '-');
+  return options.find((o) => plain(o) === plain(t)) ||
+    options.find((o) => plain(o).startsWith(plain(t)) && t.length >= 3) ||
+    (/^\d+$/.test(t) && options.includes(SIZES[0]) && +t >= 2 && +t <= 10 ? t : null);
+}
+
+document.getElementById('profile-composer').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const input = document.getElementById('profile-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  const q = buildSteps(profile)[qIndex];
+  const match = matchOption(text, q.options);
+  if (match) answer(q.key, match);
+  else askFromOutside(text);
+});
 
 document.getElementById('profile-back').addEventListener('click', () => {
   if (qIndex > 0) { qIndex -= 1; renderQuestion(); } else { history.back(); }
 });
 
-/* ---------- Home menu ---------- */
-const menuBtn = document.getElementById('menu-btn');
-const menuPanel = document.getElementById('menu-panel');
-function closeMenu() { menuPanel.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); }
-menuBtn.addEventListener('click', () => {
-  const open = menuPanel.hidden;
-  menuPanel.hidden = !open;
-  menuBtn.setAttribute('aria-expanded', String(open));
+function profileSummary(p) {
+  if (!p || !p.for) return '';
+  if (p.for === 'Self') return p.age ? `Profile · Self · ${p.age}` : 'Profile · Self';
+  const n = p.size ? `Household of ${p.size}` : 'Household';
+  const how = p.setup === 'Individual profiles' ? ' · individual profiles' : p.setup ? ' · contracts together' : '';
+  return `Profile · ${n}${how}`;
+}
+
+/* ---------- Side menu (drawer) ---------- */
+const drawer = document.getElementById('drawer');
+const scrim = document.getElementById('drawer-scrim');
+const drawerBtn = document.getElementById('drawer-btn');
+
+function openDrawer() {
+  renderDrawer();
+  drawer.hidden = false;
+  scrim.hidden = false;
+  requestAnimationFrame(() => document.body.classList.add('drawer-open'));
+  drawerBtn.setAttribute('aria-expanded', 'true');
+}
+function closeDrawer() {
+  document.body.classList.remove('drawer-open');
+  drawerBtn.setAttribute('aria-expanded', 'false');
+  drawer.hidden = true;
+  scrim.hidden = true;
+}
+drawerBtn.addEventListener('click', openDrawer);
+scrim.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+
+const catToggle = document.getElementById('drawer-agreements');
+catToggle.addEventListener('click', () => {
+  const open = catToggle.getAttribute('aria-expanded') !== 'true';
+  catToggle.setAttribute('aria-expanded', String(open));
+  document.getElementById('drawer-cats').hidden = !open;
 });
-document.getElementById('menu-profile').addEventListener('click', () => startProfile());
-document.getElementById('menu-signout').addEventListener('click', () => {
+
+function renderDrawer() {
+  const agreements = load('agreements', []);
+  document.getElementById('drawer-all-count').textContent = agreements.length;
+  const list = document.getElementById('drawer-cats');
+  list.innerHTML = '';
+  const all = document.createElement('button');
+  all.type = 'button';
+  all.className = 'drawer-sub' + (filter === null ? ' current' : '');
+  all.innerHTML = '<span>All</span>';
+  all.addEventListener('click', () => { filter = null; show('home'); });
+  list.appendChild(all);
+  CATEGORIES.forEach((c) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'drawer-sub' + (filter === c.id ? ' current' : '');
+    const count = agreements.filter((a) => a.category === c.id).length;
+    const name = document.createElement('span'); name.textContent = c.label;
+    const n = document.createElement('span'); n.className = 'drawer-count'; n.textContent = count;
+    b.append(name, n);
+    b.addEventListener('click', () => { filter = c.id; show('home'); });
+    list.appendChild(b);
+  });
+  document.getElementById('drawer-profile-sub').textContent = profileSummary(load('profile', null)).replace('Profile · ', '') || 'Not set up yet';
+}
+
+document.getElementById('drawer-home').addEventListener('click', () => { filter = null; show('home'); });
+document.getElementById('drawer-profile').addEventListener('click', () => startProfile());
+document.getElementById('drawer-signout').addEventListener('click', () => {
   save('onboarded', false); // demo sign-out: your agreements stay saved on this phone
   show('welcome');
 });
@@ -156,15 +296,31 @@ document.getElementById('menu-signout').addEventListener('click', () => {
 /* ---------- Home ---------- */
 function renderHome() {
   const agreements = load('agreements', []);
-  document.getElementById('empty-state').hidden = agreements.length > 0;
+  const cat = CATEGORIES.find((c) => c.id === filter);
+  const shown = cat ? agreements.filter((a) => a.category === cat.id) : agreements;
+  document.getElementById('home-title').textContent = cat ? cat.label : 'Welcome to your agreements!';
+  document.getElementById('empty-state').hidden = !(agreements.length === 0 && !cat);
+  const catEmpty = document.getElementById('cat-empty');
+  catEmpty.hidden = !(cat && shown.length === 0);
+  if (cat) document.getElementById('cat-empty-text').textContent = `None yet in ${cat.label}. ${cat.hint} will show up here.`;
+  renderList(shown);
   const chip = document.getElementById('profile-chip');
-  const p = load('profile', null);
-  if (p && p.for) {
-    chip.textContent = `Profile · ${p.for} · ${p.age}`;
-    chip.hidden = false;
-  } else {
-    chip.hidden = true;
-  }
+  const summary = profileSummary(load('profile', null));
+  chip.textContent = summary;
+  chip.hidden = !summary || !!cat;
+  document.getElementById('chat').hidden = !!cat;
+}
+
+// Agreement rows are filled in from slice 2 onward.
+export function renderList(items) {
+  const list = document.getElementById('agreement-list');
+  list.innerHTML = '';
+  items.forEach((a) => {
+    const row = document.createElement('div');
+    row.className = 'agreement-row' + (a.pendingAction ? ' has-action' : '');
+    row.textContent = a.fileName;
+    list.appendChild(row);
+  });
 }
 
 /* ---------- Chat (agent messages shown in the app) ---------- */
@@ -187,7 +343,6 @@ function chipsRow(choices) {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'chip' + (c.soon ? ' chip-soon' : '');
-    b.innerHTML = '';
     b.append(c.label);
     if (c.soon) {
       const t = document.createElement('span');
@@ -259,6 +414,7 @@ document.getElementById('composer').addEventListener('submit', (e) => {
   const text = input.value.trim();
   if (!text) return;
   input.value = '';
+  if (filter) { filter = null; renderHome(); }
   handleUserMessage(text);
 });
 
