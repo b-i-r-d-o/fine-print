@@ -352,3 +352,20 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 .confirm-delete { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1.5px solid #C0392B; border-radius: var(--radius); background: var(--surface); }
 .confirm-delete p { margin: 0; }
 .confirm-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Notice */
+.guide-banner { margin: 0 0 12px; font-size: .88rem; color: var(--muted); background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
+.notice-paper { background: #FFFFFF; color: #1F1A16; border-radius: 6px; padding: 22px 20px; box-shadow: var(--shadow); font-family: Georgia, "Times New Roman", serif; font-size: .95rem; line-height: 1.5; display: flex; flex-direction: column; gap: 10px; }
+.notice-paper h2 { font-family: Georgia, "Times New Roman", serif; font-size: 1.12rem; font-weight: 700; margin: 0 0 6px; letter-spacing: 0; }
+.notice-field { display: grid; grid-template-columns: minmax(0, 8.5em) minmax(0, 1fr); gap: 8px; }
+.notice-field .k { color: #6B6158; font-size: .85rem; font-family: system-ui, sans-serif; }
+.notice-field .v { overflow-wrap: anywhere; }
+.notice-field .blank { color: #9A8F84; font-style: italic; }
+.notice-body p { margin: 0 0 10px; }
+.notice-sign { margin-top: 18px; display: flex; flex-direction: column; gap: 14px; font-size: .9rem; }
+.notice-paper input, .notice-paper textarea { width: 100%; font: inherit; color: #1F1A16; background: #FFFBEA; border: 1px solid #E2C96B; border-radius: 6px; padding: 6px 8px; }
+.notice-paper textarea { min-height: 220px; resize: vertical; }
+.notice-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; padding-bottom: 24px; }
+.notice-card .notice-meta { margin: 0; font-size: .9rem; }
+.notice-card .contact-actions { margin-top: 2px; }
+.caption-guidance { align-self: flex-start; margin: -4px 0 0 6px; font-size: .72rem; color: var(--muted); opacity: .85; }

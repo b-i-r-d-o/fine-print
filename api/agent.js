@@ -5,10 +5,11 @@
 //
 // GET  /api/agent                      -> { ok, practice }  (is the AI connected?)
 // POST /api/agent { mode: 'read', files: [{ name, type, data(base64) }], today, profile }
+// POST /api/agent { mode: 'chat', message, facts, conversation, today, profile }
 
 import { askAI, hasKey } from '../lib/ai.js';
-import { READ_PROMPT, readUserText, CATEGORIES } from '../lib/prompts.js';
-import { practiceRead } from '../lib/practice.js';
+import { READ_PROMPT, readUserText, CHAT_PROMPT, chatUserText, CATEGORIES } from '../lib/prompts.js';
+import { practiceRead, practiceChat } from '../lib/practice.js';
 
 // Pull the JSON object out of the AI's reply, even if it wrapped it in extra text.
 export function parseReply(text) {
@@ -29,6 +30,34 @@ export function validRead(r) {
   if (!Array.isArray(r.contacts)) r.contacts = [];
   if (!Array.isArray(r.key_dates_and_actions)) r.key_dates_and_actions = [];
   return typeof r.type === 'string' && typeof r.signed === 'boolean';
+}
+
+export function validChat(r) {
+  if (!r || typeof r !== 'object' || typeof r.message !== 'string' || !r.message.trim()) return false;
+  if (!Array.isArray(r.choices)) r.choices = null;
+  if (!['offer_draft', 'none'].includes(r.action)) r.action = 'none';
+  r.explains_rule = r.explains_rule === true;
+  return true;
+}
+
+async function chat(body) {
+  const message = String(body.message || '').slice(0, 2000);
+  if (!message.trim()) return { status: 400, json: { error: 'Type a message first.' } };
+  if (!hasKey()) return { status: 200, json: { practice: true, reply: practiceChat(body) } };
+  const facts = body.facts && typeof body.facts === 'object' ? body.facts : null;
+  const conversation = Array.isArray(body.conversation) ? body.conversation.filter((m) => m && typeof m.text === 'string').slice(-10) : [];
+  const content = [{ kind: 'text', text: chatUserText({ today: body.today, facts, conversation, message, profile: body.profile }) }];
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const text = await askAI({
+      speed: 'quick',
+      system: CHAT_PROMPT + (attempt === 2 ? '\n\nIMPORTANT: Your last reply was not valid. Reply with the JSON object only.' : ''),
+      content,
+      maxTokens: 800,
+    });
+    const reply = parseReply(text);
+    if (validChat(reply)) return { status: 200, json: { practice: false, reply } };
+  }
+  return { status: 502, json: { error: 'Something went wrong. Try again?' } };
 }
 
 function filesToContent(files) {
@@ -64,8 +93,8 @@ export default async function handler(req, res) {
 
   const body = req.body || {};
   try {
-    if (body.mode === 'read') {
-      const out = await read(body);
+    if (body.mode === 'read' || body.mode === 'chat') {
+      const out = body.mode === 'read' ? await read(body) : await chat(body);
       return res.status(out.status).json(out.json);
     }
     return res.status(400).json({ error: 'Unknown request.' });

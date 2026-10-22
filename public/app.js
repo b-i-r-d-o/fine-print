@@ -6,6 +6,7 @@ import { load, save, clearAll } from './storage.js';
 import { askHelper, todayISO } from './agent.js';
 import { prepareFile } from './upload.js';
 import { saveVCard, contactLabel } from './contacts.js';
+import { buildNotice, deliverBy, longDate, downloadNoticePDF, NOTICE_FIELDS } from './notice.js';
 
 /* ---------- Themes ---------- */
 const THEME_COLOURS = { linen: '#F3EDE4', midnight: '#0B0D12', heirloom: '#2A1823', popstar: '#FFF3FA' };
@@ -50,6 +51,7 @@ window.addEventListener('popstate', (e) => {
   const name = e.state?.screen || 'welcome';
   if (name === 'profile') { startProfile({ push: false }); return; }
   if (name === 'agreement') { renderAgreement(load('openAgreement', null)); }
+  if (name === 'notice') { renderNotice(); }
   show(name, { push: false });
 });
 
@@ -434,6 +436,7 @@ function archiveSession() {
   chatEl.innerHTML = '';
   current = null;
   save('current', null);
+  guidanceShown = false;
   circleUploadIcons(false);
 }
 
@@ -763,6 +766,7 @@ function renderAgreement(id) {
   ].filter(Boolean).forEach((r) => dl.append(r));
   box.append(dl);
 
+  if (a.notice) box.append(buildNoticeCard(a));
   const dates = buildDatesCard(f.key_dates_and_actions); if (dates) box.append(dates);
   const contacts = buildContactsCard(f.contacts, a.fileName); if (contacts) box.append(contacts);
 
@@ -828,15 +832,201 @@ document.getElementById('composer').addEventListener('submit', (e) => {
   handleUserMessage(text);
 });
 
-// Free-typed replies and questions are connected to the AI in the next build step (slice 3).
-function handleUserMessage(text) {
+/* ---------- Conversation with the agent ---------- */
+let guidanceShown = false; // the subtle "not legal advice" caption shows once per session
+let awaitingAddress = false;
+
+// The app adds this caption (not the AI), the first time per session a reply explains a rule.
+function guidanceCaption() {
+  if (guidanceShown) return;
+  guidanceShown = true;
+  const c = document.createElement('p');
+  c.className = 'caption-guidance';
+  c.textContent = 'General guidance, not legal advice.';
+  chatEl.appendChild(c);
+  scrollDown();
+}
+
+function conversationAbout(id) {
+  return chatLog.filter((m) => m.text && !m.kind && (id ? m.about === id : true)).slice(-10).map((m) => ({ role: m.role, text: m.text }));
+}
+
+async function handleUserMessage(text) {
   userSay(text);
-  if (current && current.awaiting === 'ask_renewal') {
-    agentSay("Got it. Helping with your next steps arrives in the next build step 🛠️.");
+  if (awaitingAddress && current) { awaitingAddress = false; makeDraft(text.trim()); return; }
+  const a = current ? getAgreement(current.id) : null;
+  const loader = loaderBubble('…');
+  const result = await askHelper({
+    mode: 'chat', message: text, facts: a ? a.facts : null,
+    conversation: conversationAbout(a ? a.id : null).slice(0, -1),
+    today: todayISO(), profile: load('profile', null),
+  });
+  loader.remove();
+  if (result.error) {
+    agentSay(result.error, [{ label: 'Try again', onClick: () => { chatLog.pop(); save('chat', chatLog); handleUserMessage(text); } }]);
+    return;
+  }
+  const r = result.reply;
+  let choices = null;
+  if (r.action === 'offer_draft' && a) {
+    choices = [
+      { label: 'Yes, draft it', onClick: () => { userSay('Yes, draft it'); startDraft(); } },
+      { label: 'No thanks', onClick: () => { userSay('No thanks'); agentSay("No problem. I'm here if you change your mind 👍"); } },
+    ];
+  } else if (r.choices && r.choices.length) {
+    choices = r.choices.slice(0, 4).map((label) => ({ label, onClick: () => handleUserMessage(label) }));
+  }
+  agentSay(r.message, null);
+  if (r.explains_rule) guidanceCaption();
+  if (choices) chipsRow(choices);
+}
+
+function startDraft() {
+  const a = current && getAgreement(current.id);
+  if (!a) return;
+  if (!a.facts.other_party_address) {
+    agentSay("The lease doesn't list an address for the landlord. Do you have this?", [
+      { label: 'Yes', onClick: () => { userSay('Yes'); awaitingAddress = true; agentSay("Great, type the landlord's address and I'll add it ✍️"); document.getElementById('composer-input').focus(); } },
+      { label: 'No', onClick: () => { userSay('No'); makeDraft(''); } },
+    ]);
   } else {
-    agentSay("Great question! Answering contract questions arrives in an upcoming build step 🛠️. You can also upload an agreement with ＋ or 📷.");
+    makeDraft(a.facts.other_party_address);
   }
 }
+
+function updateAgreement(id, changes) {
+  save('agreements', load('agreements', []).map((x) => (x.id === id ? { ...x, ...changes } : x)));
+}
+
+function makeDraft(landlordAddress) {
+  const a = current && getAgreement(current.id);
+  if (!a) return;
+  const notice = buildNotice(a.facts, { todayISO: todayISO(), landlordAddress });
+  notice.deliverBy = deliverBy(todayISO(), a.facts.rent_day || 1);
+  updateAgreement(a.id, { notice });
+  const card = buildNoticeCard(getAgreement(a.id));
+  chatEl.appendChild(card);
+  scrollDown();
+  chatLog.push({ role: 'agent', kind: 'notice', about: a.id });
+  save('chat', chatLog);
+  agentSay(`I've drafted the notice for you, please review 📝${landlordAddress ? '' : " I've left a blank line for the landlord's address so you can fill it in by hand."}`);
+  agentSay('Would you like to edit the notice?', [
+    { label: 'Yes, edit it', onClick: () => { userSay('Yes, edit it'); openNotice(a.id, { edit: true, thenReady: true }); } },
+    { label: 'No, it looks good', onClick: () => { userSay('No, it looks good'); noticeReady(a.id); } },
+  ]);
+}
+
+function buildNoticeCard(a) {
+  const n = a.notice;
+  const card = document.createElement('div');
+  card.className = 'card notice-card';
+  const t = document.createElement('p'); t.className = 'card-title'; t.textContent = '📝 Notice to end tenancy';
+  const meta = document.createElement('p'); meta.className = 'notice-meta';
+  meta.textContent = `From ${n.from} to ${n.to}. Tenancy ends ${longDate(n.endISO)}.`;
+  const note = document.createElement('p'); note.className = 'card-note'; note.textContent = 'Drafted as a guide. Review it before you send it.';
+  const actions = document.createElement('div'); actions.className = 'contact-actions';
+  const open = document.createElement('button'); open.type = 'button'; open.className = 'chip'; open.textContent = 'Open notice';
+  open.addEventListener('click', () => openNotice(a.id));
+  const pdf = document.createElement('button'); pdf.type = 'button'; pdf.className = 'chip'; pdf.textContent = 'Get PDF';
+  pdf.addEventListener('click', () => getPDF(a.id, pdf));
+  actions.append(open, pdf);
+  card.append(t, meta, actions, note);
+  return card;
+}
+
+async function getPDF(id, btn) {
+  const a = getAgreement(id);
+  if (!a || !a.notice) return;
+  try {
+    await downloadNoticePDF(a.notice);
+    if (btn) btn.textContent = 'PDF ready ✓';
+  } catch {
+    agentSay("I couldn't make the PDF just now. Try again in a moment?");
+  }
+}
+
+function noticeReady(id) {
+  const a = getAgreement(id);
+  if (!a || !a.notice) return;
+  updateAgreement(id, { pendingAction: 'deliver notice to landlord' });
+  renderHome();
+  const by = a.notice.deliverBy ? ` Make sure ${a.notice.to || 'your landlord'} gets it by ${longDate(a.notice.deliverBy)} so your tenancy ends ${longDate(a.notice.endISO)}.` : '';
+  agentSay(`The notice is ready as a PDF to print and mail or drop off, or email if that's the agreed contact method 📬 Next step: deliver it to your landlord.${by}`, [
+    { label: 'Get PDF', keep: true, onClick: () => getPDF(id) },
+  ]);
+}
+
+/* ---------- Notice screen (view / edit) ---------- */
+let noticeState = { id: null, edit: false, thenReady: false };
+
+function openNotice(id, { edit = false, thenReady = false } = {}) {
+  noticeState = { id, edit, thenReady };
+  save('openNotice', id);
+  renderNotice();
+  show('notice');
+}
+
+function renderNotice() {
+  const id = noticeState.id || load('openNotice', null);
+  const a = getAgreement(id);
+  const box = document.getElementById('notice-view');
+  box.innerHTML = '';
+  if (!a || !a.notice) { box.textContent = 'No notice yet.'; return; }
+  const n = a.notice;
+  const h = document.createElement('h2'); h.textContent = n.title; box.append(h);
+  NOTICE_FIELDS.forEach((f) => {
+    if (f.multiline) {
+      const body = document.createElement('div'); body.className = 'notice-body';
+      if (noticeState.edit) {
+        const ta = document.createElement('textarea'); ta.id = `nf-${f.key}`; ta.value = n[f.key] || ''; ta.setAttribute('aria-label', f.label);
+        body.append(ta);
+      } else {
+        (n[f.key] || '').split(/\n\s*\n/).forEach((para) => { const p = document.createElement('p'); p.textContent = para.trim(); body.append(p); });
+      }
+      box.append(body);
+      return;
+    }
+    const row = document.createElement('div'); row.className = 'notice-field';
+    const k = document.createElement('span'); k.className = 'k'; k.textContent = f.label;
+    let v;
+    if (noticeState.edit) {
+      v = document.createElement('input'); v.id = `nf-${f.key}`; v.value = n[f.key] || ''; v.placeholder = f.blank || ''; v.setAttribute('aria-label', f.label);
+    } else {
+      v = document.createElement('span'); v.className = 'v' + (n[f.key] ? '' : ' blank');
+      v.textContent = n[f.key] || `______________ (${f.blank || 'blank'})`;
+    }
+    row.append(k, v);
+    box.append(row);
+  });
+  const sign = document.createElement('div'); sign.className = 'notice-sign';
+  ['Tenant signature: ______________________', `Tenant name: ${n.from}`, 'Date signed: ______________'].forEach((t) => { const p = document.createElement('span'); p.textContent = t; sign.append(p); });
+  box.append(sign);
+  document.getElementById('notice-edit').hidden = noticeState.edit;
+  document.getElementById('notice-save').hidden = !noticeState.edit;
+}
+
+document.getElementById('notice-edit').addEventListener('click', () => { noticeState.edit = true; renderNotice(); });
+document.getElementById('notice-save').addEventListener('click', () => {
+  const id = noticeState.id || load('openNotice', null);
+  const a = getAgreement(id);
+  if (!a) return;
+  const n = { ...a.notice };
+  NOTICE_FIELDS.forEach((f) => { const el = document.getElementById(`nf-${f.key}`); if (el) n[f.key] = el.value; });
+  updateAgreement(id, { notice: n });
+  const thenReady = noticeState.thenReady;
+  noticeState = { id, edit: false, thenReady: false };
+  renderNotice();
+  if (thenReady) {
+    show('home');
+    agentSay('Saved your changes ✓');
+    noticeReady(id);
+  }
+});
+document.getElementById('notice-pdf').addEventListener('click', (e) => {
+  const id = noticeState.id || load('openNotice', null);
+  if (noticeState.edit) document.getElementById('notice-save').click();
+  getPDF(id, e.currentTarget);
+});
 
 /* ---------- Practice mode banner ---------- */
 fetch('/api/agent')

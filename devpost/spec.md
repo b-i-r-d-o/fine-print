@@ -112,6 +112,7 @@ PRD ref: `prd.md > Agreement Reading`, `prd.md > Rental Agreement: Move-Out Help
 - `prepareFile` computes a SHA-256 fingerprint of the original file with `crypto.subtle`. It's stored on the agreement as `hash` and never sent to the helper. A matching hash skips the AI read and offers a review.
 
 ### Notice Builder
+_Build revision: wording comes from a fixed template filled with the lease facts (no AI `draft` request); a deliver-by date is shown; jsPDF is bundled locally. See checklist Revisions._
 `public/notice.js`. Implements `prd.md > Rental Agreement: Move-Out Help`.
 - **End-date calculation (code, not AI):** from today and the rent day, it finds the end of the next complete tenancy month. Example: with rent due on the 1st and notice given Oct 20, the end date is Nov 30. If notice were given on the 1st itself, it would be the last day of that month. The rule is verified with a few test dates during the build.
 - **Notice view:** title, date, tenant and landlord names, landlord address (or a blank line), rental address, lease identifiers, "This is my notice to end the tenancy on [end date]," and a signature line. Text becomes editable after "Yes" to edit.
