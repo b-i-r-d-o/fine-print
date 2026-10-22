@@ -142,6 +142,24 @@ Added during the build at Joann's request.
 - [ ] **Same agreement again.** If the date, other party and agreement number match one already stored after reading, it's also treated as a repeat (this catches photos and older uploads).
 - [ ] **Same file again.** Re-uploading the exact same file is recognized on the phone by its digital fingerprint, without reading it with the AI again: "This was previously uploaded and is already stored as [name]. Would you like to review this agreement?" with **Yes, review it** and **Not now**.
 
+### Sign-In Page About, Demo Agreements and Credit
+- [ ] The sign-in screen has an **About Fine Print** section: what it does; "Please test this app with the following fictional demo agreements" with download links for the sample lease and mortgage; a note that security features (two-factor sign-in), storage choices (cloud or on the phone) and bring-your-own-AI privacy were left out on purpose and are next; and "Created by Joann Dobish for Devpost's Build With AI: Basics hackathon."
+
+### Large Script Theme
+- [ ] A fifth theme, **Large Script**: everything noticeably larger, high contrast (near-black on warm white, strong blue accent, thicker outlines). For accessibility.
+
+### Read Aloud and Mic
+- [ ] Each agent message has a 🔊 button that reads it aloud with the phone's built-in voice (tap again to stop). Hidden where the phone doesn't support it.
+- [ ] A 🎤 button in the chat box replies "The mic feature is coming soon", pointing to the keyboard's own microphone for now.
+
+### Jurisdiction
+- [ ] Profile asks "Where do you live?" (13 provinces and territories, or Outside Canada). It's shown in the profile summary.
+- [ ] The AI extracts each agreement's `jurisdiction`. Replies name the law they rely on (e.g. "Under Alberta's Residential Tenancies Act…"). For anything outside the Alberta tenancy rules written into the agent, it gives the general common-law position and says it varies by jurisdiction (and flags Quebec civil law).
+- [ ] The Alberta notice is only drafted for Alberta agreements. Otherwise the agent explains it can't draft for that province yet.
+
+### Write a Simple Agreement (Coming Soon)
+- [ ] The side menu has **Write a simple agreement ▾**: Room or basement rental, Borrowing a vehicle, Loaning money, Cash for work, Bill of sale, Other. Each shows a "coming soon" message noting drafts will be for education and guidance only, to be reviewed with a lawyer.
+
 ### Home List
 - [ ] Each row shows the agreement's file name, its type and party, and its status, such as "Signed" or "Term ended."
 - [ ] An agreement with something to do is highlighted with its pending action, for example "Action pending: deliver notice to landlord."
@@ -181,6 +199,11 @@ Theme switching, demo sign-in, profile setup, agreement upload (file or page-by-
 - **Preloaded demo agreements.** The video shows blank first use.
 
 ## Possible Later Enhancements
+- **Secure sign-in:** real accounts with two-factor authentication.
+- **Storage choices:** cloud or on-device, chosen by the user.
+- **Speak to Fine Print:** voice input with the 🎤 button (speech recognition).
+- **Write simple agreements:** the agent interviews you and drafts room rentals, vehicle loans, personal loans, cash-for-work and bills of sale, or any other type you describe, as an editable PDF marked for education and guidance only, to be reviewed with a lawyer.
+- **Full jurisdiction handling:** every province and territory's rules (and other countries), not just Alberta tenancies. In real use, location and jurisdiction matter a lot; this demo is general-purpose and aspirational.
 - **AI-generated celebration images** to go with the new-home announcement post.
 - **Privacy and AI data handling, including bring your own AI.** Users choose which AI reads their agreements to keep them confidential: their own API key, a private or business AI account, or a model running on their own device or computer. Also: control over where documents are stored, encryption, delete-anytime, a clear no-training-on-your-data policy, and retention settings. The demo uses one hosted AI on fictional documents; this is what a real version needs before people trust it with their own contracts (Joann's call).
 - **A refined in-chat guidance reminder,** for example based on how often it's shown or whether the user has acknowledged it.

@@ -125,6 +125,38 @@
 [data-theme="popstar"] .progress-dots span.on { background: linear-gradient(90deg, #FF2E93, #1E6BFF); }
 [data-theme="popstar"] .home-brand span:not(.brand-caret), [data-theme="popstar"] .home-title, [data-theme="popstar"] .brand-name { background: linear-gradient(90deg, #FF2E93, #1E6BFF 55%, #00C46A); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
+[data-theme="large"] {
+  /* Large Script: everything bigger, high contrast (dark ink on warm white, strong blue). */
+  --bg: #FFFDF8;
+  --surface: #FFFFFF;
+  --surface-2: #EEF1F6;
+  --ink: #0B0B0B;
+  --muted: #3A3F47;
+  --line: #9AA3AF;
+  --accent: #0B4FB3;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DCE7F8;
+  --second: #0B4FB3;
+  --flag: #8A4B00;
+  --flag-soft: #FFE8C7;
+  --bubble-agent: #FFFFFF;
+  --bubble-user: #0B4FB3;
+  --bubble-user-ink: #FFFFFF;
+  --font: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --display-weight: 700;
+  --radius: 16px;
+  --shadow: none;
+  color-scheme: light;
+}
+html[data-theme="large"] { font-size: 125%; }
+[data-theme="large"] body { font-size: 1.15rem; line-height: 1.55; }
+[data-theme="large"] .bubble, [data-theme="large"] .agreement-row, [data-theme="large"] .card,
+[data-theme="large"] .choice-card, [data-theme="large"] .option-btn, [data-theme="large"] .btn-signin { border-width: 2px; border-color: var(--line); }
+[data-theme="large"] .muted, [data-theme="large"] .row-sub, [data-theme="large"] .card-note, [data-theme="large"] .guidance-line, [data-theme="large"] .demo-note { color: var(--muted); }
+[data-theme="large"] .tag { font-size: .7rem; }
+[data-theme="large"] .reset-link { opacity: .8; }
+
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { height: 100%; }
@@ -369,3 +401,20 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 .notice-card .notice-meta { margin: 0; font-size: .9rem; }
 .notice-card .contact-actions { margin-top: 2px; }
 .caption-guidance { align-self: flex-start; margin: -4px 0 0 6px; font-size: .72rem; color: var(--muted); opacity: .85; }
+
+/* About section on the sign-in screen */
+.about { margin: 22px auto 0; max-width: 34rem; display: flex; flex-direction: column; gap: 12px; padding: 18px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.about p { margin: 0; font-size: .9rem; }
+.about-title { font-size: 1.1rem; }
+.about-box { display: flex; flex-direction: column; gap: 6px; padding-top: 10px; border-top: 1px solid var(--line); }
+.about-label { font-weight: 700; font-size: .85rem !important; }
+.about-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.about-links a { text-decoration: none; }
+.about-credit { color: var(--muted); font-size: .82rem !important; padding-top: 10px; border-top: 1px solid var(--line); }
+
+/* Read aloud + mic */
+.bubble-agent { position: relative; }
+.speak-btn { display: inline-grid; place-items: center; margin: 6px 0 -2px; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-2); font-size: .85rem; line-height: 1; vertical-align: middle; }
+.speak-btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.bubble-text { display: block; }
+.mic-btn { font-size: 1rem; }

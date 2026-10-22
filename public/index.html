@@ -28,6 +28,7 @@
           <option value="midnight">Midnight</option>
           <option value="heirloom">Heirloom</option>
           <option value="popstar">Popstar</option>
+          <option value="large">Large Script</option>
         </select>
       </label>
     </div>
@@ -47,6 +48,25 @@
       <p class="demo-note">Demo sign-in · no account is created.</p>
     </div>
     <p class="guidance-line">Fine Print helps you understand your agreements. It's guidance, not legal advice.</p>
+
+    <section class="about" aria-labelledby="about-title">
+      <h2 id="about-title" class="about-title">About Fine Print</h2>
+      <p>You've signed dozens of agreements you'll never reread. Fine Print is an AI agent that reads them for you: it files each one, notices what's coming due, asks you plain questions about your situation, and helps with the next small step, like drafting a move-out notice.</p>
+      <div class="about-box">
+        <p class="about-label">Try it with these demo agreements</p>
+        <p>Please test this app with the following fictional demo agreements. Download one, then upload it with ＋.</p>
+        <div class="about-links">
+          <a class="chip" href="/samples/sample-alberta-lease.pdf" download>📄 Sample Alberta lease</a>
+          <a class="chip" href="/samples/sample-mortgage.pdf" download>📄 Sample mortgage</a>
+        </div>
+      </div>
+      <div class="about-box">
+        <p class="about-label">Left out on purpose for this demo</p>
+        <p>This is a hackathon demo shell. Security features (such as a two-factor sign-in), storage choices (cloud or on your phone) and bring-your-own-AI privacy options are deliberately not built yet. They're the next features to work on. Your agreements in this demo stay on this phone.</p>
+      </div>
+      <p class="about-credit">Created by Joann Dobish for Devpost's <strong>Build With AI: Basics</strong> hackathon.</p>
+    </section>
+
     <button type="button" class="reset-link" id="reset-demo">Reset demo</button>
   </section>
 
@@ -100,6 +120,7 @@
             <option value="midnight">Midnight</option>
             <option value="heirloom">Heirloom</option>
           <option value="popstar">Popstar</option>
+          <option value="large">Large Script</option>
           </select>
         </label>
       </div>
@@ -124,6 +145,7 @@
       <button type="button" class="icon-btn" id="btn-upload" aria-label="Upload a file">＋</button>
       <button type="button" class="icon-btn" id="btn-camera" aria-label="Take a photo">📷</button>
       <input type="text" id="composer-input" class="composer-input" placeholder="Message Fine Print…" aria-label="Message">
+      <button type="button" class="icon-btn mic-btn" id="btn-mic" aria-label="Speak (coming soon)">🎤</button>
       <button type="submit" class="send-btn" id="composer-send" aria-label="Send">↑</button>
     </form>
     <input type="file" id="file-input" accept="application/pdf,image/*" hidden>
@@ -156,6 +178,15 @@
     <button type="button" class="drawer-item" id="drawer-profile"><span class="drawer-ico" aria-hidden="true">😘</span> <span class="drawer-label">Profile<small id="drawer-profile-sub"></small></span></button>
     <button type="button" class="drawer-item" id="drawer-agreements" aria-expanded="false" aria-controls="drawer-cats"><span class="drawer-ico" aria-hidden="true">📄</span> <span class="drawer-label">All agreements</span> <span class="drawer-count" id="drawer-all-count">0</span> <span class="drawer-arrow" aria-hidden="true">▾</span></button>
     <div class="drawer-cats" id="drawer-cats" hidden></div>
+    <button type="button" class="drawer-item" id="drawer-write" aria-expanded="false" aria-controls="drawer-write-list"><span class="drawer-ico" aria-hidden="true">✍️</span> <span class="drawer-label">Write a simple agreement<small>Coming soon</small></span> <span class="drawer-arrow" aria-hidden="true">▾</span></button>
+    <div class="drawer-cats" id="drawer-write-list" hidden>
+      <button type="button" class="drawer-sub" data-write="room or basement rental">Room or basement rental</button>
+      <button type="button" class="drawer-sub" data-write="vehicle borrowing">Borrowing a vehicle</button>
+      <button type="button" class="drawer-sub" data-write="personal loan">Loaning money</button>
+      <button type="button" class="drawer-sub" data-write="cash-for-work">Cash for work</button>
+      <button type="button" class="drawer-sub" data-write="bill of sale">Bill of sale</button>
+      <button type="button" class="drawer-sub" data-write="other">Other…</button>
+    </div>
     <div class="drawer-foot">
       <button type="button" class="drawer-item drawer-quiet" id="drawer-signout">Sign out <span class="tag tag-demo">Demo</span></button>
       <p class="drawer-note">Guidance, not legal advice.</p>

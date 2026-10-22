@@ -9,7 +9,7 @@ import { saveVCard, contactLabel } from './contacts.js';
 import { buildNotice, deliverBy, longDate, downloadNoticePDF, NOTICE_FIELDS } from './notice.js';
 
 /* ---------- Themes ---------- */
-const THEME_COLOURS = { linen: '#F3EDE4', midnight: '#0B0D12', heirloom: '#2A1823', popstar: '#FFF3FA' };
+const THEME_COLOURS = { linen: '#F3EDE4', midnight: '#0B0D12', heirloom: '#2A1823', popstar: '#FFF3FA', large: '#FFFDF8' };
 
 function applyTheme(name) {
   if (!THEME_COLOURS[name]) name = 'linen';
@@ -122,6 +122,8 @@ document.getElementById('start-composer').addEventListener('submit', (e) => {
 const AGES_SELF = ['18–25', '25–35', '35–45', '45–65', '65+'];
 const AGES_PERSON = ['1–20', '20–40', '40–60', '60+'];
 const SIZES = ['2', '3', '4', '5', '6'];
+// Where the user lives decides which laws apply, so the agent can name the jurisdiction.
+const REGIONS = ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon', 'Outside Canada'];
 
 function buildSteps(p) {
   const steps = [{ key: 'for', text: 'Are you looking to be supported with your contracts for yourself or your household?', options: ['Self', 'Household'] }];
@@ -136,6 +138,7 @@ function buildSteps(p) {
     steps.push({ key: 'age', text: 'What is your age range?', options: AGES_SELF });
   }
   if (p.for !== 'Household' || p.size) {
+    steps.push({ key: 'region', text: 'Where do you live? Laws for agreements differ by province and territory.', options: REGIONS });
     steps.push({ key: 'goal', text: 'Would you like to learn about some contract topics, or review your own contracts?', options: ['Learn', 'Review'] });
   }
   return steps;
@@ -241,10 +244,11 @@ document.getElementById('profile-back').addEventListener('click', () => {
 
 function profileSummary(p) {
   if (!p || !p.for) return '';
-  if (p.for === 'Self') return p.age ? `Profile · Self · ${p.age}` : 'Profile · Self';
+  const where = p.region ? ` · ${p.region}` : '';
+  if (p.for === 'Self') return (p.age ? `Profile · Self · ${p.age}` : 'Profile · Self') + where;
   const n = p.size ? `Household of ${p.size}` : 'Household';
   const how = p.setup === 'Individual profiles' ? ' · individual profiles' : p.setup ? ' · contracts together' : '';
-  return `Profile · ${n}${how}`;
+  return `Profile · ${n}${how}${where}`;
 }
 
 /* ---------- Side menu (drawer) ---------- */
@@ -302,6 +306,25 @@ function renderDrawer() {
 }
 
 document.getElementById('drawer-home').addEventListener('click', () => { filter = null; show('home'); });
+
+const writeToggle = document.getElementById('drawer-write');
+writeToggle.addEventListener('click', () => {
+  const open = writeToggle.getAttribute('aria-expanded') !== 'true';
+  writeToggle.setAttribute('aria-expanded', String(open));
+  document.getElementById('drawer-write-list').hidden = !open;
+});
+document.querySelectorAll('[data-write]').forEach((b) => b.addEventListener('click', () => {
+  const kind = b.dataset.write;
+  filter = null;
+  show('home');
+  agentSay(kind === 'other'
+    ? "Writing your own simple agreement is coming soon ✍️ You'll be able to tell me what type of agreement you'd like to write, and I'll draft it with you. Drafts will be for education and guidance only, to be reviewed with a lawyer."
+    : `Writing a simple ${kind} agreement is coming soon ✍️ I'll ask you a few questions and draft it with you. Drafts will be for education and guidance only, to be reviewed with a lawyer.`);
+}));
+
+document.getElementById('btn-mic').addEventListener('click', () => {
+  agentSay("The mic feature is coming soon 🎤 For now, the microphone on your phone's keyboard works for speaking your messages.");
+});
 document.getElementById('drawer-profile').addEventListener('click', () => startProfile());
 document.getElementById('drawer-signout').addEventListener('click', () => {
   // Demo sign-out: back to sign-in. Your agreements stay saved on this phone.
@@ -370,10 +393,41 @@ export function renderList(items) {
 const chatEl = document.getElementById('chat');
 let chatLog = load('chat', []);
 
-function bubble(role, text) {
+// Read aloud uses the phone's built-in voice (speechSynthesis). Hidden where unsupported.
+const canSpeak = 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+let speakingBtn = null;
+function speak(text, btn) {
+  if (!canSpeak) return;
+  const wasThis = speakingBtn === btn;
+  window.speechSynthesis.cancel();
+  if (speakingBtn) speakingBtn.setAttribute('aria-pressed', 'false');
+  speakingBtn = null;
+  if (wasThis) return; // second tap stops
+  const u = new SpeechSynthesisUtterance(text.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, ''));
+  u.lang = 'en-CA';
+  u.onend = () => { btn.setAttribute('aria-pressed', 'false'); if (speakingBtn === btn) speakingBtn = null; };
+  btn.setAttribute('aria-pressed', 'true');
+  speakingBtn = btn;
+  window.speechSynthesis.speak(u);
+}
+
+function bubble(role, text, { speakable = true } = {}) {
   const el = document.createElement('div');
   el.className = `bubble bubble-${role}`;
-  el.textContent = text;
+  const t = document.createElement('span');
+  t.className = 'bubble-text';
+  t.textContent = text;
+  el.append(t);
+  if (role === 'agent' && speakable && canSpeak) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'speak-btn';
+    b.setAttribute('aria-label', 'Read aloud');
+    b.setAttribute('aria-pressed', 'false');
+    b.textContent = '🔊';
+    b.addEventListener('click', () => speak(text, b));
+    el.append(b);
+  }
   chatEl.appendChild(el);
   scrollDown();
   return el;
@@ -571,7 +625,7 @@ document.getElementById('btn-camera').addEventListener('click', () => cameraInpu
 let current = load('current', null); // the agreement the conversation is about
 
 function loaderBubble(text) {
-  const el = bubble('agent', text);
+  const el = bubble('agent', text, { speakable: false });
   el.classList.add('bubble-loading');
   return el;
 }
@@ -884,6 +938,11 @@ async function handleUserMessage(text) {
 function startDraft() {
   const a = current && getAgreement(current.id);
   if (!a) return;
+  const where = String(a.facts.jurisdiction || 'Alberta');
+  if (!/alberta/i.test(where)) {
+    agentSay(`Right now I can only draft tenancy notices for Alberta. This agreement looks like it's under ${where} law, where the notice rules may differ. Your province's residential tenancy office can confirm what's needed.`);
+    return;
+  }
   if (!a.facts.other_party_address) {
     agentSay("The lease doesn't list an address for the landlord. Do you have this?", [
       { label: 'Yes', onClick: () => { userSay('Yes'); awaitingAddress = true; agentSay("Great, type the landlord's address and I'll add it ✍️"); document.getElementById('composer-input').focus(); } },
