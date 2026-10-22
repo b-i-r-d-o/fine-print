@@ -47,7 +47,8 @@ Source: `scope.md > What "Working" Looks Like`, `scope.md > The Core Loop`.
 Source: `scope.md > Inspiration & Identity`.
 - **Default theme:** neutral beige, calm colour scheme. This is what the app opens in.
 - **Theme 2:** blue and black.
-- **Theme 3:** maroon and olive with a serif, print-style font. It's used for the rest of the demo.
+- **Theme 3 (Heirloom):** dusky plum-mauve with wine maroon and olive, serif print-style font, a "vampire-y" feel. It's used for the rest of the demo.
+- **Theme 4 (Popstar):** bright pink, electric blue and lime green, with a rounded, bouncy display font. It's energetic, aimed at someone young, fun, or just feeling spunky (added during the build at Joann's request).
 - The overall product should feel female-friendly, but theme names in the app stay neutral, not gendered.
 - The agent feels calm and helpful, like a chat, not a legal tool. Its tone is simple and casual, and emojis are welcome.
 - The theme choice applies to every screen.

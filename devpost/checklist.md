@@ -84,6 +84,7 @@ Activity mode:
 
 ## Revisions
 
+- Added a fourth theme, **Popstar** (bright pink, electric blue, lime green, Fredoka display font), for a young, fun, energetic appeal (Joann's request).
 - Added `prd.md > Contacts From Agreements` to slice 2. Contacts the agent finds can be saved to phone contacts for real (a vCard with a note naming the source agreement), with email contacts as coming soon. Joann wanted the contacts in agreements easy to keep.
 - Sample PDFs are also published at `/samples/…` on the live link, so they can be opened and saved on the phone for the demo.
 - Added "Privacy and AI data handling, including bring your own AI" to the future features (scope, PRD, spec simplifications, README). Joann pointed out the demo is a shell, and that real users need to connect their own AI or another option to keep their information confidential.

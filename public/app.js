@@ -8,7 +8,7 @@ import { prepareFile } from './upload.js';
 import { saveVCard, contactLabel } from './contacts.js';
 
 /* ---------- Themes ---------- */
-const THEME_COLOURS = { linen: '#F3EDE4', midnight: '#0B0D12', heirloom: '#2A1823' };
+const THEME_COLOURS = { linen: '#F3EDE4', midnight: '#0B0D12', heirloom: '#2A1823', popstar: '#FFF3FA' };
 
 function applyTheme(name) {
   if (!THEME_COLOURS[name]) name = 'linen';

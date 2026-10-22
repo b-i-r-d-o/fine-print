@@ -2,6 +2,9 @@
    Themes are sets of colour/font variables switched by <html data-theme="...">.
    Linen (default): warm beige, calm. Midnight: blue and black. Heirloom: maroon + olive, serif. */
 
+@font-face { font-family: "Fredoka"; font-weight: 500; font-style: normal; font-display: swap; src: url("/fonts/fredoka-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Fredoka"; font-weight: 600; font-style: normal; font-display: swap; src: url("/fonts/fredoka-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Fredoka"; font-weight: 700; font-style: normal; font-display: swap; src: url("/fonts/fredoka-latin-700-normal.woff2") format("woff2"); }
 /* Fonts are bundled with the app (Figtree + Lora, SIL Open Font License) so they work offline. */
 @font-face { font-family: "Figtree"; font-weight: 400; font-style: normal; font-display: swap; src: url("/fonts/figtree-latin-400-normal.woff2") format("woff2"); }
 @font-face { font-family: "Figtree"; font-weight: 500; font-style: normal; font-display: swap; src: url("/fonts/figtree-latin-500-normal.woff2") format("woff2"); }
@@ -81,6 +84,46 @@
   --shadow: 0 12px 30px -16px rgba(10, 2, 8, .75);
   color-scheme: dark;
 }
+
+[data-theme="popstar"] {
+  /* Bright and energetic: hot pink, electric blue, lime green on a candy-white background. */
+  --bg: #FFF3FA;
+  --surface: #FFFFFF;
+  --surface-2: #E8F1FF;
+  --ink: #1B1035;
+  --muted: #6A5A8C;
+  --line: #FFC6E4;
+  --accent: #E6007E;        /* hot pink */
+  --accent-ink: #FFFFFF;
+  --accent-soft: #FFE0F1;
+  --second: #1E6BFF;        /* electric blue */
+  --flag: #00A85A;          /* lime-green (deep enough to read) */
+  --flag-soft: #D6FFE9;
+  --bubble-agent: #FFFFFF;
+  --bubble-user: #1E6BFF;
+  --bubble-user-ink: #FFFFFF;
+  --font: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Fredoka", "Figtree", system-ui, sans-serif;
+  --display-weight: 700;
+  --radius: 22px;
+  --shadow: 0 10px 24px -14px rgba(230, 0, 126, .45);
+  color-scheme: light;
+}
+[data-theme="popstar"] body {
+  background:
+    radial-gradient(circle at 6% 2%, rgba(255, 46, 147, .42), transparent 36%),
+    radial-gradient(circle at 100% 26%, rgba(30, 107, 255, .36), transparent 34%),
+    radial-gradient(circle at 12% 100%, rgba(57, 255, 136, .45), transparent 38%),
+    radial-gradient(circle at 92% 92%, rgba(255, 46, 147, .22), transparent 30%),
+    var(--bg);
+  background-attachment: fixed;
+}
+[data-theme="popstar"] .home-header, [data-theme="popstar"] .composer { background: rgba(255, 243, 250, .72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+[data-theme="popstar"] .empty-upload, [data-theme="popstar"] .send-btn { background: linear-gradient(135deg, #FF2E93, #E6007E 45%, #1E6BFF); }
+[data-theme="popstar"] .bubble-user { background: linear-gradient(135deg, #1E6BFF, #7A3CFF); }
+[data-theme="popstar"] .choice-icon, [data-theme="popstar"] .row-icon, [data-theme="popstar"] .drawer-ico { background: linear-gradient(135deg, #FFE0F1, #E8F1FF 55%, #D6FFE9); }
+[data-theme="popstar"] .progress-dots span.on { background: linear-gradient(90deg, #FF2E93, #1E6BFF); }
+[data-theme="popstar"] .home-brand span:not(.brand-caret), [data-theme="popstar"] .home-title, [data-theme="popstar"] .brand-name { background: linear-gradient(90deg, #FF2E93, #1E6BFF 55%, #00C46A); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }

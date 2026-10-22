@@ -60,7 +60,8 @@ From `prd.md > Look and Feel` and `scope.md > Inspiration & Identity`.
 - **Three themes** through CSS colour variables, set on the page with `data-theme`. Names are neutral (proposed; Joann can rename):
   - **Linen** (default): warm neutral beige background, soft taupe surfaces, deep brown-grey text, a muted sage or clay accent. A clean sans-serif. Calm and spacious.
   - **Midnight:** near-black background, deep navy surfaces, crisp blue accent, white text. Same sans-serif.
-  - **Heirloom:** cream-paper background, maroon primary, olive secondary, a serif print-style font for headings and body. This is the one the demo ends in.
+  - **Heirloom:** dusky plum-mauve background, wine maroon, olive, candlelit cream text, serif (Lora). This is the one the demo ends in.
+  - **Popstar:** candy-white with bright pink, blue and lime glows, hot-pink and electric-blue accents, a rounded display font (Fredoka) with Figtree body. Energetic.
 - **Feel:** female-friendly and calm, with roomy spacing and soft rounded corners. It feels like a messaging app, not a legal tool. Tap targets are large enough for thumbs.
 - **Agent voice:** simple and casual, short sentences, a few emojis, never legalese.
 - **Highlights:** the "action pending" row uses the theme's accent with a small flag. Yes/No and Store/Review choices appear as pill buttons under the agent's message.
