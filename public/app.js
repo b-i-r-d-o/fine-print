@@ -57,10 +57,19 @@ document.querySelectorAll('[data-back]').forEach((btn) => {
 });
 
 /* ---------- Welcome / demo sign-in ---------- */
+// Fine Print holds personal contracts, so it always opens on sign-in.
+// After (demo) sign-in, returning users go straight home; first-timers see the start choice.
+let chatRestored = false;
 document.querySelectorAll('[data-signin]').forEach((btn) => {
   btn.addEventListener('click', () => {
     save('signin', btn.dataset.signin); // demo only: nothing is sent anywhere
-    show('start');
+    if (load('onboarded', false)) {
+      filter = null;
+      show('home');
+      if (!chatRestored) { restoreChat(); chatRestored = true; }
+    } else {
+      show('start');
+    }
   });
 });
 
@@ -83,12 +92,14 @@ document.querySelectorAll('[data-start]').forEach((btn) => {
 function goHome() {
   save('onboarded', true);
   filter = null;
+  chatRestored = true;
   show('home');
   if (!chatLog.length) uploadPrompt();
 }
 
 // A question typed on the start or profile screen goes straight into the chat on home.
 function askFromOutside(text) {
+  chatRestored = true;
   save('onboarded', true);
   filter = null;
   show('home');
@@ -187,6 +198,7 @@ function answer(key, value) {
 }
 
 function finishProfile() {
+  chatRestored = true;
   save('onboarded', true);
   const firstTime = chatLog.length === 0;
   filter = null;
@@ -292,7 +304,7 @@ function renderDrawer() {
 document.getElementById('drawer-home').addEventListener('click', () => { filter = null; show('home'); });
 document.getElementById('drawer-profile').addEventListener('click', () => startProfile());
 document.getElementById('drawer-signout').addEventListener('click', () => {
-  save('onboarded', false); // demo sign-out: your agreements stay saved on this phone
+  // Demo sign-out: back to sign-in. Your agreements stay saved on this phone.
   show('welcome');
 });
 
@@ -637,7 +649,6 @@ fetch('/api/agent')
 
 /* ---------- Boot ---------- */
 applyTheme(load('theme', 'linen'));
-const startScreen = load('onboarded', false) ? 'home' : (load('screen', 'welcome') === 'start' ? 'start' : 'welcome');
-history.replaceState({ screen: startScreen }, '', '#' + startScreen);
-show(startScreen, { push: false });
-if (startScreen === 'home') restoreChat();
+// Always open on the sign-in screen, whatever page or link was used last.
+history.replaceState({ screen: 'welcome' }, '', '#welcome');
+show('welcome', { push: false });

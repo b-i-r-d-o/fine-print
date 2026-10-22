@@ -62,7 +62,8 @@ Source: `scope.md > Inspiration & Identity`.
 
 ### Demo Sign-In
 - [ ] Google and Facebook buttons are visibly labelled as demo.
-- [ ] Tapping either continues to the start choice. No account is created or required.
+- [ ] The app **always opens on the sign-in screen**, whatever link or page was used last, because it holds personal contracts (Joann's call). First-timers continue to the start choice. Returning users go straight to home with their agreements and chat. No account is created or required.
+- [ ] Sign out (demo) returns to sign-in and keeps the saved agreements on the phone.
 
 ### Profile Setup
 Revised during the build at Joann's direction: a household needs different questions from one person.
@@ -125,6 +126,13 @@ Joann's call: this is "a pretty important piece for what this is." Fine Print su
 - [ ] The notice view shows "Drafted as a guide. Review it before you send it." The reminder doesn't appear on the PDF itself, since that goes to the landlord.
 - [ ] The agent never says or implies it's giving legal advice.
 
+### New Home Celebration
+Added during the build at Joann's request, as part of the mortgage step (slice 5).
+- [ ] After a mortgage that looks like a **new home purchase** is stored, the agent says something like "Congratulations 🎉 Good news like this is worth sharing! I wrote a social media announcement for you, if you'd like to share it."
+- [ ] A short, celebratory, AI-written post appears as a card (e.g. "I bought a house! Stay tuned for housewarming party details 🥂"), with **Copy** and **Share** buttons. Share opens the phone's share sheet.
+- [ ] It isn't offered for refinances or renewals, and the post never includes the address, loan amount or lender.
+- [ ] Text only. An AI-generated image would need a separate image service and goes on the future list.
+
 ### Home List
 - [ ] Each row shows the agreement's file name, its type and party, and its status, such as "Signed" or "Term ended."
 - [ ] An agreement with something to do is highlighted with its pending action, for example "Action pending: deliver notice to landlord."
@@ -164,6 +172,7 @@ Theme switching, demo sign-in, profile setup, agreement upload (file or page-by-
 - **Preloaded demo agreements.** The video shows blank first use.
 
 ## Possible Later Enhancements
+- **AI-generated celebration images** to go with the new-home announcement post.
 - **Privacy and AI data handling, including bring your own AI.** Users choose which AI reads their agreements to keep them confidential: their own API key, a private or business AI account, or a model running on their own device or computer. Also: control over where documents are stored, encryption, delete-anytime, a clear no-training-on-your-data policy, and retention settings. The demo uses one hosted AI on fictional documents; this is what a real version needs before people trust it with their own contracts (Joann's call).
 - **A refined in-chat guidance reminder,** for example based on how often it's shown or whether the user has acknowledged it.
 - **Household accounts:** one custodian managing agreements for several people, shareable with other users.

@@ -56,7 +56,7 @@ Build mode: learn
   Why now: It shows the Swiss Army knife breadth on top of a finished kernel, and it reuses the `read` path, so it's lower risk.
   PRD ref: `prd.md > The Core Journey` (steps 15–16), `prd.md > Mortgage Agreement: Dates and Actions`, `prd.md > Agreement Upload` (not an agreement), `prd.md > States and Boundaries`, `prd.md > Guidance, Not Legal Advice`
   Spec ref: `spec.md > Agent Instructions`, `spec.md > Home List`, `spec.md > Guidance Notice`, `spec.md > Where It Runs and How Someone Tries It`
-  Build: Add mortgage-specific facts (key dates and actions) to the read prompt, the Store/Review buttons, the non-agreement storage prompt, the coming-soon handlers, and the README with how to run, deploy, and the not-legal-advice note.
+  Build: Add mortgage-specific facts (key dates and actions) to the read prompt, the Store/Review buttons, the new-home celebration post with Copy/Share after Store (`prd.md > New Home Celebration`), the non-agreement storage prompt, the coming-soon handlers, and the README with how to run, deploy, and the not-legal-advice note.
   Verify (mechanical): In the headless browser (practice mode), upload the mortgage, then tap Store and confirm the home list shows both agreements with correct statuses. Tap Review and confirm coming soon. Upload a non-agreement and confirm the storage prompt, and that yes stores it as "Stored." Reload and confirm all of it persists. Run "Reset demo" and confirm a blank first use.
   Learner check: On your phone, after the rental, upload `sample-mortgage.pdf`. Are the dates and actions it lists right? Tap Store. Then upload any random photo, like a receipt. Does it describe it and offer to store it? Finally, run through the whole demo once from Reset.
   Commit: `Add mortgage dates-and-actions, non-agreement storage, and README`
@@ -84,6 +84,8 @@ Activity mode:
 
 ## Revisions
 
+- The app now always opens on the sign-in screen (Joann: because it's contracts, you should always log in). Returning users go straight home after demo sign-in, and sign-out keeps saved data.
+- Added `prd.md > New Home Celebration` to slice 5: after storing a new-home mortgage, the agent offers a celebratory social post with Copy and Share (Joann's request).
 - Sample lease landlord changed at Joann's request: property manager **Quan Yuan** (her own name), **Drop Tine Properties Ltd.**, phone 587-000-0000, email demotest@droptine.example (a reserved, never-real domain), agreement no. DT-2025-0417. Tenant (who gives notice) is **Ballerina Cappucina**, who is also the mortgage borrower: she bought a home, so she's moving out of the rental. Mortgage lender changed to **Roulette Interest Rate Mortgage Corp.** (contact Squidward Tentacles, 1-800-000-0000, latepayments@rouletteinterest.example, no. RIR-77-30215). The file now files as `2025-08-15-drop-tine-residential-lease.pdf`.
 - Added a fourth theme, **Popstar** (bright pink, electric blue, lime green, Fredoka display font), for a young, fun, energetic appeal (Joann's request).
 - Added `prd.md > Contacts From Agreements` to slice 2. Contacts the agent finds can be saved to phone contacts for real (a vCard with a note naming the source agreement), with email contacts as coming soon. Joann wanted the contacts in agreements easy to keep.
