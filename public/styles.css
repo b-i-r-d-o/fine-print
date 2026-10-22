@@ -325,3 +325,30 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 .bubble-loading { animation: pulse 1.4s ease-in-out infinite; }
 @keyframes pulse { 50% { opacity: .55; } }
 @media (prefers-reduced-motion: reduce) { .bubble-loading { animation: none; } }
+
+/* Agreement rows open their page */
+.agreement-row[role="button"] { cursor: pointer; text-align: left; }
+.agreement-row[role="button"]:active { transform: scale(.99); }
+
+/* One agreement's page */
+.agreement-detail { display: flex; flex-direction: column; gap: 14px; padding-bottom: 24px; }
+.detail-head { display: flex; align-items: flex-start; gap: 12px; }
+.detail-title { font-size: 1.15rem; line-height: 1.3; overflow-wrap: anywhere; }
+.detail-summary { margin: 0; font-size: 1.02rem; }
+.detail-facts { margin: 0; gap: 0; padding: 4px 14px; }
+.detail-row { display: grid; grid-template-columns: minmax(0, 8.5em) minmax(0, 1fr); gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.detail-row:last-child { border-bottom: 0; }
+.detail-row dt { color: var(--muted); font-size: .85rem; }
+.detail-row dd { margin: 0; font-size: .92rem; overflow-wrap: anywhere; }
+.convo-line { margin: 0; font-size: .9rem; padding: 8px 10px; border-radius: 12px; background: var(--surface-2); }
+.convo-line strong { font-weight: 700; margin-right: 4px; }
+.convo-user { background: var(--accent-soft); }
+.detail-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-quiet { background: var(--surface); border: 1px solid var(--line); }
+.btn-danger { background: #B3261E; color: #fff; }
+.btn-danger-quiet { background: none; border: 1px solid var(--line); color: #C0392B; }
+[data-theme="midnight"] .btn-danger-quiet, [data-theme="heirloom"] .btn-danger-quiet { color: #FF8A80; }
+.confirm-delete { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1.5px solid #C0392B; border-radius: var(--radius); background: var(--surface); }
+.confirm-delete p { margin: 0; }
+.confirm-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }

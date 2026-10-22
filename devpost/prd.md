@@ -133,6 +133,14 @@ Added during the build at Joann's request, as part of the mortgage step (slice 5
 - [ ] It isn't offered for refinances or renewals, and the post never includes the address, loan amount or lender.
 - [ ] Text only. An AI-generated image would need a separate image service and goes on the future list.
 
+### Sessions, Agreement Pages and Duplicates
+Added during the build at Joann's request.
+- [ ] **Fresh chat each time.** Each sign-in starts a clean chat with a short "Welcome back 👋" summary (agreements on file, actions pending). The previous conversation is saved, not lost.
+- [ ] **Agreement page.** Tapping an agreement on the home list opens its page: name, type · party, status, summary, key details (parties, term, rent, property, other party's address or "Not listed in the agreement", agreement number, signed, category, date added), dates and actions, contacts (with Save to phone contacts), and the past conversation about it.
+- [ ] **Ask about this agreement** returns to the chat and picks the conversation back up.
+- [ ] **Delete agreement** asks for confirmation in the app ("This can't be undone"), then removes it from the phone.
+- [ ] **Same file again.** Re-uploading the exact same file is recognized on the phone by its digital fingerprint, without reading it with the AI again: "This was previously uploaded and is already stored as [name]. Would you like to review this agreement?" with **Yes, review it** and **Not now**.
+
 ### Home List
 - [ ] Each row shows the agreement's file name, its type and party, and its status, such as "Signed" or "Term ended."
 - [ ] An agreement with something to do is highlighted with its pending action, for example "Action pending: deliver notice to landlord."

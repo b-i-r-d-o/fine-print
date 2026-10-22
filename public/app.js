@@ -49,6 +49,7 @@ window.addEventListener('popstate', (e) => {
   if (!drawer.hidden) { closeDrawer(); }
   const name = e.state?.screen || 'welcome';
   if (name === 'profile') { startProfile({ push: false }); return; }
+  if (name === 'agreement') { renderAgreement(load('openAgreement', null)); }
   show(name, { push: false });
 });
 
@@ -59,14 +60,14 @@ document.querySelectorAll('[data-back]').forEach((btn) => {
 /* ---------- Welcome / demo sign-in ---------- */
 // Fine Print holds personal contracts, so it always opens on sign-in.
 // After (demo) sign-in, returning users go straight home; first-timers see the start choice.
-let chatRestored = false;
 document.querySelectorAll('[data-signin]').forEach((btn) => {
   btn.addEventListener('click', () => {
     save('signin', btn.dataset.signin); // demo only: nothing is sent anywhere
     if (load('onboarded', false)) {
+      archiveSession(); // each sign-in starts a fresh chat; the last one is saved
       filter = null;
       show('home');
-      if (!chatRestored) { restoreChat(); chatRestored = true; }
+      welcomeBack();
     } else {
       show('start');
     }
@@ -92,14 +93,12 @@ document.querySelectorAll('[data-start]').forEach((btn) => {
 function goHome() {
   save('onboarded', true);
   filter = null;
-  chatRestored = true;
   show('home');
   if (!chatLog.length) uploadPrompt();
 }
 
 // A question typed on the start or profile screen goes straight into the chat on home.
 function askFromOutside(text) {
-  chatRestored = true;
   save('onboarded', true);
   filter = null;
   show('home');
@@ -198,7 +197,6 @@ function answer(key, value) {
 }
 
 function finishProfile() {
-  chatRestored = true;
   save('onboarded', true);
   const firstTime = chatLog.length === 0;
   filter = null;
@@ -357,6 +355,11 @@ export function renderList(items) {
     status.className = 'row-status';
     status.textContent = a.status;
     row.append(icon, body, status);
+    row.setAttribute('role', 'button');
+    row.tabIndex = 0;
+    row.setAttribute('aria-label', `Open ${a.fileName}`);
+    row.addEventListener('click', () => openAgreement(a.id));
+    row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAgreement(a.id); } });
     list.appendChild(row);
   });
 }
@@ -404,32 +407,59 @@ function scrollDown() {
   requestAnimationFrame(() => { s.scrollTop = s.scrollHeight; });
 }
 
+// Each message remembers which agreement it was about, so past conversations
+// can be shown on that agreement's page.
 export function agentSay(text, choices, kind) {
   bubble('agent', text);
-  chatLog.push({ role: 'agent', text, kind });
+  chatLog.push({ role: 'agent', text, kind, about: current ? current.id : null });
   save('chat', chatLog);
   if (choices && choices.length) chipsRow(choices);
 }
 
 export function userSay(text) {
   bubble('user', text);
-  chatLog.push({ role: 'user', text });
+  chatLog.push({ role: 'user', text, about: current ? current.id : null });
   save('chat', chatLog);
 }
 
-function restoreChat() {
-  chatLog.forEach((m) => {
-    if (m.kind === 'contacts') { contactsCard(m.contacts, m.source, { log: false }); return; }
-    if (m.kind === 'dates') { datesCard(m.items, { log: false }); return; }
-    bubble(m.role, m.text);
-    if (m.kind === 'upload-prompt') chipsRow([emailChip()]);
-  });
-  if (!chatLog.length) uploadPrompt();
+// Save the last conversation and start a clean chat.
+function archiveSession() {
+  if (chatLog.length) {
+    const sessions = load('sessions', []);
+    sessions.push({ date: todayISO(), messages: chatLog });
+    save('sessions', sessions.slice(-30));
+  }
+  chatLog = [];
+  save('chat', chatLog);
+  chatEl.innerHTML = '';
+  current = null;
+  save('current', null);
+  circleUploadIcons(false);
+}
+
+function welcomeBack() {
+  const agreements = load('agreements', []);
+  if (!agreements.length) { uploadPrompt(); return; }
+  const pending = agreements.filter((a) => a.pendingAction);
+  const n = agreements.length;
+  let text = `Welcome back 👋 You have ${n} agreement${n === 1 ? '' : 's'} on file.`;
+  if (pending.length) text += ` ⚑ ${pending.length} action${pending.length === 1 ? '' : 's'} pending.`;
+  text += ' Tap one above to open it, or upload another with ＋ or 📷.';
+  agentSay(text);
 }
 
 /* Contacts found in an agreement: save to phone contacts for real, email contacts coming soon. */
-function contactsCard(contacts, source, { log = true } = {}) {
-  if (!contacts || !contacts.length) return;
+function contactsCard(contacts, source) {
+  const card = buildContactsCard(contacts, source);
+  if (!card) return;
+  chatEl.appendChild(card);
+  scrollDown();
+  chatLog.push({ role: 'agent', kind: 'contacts', contacts, source, about: current ? current.id : null });
+  save('chat', chatLog);
+}
+
+function buildContactsCard(contacts, source) {
+  if (!contacts || !contacts.length) return null;
   const card = document.createElement('div');
   card.className = 'card card-contacts';
   const h = document.createElement('p');
@@ -472,13 +502,20 @@ function contactsCard(contacts, source, { log = true } = {}) {
   note.className = 'card-note';
   note.textContent = `Each card notes it came from ${source}.`;
   card.append(note);
-  chatEl.appendChild(card);
-  scrollDown();
-  if (log) { chatLog.push({ role: 'agent', kind: 'contacts', contacts, source }); save('chat', chatLog); }
+  return card;
 }
 
-function datesCard(items, { log = true } = {}) {
-  if (!items || !items.length) return;
+function datesCard(items) {
+  const card = buildDatesCard(items);
+  if (!card) return;
+  chatEl.appendChild(card);
+  scrollDown();
+  chatLog.push({ role: 'agent', kind: 'dates', items, about: current ? current.id : null });
+  save('chat', chatLog);
+}
+
+function buildDatesCard(items) {
+  if (!items || !items.length) return null;
   const card = document.createElement('div');
   card.className = 'card card-dates';
   const h = document.createElement('p');
@@ -494,9 +531,7 @@ function datesCard(items, { log = true } = {}) {
     ul.append(li);
   });
   card.append(ul);
-  chatEl.appendChild(card);
-  scrollDown();
-  if (log) { chatLog.push({ role: 'agent', kind: 'dates', items }); save('chat', chatLog); }
+  return card;
 }
 
 function prettyDate(s) {
@@ -544,12 +579,22 @@ async function readAgreement(file) {
   userSay(`📎 ${file.name || 'Photo'}`);
   const prepared = await prepareFile(file);
   if (prepared.error) { agentSay(prepared.error); return; }
+  // Same exact file as one already stored? Offer to review it instead of reading it again.
+  const existing = prepared.hash && load('agreements', []).find((a) => a.hash === prepared.hash);
+  if (existing) {
+    agentSay(`This was previously uploaded and is already stored as ${existing.fileName}. Would you like to review this agreement?`, [
+      { label: 'Yes, review it', onClick: () => reviewAgreement(existing.id) },
+      { label: 'Not now', onClick: () => agentSay('No problem 👍 It\'s safe in your agreements.') },
+    ]);
+    return;
+  }
   await sendForReading([prepared]);
 }
 
 async function sendForReading(files) {
   const loader = loaderBubble('Reading your agreement… 📄');
-  const result = await askHelper({ mode: 'read', files, today: todayISO(), profile: load('profile', null) });
+  // The fingerprint stays on the phone; only the file itself goes to the helper.
+  const result = await askHelper({ mode: 'read', files: files.map(({ hash, ...f }) => f), today: todayISO(), profile: load('profile', null) });
   loader.remove();
   if (result.error) {
     agentSay(result.slow ? 'This is taking longer than usual. Try again?' : result.error, [
@@ -557,7 +602,7 @@ async function sendForReading(files) {
     ]);
     return;
   }
-  handleReadReply(result.reply, files[0].name);
+  handleReadReply(result.reply, files[0].name, files.length === 1 ? files[0].hash : null);
 }
 
 function slug(text, words = 2) {
@@ -578,7 +623,7 @@ function statusFor(r) {
   return 'Signed';
 }
 
-function handleReadReply(r, sourceName) {
+function handleReadReply(r, sourceName, hash = null) {
   if (r.readable === false || r.is_agreement === false) {
     agentSay(r.message);
     return;
@@ -595,6 +640,7 @@ function handleReadReply(r, sourceName) {
     status: statusFor(r),
     pendingAction: null,
     facts: r,
+    hash,
     addedAt: todayISO(),
   };
   if (r.action === 'store_or_review') {
@@ -614,10 +660,140 @@ function handleReadReply(r, sourceName) {
   current = { id: agreement.id, awaiting: r.action };
   save('current', current);
   renderHome();
+  // the upload bubble belongs to this agreement's conversation too
+  for (let i = chatLog.length - 1; i >= 0; i--) { if (chatLog[i].role === 'user') { chatLog[i].about = agreement.id; break; } }
   agentSay(`Filed as ${fileName} 🗂️`);
   contactsCard(r.contacts, fileName);
   agentSay(r.message);
 }
+/* ---------- One agreement's page ---------- */
+function getAgreement(id) { return load('agreements', []).find((a) => a.id === id) || null; }
+
+function openAgreement(id) {
+  save('openAgreement', id);
+  renderAgreement(id);
+  show('agreement');
+}
+
+// Go back to the chat and pick the conversation up about this agreement.
+function reviewAgreement(id) {
+  const a = getAgreement(id);
+  if (!a) return;
+  current = { id: a.id, awaiting: a.facts && a.facts.action };
+  save('current', current);
+  filter = null;
+  if (document.getElementById('screen-home').hidden) show('home');
+  agentSay(`Let's look at ${a.fileName} 📄`);
+  if (a.facts && a.facts.action === 'ask_renewal' && a.facts.message) agentSay(a.facts.message.replace(/^\[Practice reply\]\s*/, ''));
+  else agentSay('What would you like to know about it?');
+}
+
+function detailRow(label, value) {
+  if (!value) return null;
+  const row = document.createElement('div');
+  row.className = 'detail-row';
+  const l = document.createElement('dt'); l.textContent = label;
+  const v = document.createElement('dd'); v.textContent = value;
+  row.append(l, v);
+  return row;
+}
+
+function renderAgreement(id) {
+  const a = getAgreement(id);
+  const box = document.getElementById('agreement-detail');
+  box.innerHTML = '';
+  if (!a) { box.textContent = 'This agreement is no longer here.'; return; }
+  const f = a.facts || {};
+
+  const head = document.createElement('div');
+  head.className = 'detail-head';
+  const icon = document.createElement('span'); icon.className = 'row-icon'; icon.textContent = CATEGORY_ICON[a.category] || '📄';
+  const titles = document.createElement('div'); titles.className = 'row-body';
+  const h = document.createElement('h1'); h.className = 'detail-title'; h.textContent = a.fileName;
+  const sub = document.createElement('p'); sub.className = 'row-sub'; sub.textContent = [a.typeLabel, a.party].filter(Boolean).join(' · ');
+  titles.append(h, sub);
+  const st = document.createElement('span'); st.className = 'row-status'; st.textContent = a.status;
+  head.append(icon, titles, st);
+  box.append(head);
+
+  if (a.pendingAction) {
+    const act = document.createElement('p'); act.className = 'row-action'; act.textContent = `⚑ Action pending: ${a.pendingAction}`;
+    box.append(act);
+  }
+  if (f.summary) { const p = document.createElement('p'); p.className = 'detail-summary'; p.textContent = f.summary; box.append(p); }
+
+  const dl = document.createElement('dl');
+  dl.className = 'card detail-facts';
+  const term = f.term_start || f.term_end ? `${prettyDate(f.term_start) || '?'} → ${prettyDate(f.term_end) || '?'}${f.term_type ? ` (${f.term_type})` : ''}` : null;
+  [
+    detailRow('With', [f.party_name, f.party_role && `(${f.party_role})`].filter(Boolean).join(' ')),
+    detailRow('For', f.user_name),
+    detailRow('Term', term),
+    detailRow('Rent', f.rent_amount),
+    detailRow('Property', f.rental_address),
+    detailRow(`${f.party_role || 'Other party'} address`, f.other_party_address || (f.type === 'residential_tenancy' ? 'Not listed in the agreement' : null)),
+    detailRow('Agreement no.', f.lease_identifiers),
+    detailRow('Signed', f.signed === true ? 'Yes' : f.signed === false ? 'No' : null),
+    detailRow('Category', (CATEGORIES.find((c) => c.id === a.category) || {}).label),
+    detailRow('Added', prettyDate(a.addedAt)),
+  ].filter(Boolean).forEach((r) => dl.append(r));
+  box.append(dl);
+
+  const dates = buildDatesCard(f.key_dates_and_actions); if (dates) box.append(dates);
+  const contacts = buildContactsCard(f.contacts, a.fileName); if (contacts) box.append(contacts);
+
+  // Past conversation about this agreement (earlier sessions + this one).
+  const past = [...load('sessions', []).flatMap((s) => s.messages), ...chatLog]
+    .filter((m) => m.about === a.id && m.text && !m.kind);
+  const conv = document.createElement('div');
+  conv.className = 'card detail-convo';
+  const ct = document.createElement('p'); ct.className = 'card-title'; ct.textContent = '💬 Conversation about this agreement';
+  conv.append(ct);
+  if (!past.length) {
+    const none = document.createElement('p'); none.className = 'card-note'; none.textContent = 'No conversation yet.';
+    conv.append(none);
+  } else {
+    past.forEach((m) => {
+      const line = document.createElement('p');
+      line.className = `convo-line convo-${m.role}`;
+      const who = document.createElement('strong'); who.textContent = m.role === 'user' ? 'You' : 'Fine Print';
+      line.append(who, ` ${m.text.replace(/^\[Practice reply\]\s*/, '')}`);
+      conv.append(line);
+    });
+  }
+  box.append(conv);
+
+  const actions = document.createElement('div');
+  actions.className = 'detail-actions';
+  const ask = document.createElement('button');
+  ask.type = 'button'; ask.className = 'btn btn-primary'; ask.textContent = 'Ask about this agreement';
+  ask.addEventListener('click', () => reviewAgreement(a.id));
+  const del = document.createElement('button');
+  del.type = 'button'; del.className = 'btn btn-danger-quiet'; del.textContent = 'Delete agreement';
+  const confirmBox = document.createElement('div');
+  confirmBox.className = 'confirm-delete'; confirmBox.hidden = true;
+  const msg = document.createElement('p'); msg.textContent = 'Delete this agreement and its notes from this phone? This can\'t be undone.';
+  const yes = document.createElement('button'); yes.type = 'button'; yes.className = 'btn btn-danger'; yes.textContent = 'Delete';
+  const no = document.createElement('button'); no.type = 'button'; no.className = 'btn btn-quiet'; no.textContent = 'Cancel';
+  yes.addEventListener('click', () => deleteAgreement(a.id));
+  no.addEventListener('click', () => { confirmBox.hidden = true; del.hidden = false; });
+  del.addEventListener('click', () => { confirmBox.hidden = false; del.hidden = true; });
+  const row = document.createElement('div'); row.className = 'confirm-buttons'; row.append(yes, no);
+  confirmBox.append(msg, row);
+  actions.append(ask, del, confirmBox);
+  box.append(actions);
+}
+
+function deleteAgreement(id) {
+  const a = getAgreement(id);
+  save('agreements', load('agreements', []).filter((x) => x.id !== id));
+  if (current && current.id === id) { current = null; save('current', null); }
+  save('openAgreement', null);
+  filter = null;
+  show('home');
+  agentSay(`Deleted ${a ? a.fileName : 'that agreement'} 🗑️`);
+}
+
 document.getElementById('composer').addEventListener('submit', (e) => {
   e.preventDefault();
   const input = document.getElementById('composer-input');

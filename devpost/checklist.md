@@ -84,6 +84,7 @@ Activity mode:
 
 ## Revisions
 
+- Added `prd.md > Sessions, Agreement Pages and Duplicates` (Joann's slice 2 feedback): a fresh chat at each sign-in with the last one saved; tapping an agreement opens its page with details, contacts, past conversation, Ask and Delete (with in-app confirm); re-uploading the same file is recognized by fingerprint and offers a review instead of a new AI read.
 - The app now always opens on the sign-in screen (Joann: because it's contracts, you should always log in). Returning users go straight home after demo sign-in, and sign-out keeps saved data.
 - Added `prd.md > New Home Celebration` to slice 5: after storing a new-home mortgage, the agent offers a celebratory social post with Copy and Share (Joann's request).
 - Sample lease landlord changed at Joann's request: property manager **Quan Yuan** (her own name), **Drop Tine Properties Ltd.**, phone 587-000-0000, email demotest@droptine.example (a reserved, never-real domain), agreement no. DT-2025-0417. Tenant (who gives notice) is **Ballerina Cappucina**, who is also the mortgage borrower: she bought a home, so she's moving out of the rental. Mortgage lender changed to **Roulette Interest Rate Mortgage Corp.** (contact Squidward Tentacles, 1-800-000-0000, latepayments@rouletteinterest.example, no. RIR-77-30215). The file now files as `2025-08-15-drop-tine-residential-lease.pdf`.

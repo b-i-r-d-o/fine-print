@@ -105,6 +105,12 @@ PRD ref: `prd.md > Agreement Reading`, `prd.md > Rental Agreement: Move-Out Help
 ### Contacts
 `public/contacts.js`, `public/app.js`. Implements `prd.md > Contacts From Agreements`. The `read` reply includes `contacts[]` for the other party. Each gets a vCard 3.0 (`.vcf`) built on the phone with a `NOTE` naming the source agreement. Tapping "Save to phone contacts" downloads it, and the phone offers to add it. "Email contacts" is a coming-soon chip.
 
+### Sessions, Agreement Page and Duplicates
+`public/app.js`, `public/upload.js`, `public/index.html`. Implements `prd.md > Sessions, Agreement Pages and Duplicates`.
+- Every chat message carries `about` (the agreement id it concerns). On demo sign-in, the current chat is archived to `sessions[]` (last 30 kept) and a fresh chat starts with a welcome-back summary.
+- `screen-agreement` renders one agreement from `agreements[]`: facts, a dates card, a contacts card, and the conversation filtered by `about` across `sessions` and the current chat. Delete uses an in-app confirm box (no browser dialogs).
+- `prepareFile` computes a SHA-256 fingerprint of the original file with `crypto.subtle`. It's stored on the agreement as `hash` and never sent to the helper. A matching hash skips the AI read and offers a review.
+
 ### Notice Builder
 `public/notice.js`. Implements `prd.md > Rental Agreement: Move-Out Help`.
 - **End-date calculation (code, not AI):** from today and the rent day, it finds the end of the next complete tenancy month. Example: with rent due on the 1st and notice given Oct 20, the end date is Nov 30. If notice were given on the 1st itself, it would be the last day of that month. The rule is verified with a few test dates during the build.
@@ -139,6 +145,7 @@ Everything the app remembers is saved in the phone browser's **local storage**, 
 | `profile` (`for`, then `age` for Self, or `size`, `person1…N`, `setup` for Household; `goal`) | local storage | profile questions are answered | stays |
 | `agreements[]`: `{ id, fileName, type, category, party, status, pendingAction, facts, addedAt }` | local storage | after each "read," draft or store | stays |
 | `conversation` (messages for the current agreement) | in memory, plus local storage | each message | stays for the current agreement |
+| `sessions[]` (past chats, each message tagged with the agreement it was about) | local storage | at each sign-in | stays (last 30) |
 | `notice` (draft text, end date) | local storage | when drafted or edited | stays |
 | The uploaded file itself | in memory only, sent once to the helper | at upload | **not kept** (see What Was Simplified) |
 

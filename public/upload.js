@@ -35,16 +35,29 @@ export async function shrinkImage(file, maxSide = MAX_SIDE, quality = 0.82) {
   }
 }
 
-/** @returns {Promise<{name:string,type:string,data:string,size:number}|{error:string}>} */
+// A digital fingerprint of the exact file, so re-uploading the same file is recognized
+// without sending it to the AI again. Only computed on the phone; never leaves it.
+export async function fingerprint(file) {
+  try {
+    if (!crypto || !crypto.subtle) return null;
+    const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+    return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+  } catch {
+    return null;
+  }
+}
+
+/** @returns {Promise<{name:string,type:string,data:string,size:number,hash:string|null}|{error:string}>} */
 export async function prepareFile(file) {
   if (!file) return { error: 'No file chosen.' };
+  const hash = await fingerprint(file);
   if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
     if (file.size > MAX_BYTES * 0.74) return { error: 'This file is too large. Try a photo of the key pages.' };
-    return { name: file.name, type: 'application/pdf', data: await toBase64(file), size: file.size };
+    return { name: file.name, type: 'application/pdf', data: await toBase64(file), size: file.size, hash };
   }
   if (file.type.startsWith('image/')) {
     const { blob } = await shrinkImage(file);
-    return { name: file.name || 'photo.jpg', type: 'image/jpeg', data: await toBase64(blob), size: blob.size };
+    return { name: file.name || 'photo.jpg', type: 'image/jpeg', data: await toBase64(blob), size: blob.size, hash };
   }
   return { error: 'Fine Print can read PDFs and photos. Try one of those?' };
 }
