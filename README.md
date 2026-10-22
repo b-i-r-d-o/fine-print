@@ -4,7 +4,7 @@
 
 Fine Print is a phone app with an AI agent for your personal agreements: leases, mortgages, phone plans, warranties, anything with terms and conditions. It files your agreements, notices what's coming due, asks you plain questions about your situation, and helps you take the next small step, like drafting a move-out notice.
 
-Built for Devpost's **Build With AI: Basics** hackathon.
+Created by Joann Dobish for Devpost's **Build With AI: Basics** hackathon, October 2026.
 
 > **Not legal advice.** Fine Print is a comprehension and guidance tool. It explains public rules in plain language and drafts standard documents for you to review. It doesn't replace a lawyer.
 
