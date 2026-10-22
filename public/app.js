@@ -30,7 +30,9 @@ export const CATEGORIES = [
   { id: 'medical', label: 'Medical', hint: 'Health plans, care agreements' },
   { id: 'financial', label: 'Financial', hint: 'Insurance, investments' },
   { id: 'marriage', label: 'Marriage', hint: 'Prenups, separation agreements' },
-  { id: 'estate', label: 'Estate planning', hint: 'Wills, powers of attorney' },
+  { id: 'estate', label: 'Estate', hint: 'Wills, powers of attorney' },
+  { id: 'work', label: 'Work', hint: 'Employment, contractor agreements, NDAs' },
+  { id: 'other', label: 'Other', hint: 'Anything else you store' },
 ];
 let filter = null; // null = all agreements, or a category id
 
@@ -349,7 +351,7 @@ function renderHome() {
   document.getElementById('chat').hidden = !!cat;
 }
 
-const CATEGORY_ICON = { housing: '🏠', medical: '🩺', financial: '💼', marriage: '💍', estate: '📜' };
+const CATEGORY_ICON = { housing: '🏠', medical: '🩺', financial: '💰', marriage: '💍', estate: '📜', work: '🧰', other: '🗂️' };
 
 export function renderList(items) {
   const list = document.getElementById('agreement-list');
@@ -813,7 +815,7 @@ function offerToStoreOther(r, sourceName, hash) {
         sourceName,
         type: 'document',
         typeLabel: desc.charAt(0).toUpperCase() + desc.slice(1),
-        category: null, // not an agreement, so it isn't put in an agreement category
+        category: 'other', // not an agreement, so it's filed under Other
         party: null,
         status: 'Stored',
         pendingAction: null,

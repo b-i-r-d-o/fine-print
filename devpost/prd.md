@@ -83,7 +83,7 @@ Added during the build at Joann's request: "A person might right away have a con
 ### Side Menu
 Added during the build at Joann's request, to "make it seem more app-y."
 - [ ] Tapping the Fine Print logo (top left of home) slides in a side menu with **Home**, **Profile** (showing a profile summary) and **All agreements ▾**.
-- [ ] All agreements expands to **Housing, Medical, Financial, Marriage, Estate planning**, each with a count. Tapping one shows only those agreements, or "None yet in [category]."
+- [ ] All agreements expands to **Housing, Medical, Financial, Marriage, Estate, Work, Other**, each with a count. Tapping one shows only those agreements, or "None yet in [category]."
 - [ ] Each agreement gets one category when the AI reads it. Leases and mortgages go under Housing. Financial means insurance and investments (Joann's call).
 - [ ] Sign out (demo) lives in the side menu.
 

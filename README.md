@@ -11,7 +11,7 @@ Created by Joann Dobish for Devpost's **Build With AI: Basics** hackathon, Octob
 ## What it does
 
 - **Reads an uploaded agreement** (PDF or photo) and works out its type, the other party, key dates, whether it's signed, and the contacts in it.
-- **Files it** under a clean name (`date-party-purpose.pdf`) in categories: Housing, Medical, Financial, Marriage and Estate planning.
+- **Files it** under a clean name (`date-party-purpose.pdf`) in categories: Housing, Medical, Financial, Marriage, Estate, Work and Other.
 - **Asks you a plain question** about where you stand. For example: *"This fixed-term tenancy ended 2 months ago. Are you looking to renew with your landlord?"*
 - **Helps you act.** Say "No, I want to move out" and it explains Alberta's notice rule, asks about anything missing (like the landlord's address), and drafts an editable **Notice to End Tenancy** as a PDF. The end date and deliver-by date are calculated in code.
 - **Lists dates and actions** for a mortgage (payments, tax and insurance proof, renewal), and offers a **celebration post** for a new home, without your address, amounts or lender.

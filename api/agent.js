@@ -26,7 +26,7 @@ export function validRead(r) {
   if (!r || typeof r !== 'object' || typeof r.message !== 'string' || !r.message.trim()) return false;
   if (r.readable === false) return true;
   if (r.is_agreement === false) return true;
-  if (r.category && !CATEGORIES.includes(r.category)) r.category = 'housing';
+  if (!CATEGORIES.includes(r.category)) r.category = 'other';
   if (!Array.isArray(r.contacts)) r.contacts = [];
   if (!Array.isArray(r.key_dates_and_actions)) r.key_dates_and_actions = [];
   return typeof r.type === 'string' && typeof r.signed === 'boolean';

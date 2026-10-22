@@ -78,7 +78,7 @@ PRD ref: `prd.md > Screens and Layout`, `prd.md > Demo Sign-In`, `prd.md > Profi
 PRD ref: `prd.md > Theme Switching`.
 
 ### Side Menu
-`public/index.html`, `public/app.js`, `public/styles.css`. Implements `prd.md > Side Menu`. A drawer opened from the home logo, with Home, Profile (with summary), All agreements (expandable to the five categories with counts) and Sign out (demo). Choosing a category sets a filter on the home list and shows "None yet in [category]" when it's empty. Agreements carry a `category` (`housing`, `medical`, `financial`, `marriage`, `estate`) set by the AI's `read` reply.
+`public/index.html`, `public/app.js`, `public/styles.css`. Implements `prd.md > Side Menu`. A drawer opened from the home logo, with Home, Profile (with summary), All agreements (expandable to the five categories with counts) and Sign out (demo). Choosing a category sets a filter on the home list and shows "None yet in [category]" when it's empty. Agreements carry a `category` (`housing`, `medical`, `financial`, `marriage`, `estate`, `work`, `other`) set by the AI's `read` reply.
 
 ### Upload and Camera
 `public/upload.js`. The (+) button opens the phone's file picker for a PDF or image. The camera button uses the phone camera (`<input type="file" accept="image/*" capture="environment">`), repeated for "next page" until "done." Photos get resized to about 1600px wide and compressed so the whole upload stays under Vercel's request size limit. The email option is a "coming soon" tag.
@@ -97,7 +97,7 @@ PRD ref: `prd.md > Agreement Reading`, `prd.md > Rental Agreement: Move-Out Help
 - **The reply format.** Every reply is one JSON object:
   `{ "message": "...", "choices": ["Yes","No"] | null, "action": "none" | "offer_draft" | "ask_missing" | "store_prompt" | "retake_photo", "explains_rule": true | false, "facts": {...} | null }`
 - **The Alberta rule, word for word**, from the [Government of Alberta](https://www.alberta.ca/ending-a-tenancy.aspx). A fixed-term tenancy ends on its stated date. If both sides continue without renewing, it becomes periodic. To end a monthly periodic tenancy, the tenant gives one full tenancy month's written notice. The notice must include the rental address, the end date, and the signature of the person giving notice. Tenants don't need to give a reason.
-- **What to extract in `read`:** `is_agreement`, `readable`, `type`, `party_name`, `user_name`, `rental_address`, `other_party_address` (or null), `agreement_date`, `term_start`, `term_end`, `rent_day`, `lease_identifiers`, `signed`, `category` (housing / medical / financial / marriage / estate; leases and mortgages are housing, and financial means insurance and investments), `summary`, `key_dates_and_actions` (for the mortgage), and `first_question`.
+- **What to extract in `read`:** `is_agreement`, `readable`, `type`, `party_name`, `user_name`, `rental_address`, `other_party_address` (or null), `agreement_date`, `term_start`, `term_end`, `rent_day`, `lease_identifiers`, `signed`, `category` (housing / medical / financial / marriage / estate / work / other; leases and mortgages are housing, and financial means insurance and investments), `summary`, `key_dates_and_actions` (for the mortgage), and `first_question`.
 
 ### AI Connector
 `lib/ai.js`. This is the only file that knows which AI company is used. It sends `POST https://api.anthropic.com/v1/messages` and returns the text. Switching to Gemini later means rewriting just this file.
