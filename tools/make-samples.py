@@ -60,9 +60,9 @@ def lease():
     s.append(table([
         ("Landlord", "Drop Tine Properties Ltd."),
         ("Landlord's agent / property manager", "Quan Yuan, Property Manager"),
-        ("Landlord contact", "Phone: 587-000-0000 · Email: demotest@notrealemail.com"),
-        ("Tenant(s)", "Alex Morgan"),
-        ("Tenant contact", "Phone: 780-555-0199 · Email: alex.morgan@mail.example"),
+        ("Landlord contact", "Phone: 587-000-0000 · Email: demotest@droptine.example"),
+        ("Tenant(s)", "Ballerina Cappucina"),
+        ("Tenant contact", "Phone: 780-555-0199 · Email: ballerina.cappucina@mail.example"),
         ("Rental premises", "Unit 204, 10123 – 99 Avenue, Grande Prairie, Alberta T8V 0R5"),
         ("Parking", "One assigned stall, #17 (included)"),
     ]))
@@ -75,7 +75,7 @@ def lease():
         ]),
         ("Rent", [
             "Rent is <b>$1,450.00 per month</b>, payable in advance on the <b>first (1st) day of each month</b>.",
-            "Rent is payable by electronic transfer to demotest@notrealemail.com or by post-dated cheques delivered to the property manager.",
+            "Rent is payable by electronic transfer to demotest@droptine.example or by post-dated cheques delivered to the property manager.",
             "A late payment fee of $25.00 applies to rent received after the 3rd day of the month.",
         ]),
         ("Security Deposit", [
@@ -124,8 +124,8 @@ def lease():
     s.append(Paragraph("SIGNATURES", H2))
     sig = Table([
         [Paragraph("<b>Landlord</b> (by its agent)", P), Paragraph("<b>Tenant</b>", P)],
-        [Paragraph("Quan Yuan", SIG), Paragraph("Alex Morgan", SIG)],
-        [Paragraph("Quan Yuan, for Drop Tine Properties Ltd.", P), Paragraph("Alex Morgan", P)],
+        [Paragraph("Quan Yuan", SIG), Paragraph("Ballerina Cappucina", SIG)],
+        [Paragraph("Quan Yuan, for Drop Tine Properties Ltd.", P), Paragraph("Ballerina Cappucina", P)],
         [Paragraph("Date: August 15, 2025", P), Paragraph("Date: August 15, 2025", P)],
     ], colWidths=(3.35 * inch, 3.35 * inch))
     sig.setStyle(TableStyle([("LINEBELOW", (0, 1), (-1, 1), 0.6, colors.black), ("VALIGN", (0, 0), (-1, -1), "TOP")]))
@@ -153,7 +153,7 @@ def mortgage():
         ("Lender", "Aurora Hearth Mortgage Corp."),
         ("Lender contact", "Priya Raman, Mortgage Specialist · Phone: 1-800-555-0177 · Email: priya.raman@aurorahearth.example"),
         ("Lender address", "Suite 900, 4400 Gateway Boulevard NW, Edmonton, Alberta T6H 0A1"),
-        ("Borrower(s)", "Alex Morgan and Sam Morgan"),
+        ("Borrower(s)", "Ballerina Cappucina"),
         ("Mortgaged property", "4812 – 37 Street, Grande Prairie, Alberta T8W 1C4"),
         ("Principal amount", "$385,000.00"),
         ("Interest rate", "4.79% per year, fixed, compounded semi-annually, not in advance"),
@@ -194,11 +194,11 @@ def mortgage():
     s.append(Spacer(1, 10))
     s.append(Paragraph("SIGNATURES", H2))
     sig = Table([
-        [Paragraph("<b>Borrower</b>", P), Paragraph("<b>Borrower</b>", P), Paragraph("<b>Lender</b>", P)],
-        [Paragraph("Alex Morgan", SIG), Paragraph("Sam Morgan", SIG), Paragraph("Priya Raman", SIG)],
-        [Paragraph("Alex Morgan", P), Paragraph("Sam Morgan", P), Paragraph("Priya Raman, for Aurora Hearth Mortgage Corp.", P)],
-        [Paragraph("Date: October 8, 2025", P), Paragraph("Date: October 8, 2025", P), Paragraph("Date: October 8, 2025", P)],
-    ], colWidths=(2.23 * inch, 2.23 * inch, 2.24 * inch))
+        [Paragraph("<b>Borrower</b>", P), Paragraph("<b>Lender</b>", P)],
+        [Paragraph("Ballerina Cappucina", SIG), Paragraph("Priya Raman", SIG)],
+        [Paragraph("Ballerina Cappucina", P), Paragraph("Priya Raman, for Aurora Hearth Mortgage Corp.", P)],
+        [Paragraph("Date: October 8, 2025", P), Paragraph("Date: October 8, 2025", P)],
+    ], colWidths=(3.35 * inch, 3.35 * inch))
     sig.setStyle(TableStyle([("LINEBELOW", (0, 1), (-1, 1), 0.6, colors.black), ("VALIGN", (0, 0), (-1, -1), "TOP")]))
     s.append(sig)
     s.append(Spacer(1, 14))
