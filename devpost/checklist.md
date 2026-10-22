@@ -84,6 +84,7 @@ Activity mode:
 
 ## Revisions
 
+- Added "Privacy and AI data handling, including bring your own AI" to the future features (scope, PRD, spec simplifications, README). Joann pointed out the demo is a shell, and that real users need to connect their own AI or another option to keep their information confidential.
 - Learner checks happen on the live Vercel link, so each slice is committed and pushed after mechanical verification and before the learner check. Fixes from the check become follow-up commits, and the box is ticked once the check passes. This workspace can't reach Vercel, and the key never enters chat.
 - Slice 1 learner feedback: added phone back navigation, on-screen Back buttons, and a home menu (Edit profile, Sign out demo); reworked Heirloom into a dusky plum and wine theme; swapped the profile icon to 😘. Joann found she couldn't get back from home, and that Heirloom was too close to Linen.
 - Revised `prd.md > Profile Setup` with separate household questions (how many people, each person's age range 1–20/20–40/40–60/60+, individual profiles or kept together) and a chat box on every question. Added `prd.md > Side Menu`: the logo opens a drawer with Home, Profile, and All agreements split into Housing, Medical, Financial, Marriage and Estate planning. The menu replaces the ☰ button, and the AI will assign categories in slice 2. Joann's feedback: the household questions didn't fit, and the menu makes it feel more like an app.

@@ -8,6 +8,16 @@ Built for Devpost's **Build With AI: Basics** hackathon.
 
 > **Not legal advice.** Fine Print is a comprehension and guidance tool. It explains public rules in plain language and drafts standard documents for you to review. It doesn't replace a lawyer.
 
+## Privacy and your data
+
+This is a hackathon demo shell, shown with **fictional** sample documents. In the demo, an uploaded agreement is sent to one hosted AI (Claude) through a small server helper to be read. Nothing is stored on the server, and your agreements list stays on your phone.
+
+A real version needs stronger data handling before anyone trusts it with their own contracts:
+- **Bring your own AI:** connect your own API key, a private or business AI account, or a model that runs on your own device, so your agreements stay confidential.
+- Control over where documents are stored, encryption, delete-anytime, a clear no-training-on-your-data policy, and retention settings.
+
+The app is built so that only one file (`lib/ai.js`) knows which AI is used, which keeps that option open.
+
 ## Status
 
 🛠️ Being built in slices. See [`devpost/checklist.md`](devpost/checklist.md) for progress, and [`devpost/`](devpost/) for the scope, product requirements and technical plan.

@@ -199,6 +199,7 @@ fine-print/
 
 ## What Was Simplified and Why
 - **Demo sign-in buttons** instead of real Google/Facebook accounts, because accounts don't prove the idea (Joann's call). The full version would need an identity service and secure sessions.
+- **One hosted AI, fictional documents** instead of privacy controls and bring-your-own-AI. This is a demo shell. Because only `lib/ai.js` knows which AI is used, a later version could let each user plug in their own key, a private business model, or a model on their own device, without rebuilding the app.
 - **Saved on the phone** instead of a cloud database, because there's a single user and a single demo. The full version would need accounts and a database to sync across devices and household members.
 - **Agreements are filed by name and facts, not by keeping the original file.** Phone browser storage is too small for PDFs. The home list shows the clean file name, status and facts. The full version would keep originals in cloud storage (Dropbox/Google Drive, already on the Later list).
 - **The document is read once, then only the facts are sent on.** Follow-up chat stays fast and cheap. The full version might re-read the document for clause-level questions.

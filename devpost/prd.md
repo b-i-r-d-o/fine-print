@@ -146,6 +146,7 @@ Theme switching, demo sign-in, profile setup, agreement upload (file or page-by-
 
 ## Submission Notes
 - In the Devpost write-up and README, state that Fine Print is a comprehension and guidance tool, not legal advice.
+- In the write-up and README, be upfront that this is a demo shell: the demo sends fictional documents to one hosted AI, and real use would add privacy controls and bring-your-own-AI options (see Possible Later Enhancements).
 - In the Devpost write-up, add a line on what the profile questions will do later (household management, age-tuned explanations, the Learn path), so judges see they're intentional and not unfinished. Joann: "I feel like I'm expecting it to do too much right now for a demo."
 
 ## Deferred From the POC
@@ -156,6 +157,7 @@ Theme switching, demo sign-in, profile setup, agreement upload (file or page-by-
 - **Preloaded demo agreements.** The video shows blank first use.
 
 ## Possible Later Enhancements
+- **Privacy and AI data handling, including bring your own AI.** Users choose which AI reads their agreements to keep them confidential: their own API key, a private or business AI account, or a model running on their own device or computer. Also: control over where documents are stored, encryption, delete-anytime, a clear no-training-on-your-data policy, and retention settings. The demo uses one hosted AI on fictional documents; this is what a real version needs before people trust it with their own contracts (Joann's call).
 - **A refined in-chat guidance reminder,** for example based on how often it's shown or whether the user has acknowledged it.
 - **Household accounts:** one custodian managing agreements for several people, shareable with other users.
 - **Age range:** tunes which agreements to expect and how much to explain, without being presumptuous.

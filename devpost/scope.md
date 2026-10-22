@@ -61,6 +61,7 @@ The demo, in Joann's sequence:
 
 ## Later
 _Any of these may appear in the app as a visible "coming soon" control, per the guiding rule._
+- **Privacy and AI data handling, including bring your own AI.** Users choose which AI reads their agreements to keep them confidential: their own API key, a private or business AI account, or a model running on their own device or computer. Also: control over where documents are stored, encryption, delete-anytime, a clear no-training-on-your-data policy, and retention settings. The demo uses one hosted AI on fictional documents; this is what a real version needs before people trust it with their own contracts (Joann's call).
 - Connecting email to find agreements automatically; per-user forwarding address.
 - Full pre-signing review: 5 highlights tied to your profile, relevance taps, "are you okay with this?" questions, issuer summary.
 - "Learn about contract topics" path.
