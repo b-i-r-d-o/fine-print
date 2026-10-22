@@ -500,6 +500,7 @@ function renderLog(messages) {
   messages.forEach((m) => {
     if (m.kind === 'contacts') { const c = buildContactsCard(m.contacts, m.source); if (c) chatEl.appendChild(c); return; }
     if (m.kind === 'dates') { const c = buildDatesCard(m.items); if (c) chatEl.appendChild(c); return; }
+    if (m.kind === 'post') { const p = document.createElement('div'); p.className = 'card post-card'; const t = document.createElement('p'); t.className = 'post-text'; t.textContent = m.post; p.append(t); chatEl.appendChild(p); return; }
     if (m.kind === 'notice') { const a = getAgreement(m.about); if (a && a.notice) chatEl.appendChild(buildNoticeCard(a)); return; }
     if (!m.text) return;
     bubble(m.role, m.text);
@@ -754,10 +755,8 @@ function statusFor(r) {
 }
 
 function handleReadReply(r, sourceName, hash = null) {
-  if (r.readable === false || r.is_agreement === false) {
-    agentSay(r.message);
-    return;
-  }
+  if (r.readable === false) { agentSay(r.message); return; }
+  if (r.is_agreement === false) { offerToStoreOther(r, sourceName, hash); return; }
   const fileName = makeFileName(r);
   const same = findSameAgreement(fileName, r);
   if (same) {
@@ -790,8 +789,9 @@ function handleReadReply(r, sourceName, hash = null) {
         if (findSameAgreement(fileName, r)) { agentSay(`${fileName} is already stored 🗂️`); return; }
         storeAgreement(agreement, r);
         agentSay(`Stored as ${fileName} 🗂️ You'll find it under ${(CATEGORIES.find((c) => c.id === agreement.category) || { label: 'All agreements' }).label}.`);
+        if (r.is_new_home_purchase) celebrate(r);
       } },
-      { label: 'Review', soon: true, onClick: () => agentSay('A full review is coming soon 🔍.') },
+      { label: 'Review', soon: true, keep: true, onClick: () => agentSay('A full review is coming soon 🔍. You can still tap Store.') },
     ]);
     return;
   }
@@ -800,6 +800,77 @@ function handleReadReply(r, sourceName, hash = null) {
   contactsCard(r.contacts, fileName);
   agentSay(r.message);
 }
+// Not an agreement: say what it looks like and offer to store it. No review, no rejection.
+function offerToStoreOther(r, sourceName, hash) {
+  const desc = (r.description || 'a document').trim();
+  agentSay(r.message || `The document you've uploaded looks like ${desc}. Would you like to continue to store this document?`, [
+    { label: 'Yes, store it', onClick: () => {
+      userSay('Yes, store it');
+      const ext = /\.(jpe?g|png|heic|webp)$/i.test(sourceName || '') ? 'jpg' : 'pdf';
+      const doc = {
+        id: `a${Date.now()}`,
+        fileName: `${todayISO()}-${slug(desc, 4) || 'document'}.${ext}`,
+        sourceName,
+        type: 'document',
+        typeLabel: desc.charAt(0).toUpperCase() + desc.slice(1),
+        category: null, // not an agreement, so it isn't put in an agreement category
+        party: null,
+        status: 'Stored',
+        pendingAction: null,
+        facts: { summary: `Stored document: ${desc}.`, type: 'document' },
+        hash,
+        addedAt: todayISO(),
+      };
+      storeAgreement(doc, { action: 'none' });
+      agentSay(`Stored as ${doc.fileName} 🗂️`);
+    } },
+    { label: 'No thanks', onClick: () => { userSay('No thanks'); agentSay("No problem, I won't keep it 👍"); } },
+  ]);
+}
+
+// New-home celebration: offered only for a new purchase, with a post that never
+// includes the address, amount or lender.
+const SAFE_POST = "🏡🔑 We got the keys! After lots of paperwork (and a little happy-crying), I'm officially a homeowner. Stay tuned for housewarming party details 🥂✨ #NewHome #HomeSweetHome";
+
+function safePost(r) {
+  const post = String(r.celebration_post || '').trim();
+  if (!post) return SAFE_POST;
+  const lower = post.toLowerCase();
+  const leaks = [r.rental_address, r.party_name, r.lease_identifiers, r.other_party_address]
+    .filter(Boolean).some((v) => String(v).split(/[,\s]+/).filter((w) => w.length > 4 && /\d|[A-Z]/.test(w)).some((w) => lower.includes(w.toLowerCase())));
+  return leaks || /\$\s?\d|\d{3,}/.test(post) ? SAFE_POST : post;
+}
+
+function celebrate(r) {
+  const post = safePost(r);
+  agentSay("Congratulations 🎉 Good news like this is worth sharing! I wrote a social media announcement for you, if you'd like to share it.");
+  const card = document.createElement('div');
+  card.className = 'card post-card';
+  const t = document.createElement('p'); t.className = 'card-title'; t.textContent = '📣 Your announcement';
+  const body = document.createElement('p'); body.className = 'post-text'; body.textContent = post;
+  const actions = document.createElement('div'); actions.className = 'contact-actions';
+  const copy = document.createElement('button'); copy.type = 'button'; copy.className = 'chip'; copy.textContent = 'Copy';
+  copy.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(post); copy.textContent = 'Copied ✓'; } catch {
+      const range = document.createRange(); range.selectNodeContents(body);
+      const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      copy.textContent = 'Selected, tap Copy';
+    }
+  });
+  actions.append(copy);
+  if (navigator.share) {
+    const share = document.createElement('button'); share.type = 'button'; share.className = 'chip'; share.textContent = 'Share';
+    share.addEventListener('click', () => { navigator.share({ text: post }).catch(() => {}); });
+    actions.append(share);
+  }
+  const note = document.createElement('p'); note.className = 'card-note'; note.textContent = 'No address, amounts or lender included.';
+  card.append(t, body, actions, note);
+  chatEl.appendChild(card);
+  scrollDown();
+  chatLog.push({ role: 'agent', kind: 'post', post, about: current ? current.id : null });
+  save('chat', chatLog);
+}
+
 /* ---------- One agreement's page ---------- */
 function getAgreement(id) { return load('agreements', []).find((a) => a.id === id) || null; }
 

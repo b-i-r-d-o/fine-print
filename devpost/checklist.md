@@ -51,7 +51,7 @@ Build mode: learn
   Learner check: Print or display a couple of pages of the sample lease. Photograph them with the camera button, tap done, and see if it reads them. Then take a deliberately blurry photo. Do you get the retake prompt?
   Commit: `Add multi-page camera capture with blurry-photo retake`
 
-- [ ] **5. Upload the mortgage, store it, and handle a non-agreement**
+- [x] **5. Upload the mortgage, store it, and handle a non-agreement**
   Becomes usable: Uploading the sample mortgage gets "This looks like a signed mortgage agreement. I've noted these dates and actions…" with Store and Review buttons. Store files it on the home list, and Review shows "coming soon." Uploading something that isn't an agreement gets "looks like [summary], would you like to continue to store this document?" The coming-soon controls (email, Learn, mortgage Review) explain themselves, and the README is complete, including "Not legal advice."
   Why now: It shows the Swiss Army knife breadth on top of a finished kernel, and it reuses the `read` path, so it's lower risk.
   PRD ref: `prd.md > The Core Journey` (steps 15–16), `prd.md > Mortgage Agreement: Dates and Actions`, `prd.md > Agreement Upload` (not an agreement), `prd.md > States and Boundaries`, `prd.md > Guidance, Not Legal Advice`
@@ -84,6 +84,7 @@ Activity mode:
 
 ## Revisions
 
+- Slice 5 built **before slice 4** at Joann's request (she wasn't free to take photos), so the order changed with no dependency impact. Slice 5 also fixed tapping Review (coming soon) greying out Store; Store stays available. The celebration post is AI-written but checked in code, and falls back to a safe post if it contains an address, amount, lender or long numbers. Joann's phone check of the mortgage, celebration and non-agreement flow is still to do and will be covered in the final review.
 - Slice 3 learner feedback: past conversations can be **continued**. The agreement page shows conversations as collapsible sections with Continue this chat, Start new chat at the bottom, and Delete moved to the top. Testing caught the Delete row covering the Back button, which is fixed. The agreement number on the notice is now just the number (the AI had added parking and deposit details); the prompt and the notice builder were both tightened.
 - Quick wins added before slice 3's phone check (Joann's request): About section with credit, an on-purpose-omissions note and demo-agreement downloads on the sign-in page; a **Large Script** theme; 🔊 read aloud; a 🎤 button that says coming soon; a jurisdiction profile question plus jurisdiction-aware replies (and Alberta-only drafting); and **Write a simple agreement** in the side menu as coming soon. Future features updated (2FA, storage choices, voice input, agreement writer, full jurisdiction).
 - Slice 3: the notice **wording is a fixed template filled from the lease facts in code** (`public/notice.js`) instead of a separate AI `draft` request. The behaviour is the same for Joann (drafted notice, editable, PDF), but every legally required element and the end date are guaranteed, and it's one less AI call. The AI still does the understanding and explaining (`chat` mode, Haiku). Also added a **deliver-by date** (the day before the tenancy month starts, e.g. Oct 31 for a Nov 30 end), and jsPDF is bundled at `public/vendor/` instead of loaded from a CDN.

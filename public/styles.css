@@ -431,3 +431,7 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 .convo summary::after { content: "▾"; color: var(--muted); }
 .convo[open] summary::after { content: "▴"; }
 .convo-body { display: flex; flex-direction: column; gap: 8px; padding: 0 14px 14px; }
+
+/* Celebration post */
+.post-card { background: linear-gradient(135deg, var(--accent-soft), var(--surface) 60%); }
+.post-text { margin: 0; font-size: 1.02rem; line-height: 1.5; }
