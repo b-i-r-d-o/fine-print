@@ -143,15 +143,15 @@ def mortgage():
     path = "samples/sample-mortgage.pdf"
     doc = SimpleDocTemplate(path, pagesize=letter, leftMargin=0.75 * inch, rightMargin=0.75 * inch,
                             topMargin=0.7 * inch, bottomMargin=0.8 * inch,
-                            title="Mortgage Agreement - SAMPLE", author="Aurora Hearth Mortgage Corp. (fictional)")
+                            title="Mortgage Agreement - SAMPLE", author="Roulette Interest Rate Mortgage Corp. (fictional)")
     s = []
     s.append(Paragraph("MORTGAGE AGREEMENT", H1))
     s.append(Paragraph("Residential First Mortgage · Fixed Rate", ParagraphStyle("sub", parent=P, alignment=1, fontSize=11)))
-    s.append(Paragraph("Mortgage No. AHM-77-30215", ParagraphStyle("sub2", parent=SMALL, alignment=1)))
+    s.append(Paragraph("Mortgage No. RIR-77-30215", ParagraphStyle("sub2", parent=SMALL, alignment=1)))
     s.append(Spacer(1, 8))
     s.append(table([
-        ("Lender", "Aurora Hearth Mortgage Corp."),
-        ("Lender contact", "Priya Raman, Mortgage Specialist · Phone: 1-800-555-0177 · Email: priya.raman@aurorahearth.example"),
+        ("Lender", "Roulette Interest Rate Mortgage Corp."),
+        ("Lender contact", "Squidward Tentacles, Mortgage Specialist · Phone: 1-800-000-0000 · Email: latepayments@rouletteinterest.example"),
         ("Lender address", "Suite 900, 4400 Gateway Boulevard NW, Edmonton, Alberta T6H 0A1"),
         ("Borrower(s)", "Ballerina Cappucina"),
         ("Mortgaged property", "4812 – 37 Street, Grande Prairie, Alberta T8W 1C4"),
@@ -195,8 +195,8 @@ def mortgage():
     s.append(Paragraph("SIGNATURES", H2))
     sig = Table([
         [Paragraph("<b>Borrower</b>", P), Paragraph("<b>Lender</b>", P)],
-        [Paragraph("Ballerina Cappucina", SIG), Paragraph("Priya Raman", SIG)],
-        [Paragraph("Ballerina Cappucina", P), Paragraph("Priya Raman, for Aurora Hearth Mortgage Corp.", P)],
+        [Paragraph("Ballerina Cappucina", SIG), Paragraph("Squidward Tentacles", SIG)],
+        [Paragraph("Ballerina Cappucina", P), Paragraph("Squidward Tentacles, for Roulette Interest Rate Mortgage Corp.", P)],
         [Paragraph("Date: October 8, 2025", P), Paragraph("Date: October 8, 2025", P)],
     ], colWidths=(3.35 * inch, 3.35 * inch))
     sig.setStyle(TableStyle([("LINEBELOW", (0, 1), (-1, 1), 0.6, colors.black), ("VALIGN", (0, 0), (-1, -1), "TOP")]))
@@ -204,7 +204,7 @@ def mortgage():
     s.append(Spacer(1, 14))
     s.append(Paragraph("FICTIONAL SAMPLE DOCUMENT created for the Fine Print hackathon demo. All names, companies, addresses, "
                        "phone numbers and emails are invented. Not a legal form.", SMALL))
-    note = footer("Mortgage Agreement · AHM-77-30215 · FICTIONAL SAMPLE")
+    note = footer("Mortgage Agreement · RIR-77-30215 · FICTIONAL SAMPLE")
     doc.build(s, onFirstPage=note, onLaterPages=note)
     print("wrote", path)
 

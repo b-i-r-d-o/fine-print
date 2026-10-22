@@ -84,7 +84,7 @@ Activity mode:
 
 ## Revisions
 
-- Sample lease landlord changed at Joann's request: property manager **Quan Yuan** (her own name), **Drop Tine Properties Ltd.**, phone 587-000-0000, email demotest@droptine.example (a reserved, never-real domain), agreement no. DT-2025-0417. Tenant (who gives notice) is **Ballerina Cappucina**, who is also the mortgage borrower: she bought a home, so she's moving out of the rental. The file now files as `2025-08-15-drop-tine-residential-lease.pdf`.
+- Sample lease landlord changed at Joann's request: property manager **Quan Yuan** (her own name), **Drop Tine Properties Ltd.**, phone 587-000-0000, email demotest@droptine.example (a reserved, never-real domain), agreement no. DT-2025-0417. Tenant (who gives notice) is **Ballerina Cappucina**, who is also the mortgage borrower: she bought a home, so she's moving out of the rental. Mortgage lender changed to **Roulette Interest Rate Mortgage Corp.** (contact Squidward Tentacles, 1-800-000-0000, latepayments@rouletteinterest.example, no. RIR-77-30215). The file now files as `2025-08-15-drop-tine-residential-lease.pdf`.
 - Added a fourth theme, **Popstar** (bright pink, electric blue, lime green, Fredoka display font), for a young, fun, energetic appeal (Joann's request).
 - Added `prd.md > Contacts From Agreements` to slice 2. Contacts the agent finds can be saved to phone contacts for real (a vCard with a note naming the source agreement), with email contacts as coming soon. Joann wanted the contacts in agreements easy to keep.
 - Sample PDFs are also published at `/samples/…` on the live link, so they can be opened and saved on the phone for the demo.
