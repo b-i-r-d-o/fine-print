@@ -21,7 +21,7 @@ Build mode: learn
   Learner check: Open the Vercel link on your phone, add it to your home screen, and tap the icon. Switch themes, tap through sign-in and the profile questions, and land on the empty home. Close and reopen it: is your theme still there? Tell me how it looks and feels compared with what you pictured.
   Commit: `Add phone shell: welcome, themes, demo sign-in, profile, empty home`
 
-- [ ] **2. Upload the rental agreement and the agent reads it and asks about renewing**
+- [x] **2. Upload the rental agreement and the agent reads it and asks about renewing**
   Becomes usable: Uploading the fictional Alberta lease (file picker) gets a real AI read. The agent says it's a rental agreement, notes the fixed term ended about 2 months ago, and asks "Are you looking to renew with your landlord?" The agreement appears on the home list under a clean `date-party-purpose.pdf` name with its status.
   Why now: This is the kernel and the biggest technical risk (a real document through the helper to Claude and back as structured data). Proving it early means any surprise with the AI, the PDF format or Vercel limits shows up while there's time to adjust.
   PRD ref: `prd.md > The Core Journey` (steps 7–8), `prd.md > Agreement Upload`, `prd.md > Agreement Reading`, `prd.md > Home List`
@@ -63,7 +63,7 @@ Build mode: learn
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 2 (first real AI read on her phone), where feedback can still shape the notice and remaining slices
+- [x] Early usable behavior explored — after slice 2 (first real AI read on her phone), where feedback can still shape the notice and remaining slices
 - [ ] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
@@ -84,6 +84,7 @@ Activity mode:
 
 ## Revisions
 
+- Slice 2 learner check (Joann's phone, real AI): the lease and mortgage were both read correctly, including a derived renewal-offer deadline. Feedback fixed: **Store** for the mortgage now works (pulled forward from slice 5, so it shows under Housing), and repeats are also caught after reading by date + party + agreement number. That covers photos and agreements stored before fingerprints existed, and the fingerprint is then remembered.
 - Added `prd.md > Sessions, Agreement Pages and Duplicates` (Joann's slice 2 feedback): a fresh chat at each sign-in with the last one saved; tapping an agreement opens its page with details, contacts, past conversation, Ask and Delete (with in-app confirm); re-uploading the same file is recognized by fingerprint and offers a review instead of a new AI read.
 - The app now always opens on the sign-in screen (Joann: because it's contracts, you should always log in). Returning users go straight home after demo sign-in, and sign-out keeps saved data.
 - Added `prd.md > New Home Celebration` to slice 5: after storing a new-home mortgage, the agent offers a celebratory social post with Copy and Share (Joann's request).

@@ -581,14 +581,34 @@ async function readAgreement(file) {
   if (prepared.error) { agentSay(prepared.error); return; }
   // Same exact file as one already stored? Offer to review it instead of reading it again.
   const existing = prepared.hash && load('agreements', []).find((a) => a.hash === prepared.hash);
-  if (existing) {
-    agentSay(`This was previously uploaded and is already stored as ${existing.fileName}. Would you like to review this agreement?`, [
-      { label: 'Yes, review it', onClick: () => reviewAgreement(existing.id) },
-      { label: 'Not now', onClick: () => agentSay('No problem 👍 It\'s safe in your agreements.') },
-    ]);
-    return;
-  }
+  if (existing) { alreadyStored(existing); return; }
   await sendForReading([prepared]);
+}
+
+function alreadyStored(existing) {
+  agentSay(`This was previously uploaded and is already stored as ${existing.fileName}. Would you like to review this agreement?`, [
+    { label: 'Yes, review it', onClick: () => reviewAgreement(existing.id) },
+    { label: 'Not now', onClick: () => agentSay('No problem 👍 It\'s safe in your agreements.') },
+  ]);
+}
+
+// Second check, after reading: same agreement date, other party and agreement number
+// as one already stored. Catches photos and files uploaded before fingerprints existed.
+function findSameAgreement(fileName, r) {
+  const norm = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  return load('agreements', []).find((a) => a.fileName === fileName &&
+    norm(a.facts && a.facts.lease_identifiers) === norm(r.lease_identifiers)) || null;
+}
+
+function storeAgreement(agreement, r) {
+  const agreements = load('agreements', []);
+  agreements.push(agreement);
+  save('agreements', agreements);
+  current = { id: agreement.id, awaiting: r.action };
+  save('current', current);
+  renderHome();
+  // the upload bubble belongs to this agreement's conversation too
+  for (let i = chatLog.length - 1; i >= 0; i--) { if (chatLog[i].role === 'user') { chatLog[i].about = agreement.id; break; } }
 }
 
 async function sendForReading(files) {
@@ -629,6 +649,14 @@ function handleReadReply(r, sourceName, hash = null) {
     return;
   }
   const fileName = makeFileName(r);
+  const same = findSameAgreement(fileName, r);
+  if (same) {
+    if (hash && !same.hash) { // remember this file's fingerprint for next time
+      save('agreements', load('agreements', []).map((a) => (a.id === same.id ? { ...a, hash } : a)));
+    }
+    alreadyStored(same);
+    return;
+  }
   const agreement = {
     id: `a${Date.now()}`,
     fileName,
@@ -644,24 +672,20 @@ function handleReadReply(r, sourceName, hash = null) {
     addedAt: todayISO(),
   };
   if (r.action === 'store_or_review') {
-    // Store / Review choice is completed in a later build step (slice 5).
     agentSay(r.message);
     datesCard(r.key_dates_and_actions);
     contactsCard(r.contacts, fileName);
     chipsRow([
-      { label: 'Store', onClick: () => agentSay('Storing arrives in an upcoming build step 🛠️.') },
+      { label: 'Store', onClick: () => {
+        if (findSameAgreement(fileName, r)) { agentSay(`${fileName} is already stored 🗂️`); return; }
+        storeAgreement(agreement, r);
+        agentSay(`Stored as ${fileName} 🗂️ You'll find it under ${(CATEGORIES.find((c) => c.id === agreement.category) || { label: 'All agreements' }).label}.`);
+      } },
       { label: 'Review', soon: true, onClick: () => agentSay('A full review is coming soon 🔍.') },
     ]);
     return;
   }
-  const agreements = load('agreements', []);
-  agreements.push(agreement);
-  save('agreements', agreements);
-  current = { id: agreement.id, awaiting: r.action };
-  save('current', current);
-  renderHome();
-  // the upload bubble belongs to this agreement's conversation too
-  for (let i = chatLog.length - 1; i >= 0; i--) { if (chatLog[i].role === 'user') { chatLog[i].about = agreement.id; break; } }
+  storeAgreement(agreement, r);
   agentSay(`Filed as ${fileName} 🗂️`);
   contactsCard(r.contacts, fileName);
   agentSay(r.message);

@@ -139,6 +139,7 @@ Added during the build at Joann's request.
 - [ ] **Agreement page.** Tapping an agreement on the home list opens its page: name, type · party, status, summary, key details (parties, term, rent, property, other party's address or "Not listed in the agreement", agreement number, signed, category, date added), dates and actions, contacts (with Save to phone contacts), and the past conversation about it.
 - [ ] **Ask about this agreement** returns to the chat and picks the conversation back up.
 - [ ] **Delete agreement** asks for confirmation in the app ("This can't be undone"), then removes it from the phone.
+- [ ] **Same agreement again.** If the date, other party and agreement number match one already stored after reading, it's also treated as a repeat (this catches photos and older uploads).
 - [ ] **Same file again.** Re-uploading the exact same file is recognized on the phone by its digital fingerprint, without reading it with the AI again: "This was previously uploaded and is already stored as [name]. Would you like to review this agreement?" with **Yes, review it** and **Not now**.
 
 ### Home List
