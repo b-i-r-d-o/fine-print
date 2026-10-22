@@ -31,7 +31,7 @@ Build mode: learn
   Learner check: On your phone, upload `sample-alberta-lease.pdf`. Does the agent correctly say what it is, who the landlord is, and that it ended about 2 months ago, then ask about renewing? Is it on your home list with a sensible name?
   Commit: `Read uploaded agreements with Claude and ask the first question`
 
-- [ ] **3. Tell it you're moving out and get a ready-to-send Alberta notice**
+- [x] **3. Tell it you're moving out and get a ready-to-send Alberta notice**
   Becomes usable: Typing "No, I want to move out" gets the Alberta rule explained (with the subtle one-time guidance caption) and an offer to draft. The agent asks about the missing landlord address. The notice is drafted with the end date calculated in code. You can edit it, then save it as a PDF. Delivery guidance appears, and the home list shows "Action pending: deliver notice to landlord."
   Why now: It completes the kernel, the demo's payoff, right after the first read works. It's built on the facts slice 2 saves.
   PRD ref: `prd.md > The Core Journey` (steps 9–14), `prd.md > Rental Agreement: Move-Out Help`, `prd.md > Guidance, Not Legal Advice`, `prd.md > Home List`
