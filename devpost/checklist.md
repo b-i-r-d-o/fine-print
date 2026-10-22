@@ -11,7 +11,7 @@ Build mode: learn
 
 ## Slices
 
-- [ ] **1. Fine Print opens from your phone's home screen and walks you to an empty home**
+- [x] **1. Fine Print opens from your phone's home screen and walks you to an empty home**
   Becomes usable: A live Vercel link that opens on the phone and saves to the home screen with the Fine Print icon. It goes from Welcome (with the guidance line) through the theme switch (Linen, Midnight, Heirloom), the demo sign-in, the start choice and the three profile questions, to the empty home with "Upload your first agreement!" and the email "coming soon" tag. The theme and profile answers survive closing and reopening.
   Why now: It proves the whole delivery path first (repo → Vercel → phone → home-screen icon), which is the riskiest unfamiliar setup, and it gives every later slice a real screen to land on. It also sets the look early, while feedback can still shape it.
   PRD ref: `prd.md > The Core Journey` (steps 1–6), `prd.md > Theme Switching`, `prd.md > Demo Sign-In`, `prd.md > Profile Setup`, `prd.md > Guidance, Not Legal Advice`, `prd.md > States and Boundaries` (first use)
@@ -26,7 +26,7 @@ Build mode: learn
   Why now: This is the kernel and the biggest technical risk (a real document through the helper to Claude and back as structured data). Proving it early means any surprise with the AI, the PDF format or Vercel limits shows up while there's time to adjust.
   PRD ref: `prd.md > The Core Journey` (steps 7–8), `prd.md > Agreement Upload`, `prd.md > Agreement Reading`, `prd.md > Home List`
   Spec ref: `spec.md > Upload and Camera`, `spec.md > Agent Client`, `spec.md > Helper (Vercel Function)`, `spec.md > Agent Instructions`, `spec.md > AI Connector`, `spec.md > Sample Documents`, `spec.md > External Services and Dependencies`, `spec.md > Important Failure Modes`
-  Build: Generate the fictional sample lease and mortgage PDFs (`tools/make-samples.py`). Build the file upload, the `read` mode in the helper, the prompts with the reply format and facts list (including `category` for the side menu), `lib/ai.js` for the Claude Messages API, the practice-mode replies, reply validation with one retry, the loader and timeout, chat bubbles and buttons, and the filing name and home-list row. Verify the Claude model IDs and PDF format against the docs. Joann adds `ANTHROPIC_API_KEY` in Vercel settings.
+  Build: Generate the fictional sample lease and mortgage PDFs (`tools/make-samples.py`). Add the contacts card with real phone contact cards and email as coming soon (`prd.md > Contacts From Agreements`). Build the file upload, the `read` mode in the helper, the prompts with the reply format and facts list (including `category` for the side menu), `lib/ai.js` for the Claude Messages API, the practice-mode replies, reply validation with one retry, the loader and timeout, chat bubbles and buttons, and the filing name and home-list row. Verify the Claude model IDs and PDF format against the docs. Joann adds `ANTHROPIC_API_KEY` in Vercel settings.
   Verify (mechanical): Run the helper's `read` mode in practice mode with the sample lease and confirm the reply passes the JSON schema check. Confirm the request body for the real call matches the documented Messages API format (model ID, document block, base64). In the headless browser, upload the sample lease and confirm the loader, the agent question bubble and the home-list row with the correct name. Confirm a missing key shows "The AI isn't connected right now" when practice mode is off.
   Learner check: On your phone, upload `sample-alberta-lease.pdf`. Does the agent correctly say what it is, who the landlord is, and that it ended about 2 months ago, then ask about renewing? Is it on your home list with a sensible name?
   Commit: `Read uploaded agreements with Claude and ask the first question`
@@ -84,6 +84,8 @@ Activity mode:
 
 ## Revisions
 
+- Added `prd.md > Contacts From Agreements` to slice 2. Contacts the agent finds can be saved to phone contacts for real (a vCard with a note naming the source agreement), with email contacts as coming soon. Joann wanted the contacts in agreements easy to keep.
+- Sample PDFs are also published at `/samples/…` on the live link, so they can be opened and saved on the phone for the demo.
 - Added "Privacy and AI data handling, including bring your own AI" to the future features (scope, PRD, spec simplifications, README). Joann pointed out the demo is a shell, and that real users need to connect their own AI or another option to keep their information confidential.
 - Learner checks happen on the live Vercel link, so each slice is committed and pushed after mechanical verification and before the learner check. Fixes from the check become follow-up commits, and the box is ticked once the check passes. This workspace can't reach Vercel, and the key never enters chat.
 - Slice 1 learner feedback: added phone back navigation, on-screen Back buttons, and a home menu (Edit profile, Sign out demo); reworked Heirloom into a dusky plum and wine theme; swapped the profile icon to 😘. Joann found she couldn't get back from home, and that Heirloom was too close to Linen.

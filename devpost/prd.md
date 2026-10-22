@@ -96,6 +96,12 @@ Added during the build at Joann's request, to "make it seem more app-y."
 - [ ] Each filed agreement gets a clean name following `date-party-purpose.pdf`.
 - [ ] The agent detects whether the agreement is signed.
 
+### Contacts From Agreements
+Added during the build at Joann's request.
+- [ ] After reading an agreement, the agent shows the other party's contacts it found (name, organization, role, phone, email, address).
+- [ ] **Save to phone contacts** works for real. It gives the phone a contact card that, when opened, offers "Add to contacts," with a note saying which agreement it came from (e.g. "Saved by Fine Print from: 2025-08-15-prairie-peak-residential-lease.pdf (Property manager)").
+- [ ] **Email contacts** (Gmail, Outlook) is a visible "coming soon" button.
+
 ### Rental Agreement: Move-Out Help
 Source: `scope.md > The Unique Kernel`.
 - [ ] The agent notices that the fixed term ended, says how long ago relative to today, and asks whether the user wants to renew.

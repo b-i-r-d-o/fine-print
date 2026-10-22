@@ -3,6 +3,9 @@
 // (Later slices add the AI conversation through agent.js.)
 
 import { load, save, clearAll } from './storage.js';
+import { askHelper, todayISO } from './agent.js';
+import { prepareFile } from './upload.js';
+import { saveVCard, contactLabel } from './contacts.js';
 
 /* ---------- Themes ---------- */
 const THEME_COLOURS = { linen: '#F3EDE4', midnight: '#0B0D12', heirloom: '#2A1823' };
@@ -311,14 +314,37 @@ function renderHome() {
   document.getElementById('chat').hidden = !!cat;
 }
 
-// Agreement rows are filled in from slice 2 onward.
+const CATEGORY_ICON = { housing: '🏠', medical: '🩺', financial: '💼', marriage: '💍', estate: '📜' };
+
 export function renderList(items) {
   const list = document.getElementById('agreement-list');
   list.innerHTML = '';
   items.forEach((a) => {
     const row = document.createElement('div');
     row.className = 'agreement-row' + (a.pendingAction ? ' has-action' : '');
-    row.textContent = a.fileName;
+    const icon = document.createElement('span');
+    icon.className = 'row-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = CATEGORY_ICON[a.category] || '📄';
+    const body = document.createElement('div');
+    body.className = 'row-body';
+    const name = document.createElement('p');
+    name.className = 'row-name';
+    name.textContent = a.fileName;
+    const sub = document.createElement('p');
+    sub.className = 'row-sub';
+    sub.textContent = [a.typeLabel, a.party].filter(Boolean).join(' · ');
+    body.append(name, sub);
+    if (a.pendingAction) {
+      const act = document.createElement('p');
+      act.className = 'row-action';
+      act.textContent = `⚑ Action pending: ${a.pendingAction}`;
+      body.append(act);
+    }
+    const status = document.createElement('span');
+    status.className = 'row-status';
+    status.textContent = a.status;
+    row.append(icon, body, status);
     list.appendChild(row);
   });
 }
@@ -381,10 +407,90 @@ export function userSay(text) {
 
 function restoreChat() {
   chatLog.forEach((m) => {
+    if (m.kind === 'contacts') { contactsCard(m.contacts, m.source, { log: false }); return; }
+    if (m.kind === 'dates') { datesCard(m.items, { log: false }); return; }
     bubble(m.role, m.text);
     if (m.kind === 'upload-prompt') chipsRow([emailChip()]);
   });
   if (!chatLog.length) uploadPrompt();
+}
+
+/* Contacts found in an agreement: save to phone contacts for real, email contacts coming soon. */
+function contactsCard(contacts, source, { log = true } = {}) {
+  if (!contacts || !contacts.length) return;
+  const card = document.createElement('div');
+  card.className = 'card card-contacts';
+  const h = document.createElement('p');
+  h.className = 'card-title';
+  h.textContent = `📇 Contacts in this agreement`;
+  card.append(h);
+  contacts.forEach((c) => {
+    const row = document.createElement('div');
+    row.className = 'contact-row';
+    const who = document.createElement('div');
+    who.className = 'contact-who';
+    const n = document.createElement('strong');
+    n.textContent = contactLabel(c);
+    const meta = document.createElement('span');
+    meta.className = 'muted';
+    meta.textContent = [c.name && c.organization ? c.organization : '', c.role, c.phone, c.email].filter(Boolean).join(' · ');
+    who.append(n, meta);
+    const actions = document.createElement('div');
+    actions.className = 'contact-actions';
+    const save = document.createElement('button');
+    save.type = 'button';
+    save.className = 'chip';
+    save.textContent = 'Save to phone contacts';
+    save.addEventListener('click', () => {
+      saveVCard(c, source);
+      save.textContent = 'Contact card ready ✓';
+    });
+    const email = document.createElement('button');
+    email.type = 'button';
+    email.className = 'chip chip-soon';
+    email.append('Email contacts ');
+    const t = document.createElement('span'); t.className = 'tag tag-soon'; t.textContent = 'Coming soon';
+    email.append(t);
+    email.addEventListener('click', () => agentSay('Saving to your email contacts (Gmail, Outlook) is coming soon ✉️. The phone contact card works today.'));
+    actions.append(save, email);
+    row.append(who, actions);
+    card.append(row);
+  });
+  const note = document.createElement('p');
+  note.className = 'card-note';
+  note.textContent = `Each card notes it came from ${source}.`;
+  card.append(note);
+  chatEl.appendChild(card);
+  scrollDown();
+  if (log) { chatLog.push({ role: 'agent', kind: 'contacts', contacts, source }); save('chat', chatLog); }
+}
+
+function datesCard(items, { log = true } = {}) {
+  if (!items || !items.length) return;
+  const card = document.createElement('div');
+  card.className = 'card card-dates';
+  const h = document.createElement('p');
+  h.className = 'card-title';
+  h.textContent = '🗓️ Dates and actions';
+  card.append(h);
+  const ul = document.createElement('ul');
+  items.forEach((it) => {
+    const li = document.createElement('li');
+    const d = document.createElement('strong'); d.textContent = prettyDate(it.date);
+    const a = document.createElement('span'); a.textContent = it.action;
+    li.append(d, a);
+    ul.append(li);
+  });
+  card.append(ul);
+  chatEl.appendChild(card);
+  scrollDown();
+  if (log) { chatLog.push({ role: 'agent', kind: 'dates', items }); save('chat', chatLog); }
+}
+
+function prettyDate(s) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s || '')) return s || '';
+  const [y, m, d] = s.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 function circleUploadIcons(on) {
@@ -400,14 +506,106 @@ function uploadPrompt() {
   circleUploadIcons(true);
 }
 
-function comingSoonUpload() {
-  circleUploadIcons(false);
-  agentSay('Reading agreements arrives in the next build step 🛠️.');
+/* ---------- Upload → the agent reads it ---------- */
+const fileInput = document.getElementById('file-input');
+const cameraInput = document.getElementById('camera-input');
+document.getElementById('btn-upload').addEventListener('click', () => fileInput.click());
+document.getElementById('empty-upload').addEventListener('click', () => fileInput.click());
+document.getElementById('btn-camera').addEventListener('click', () => cameraInput.click());
+[fileInput, cameraInput].forEach((input) => input.addEventListener('change', () => {
+  const file = input.files && input.files[0];
+  input.value = '';
+  if (file) readAgreement(file);
+}));
+
+let current = load('current', null); // the agreement the conversation is about
+
+function loaderBubble(text) {
+  const el = bubble('agent', text);
+  el.classList.add('bubble-loading');
+  return el;
 }
 
-document.getElementById('btn-upload').addEventListener('click', comingSoonUpload);
-document.getElementById('btn-camera').addEventListener('click', comingSoonUpload);
-document.getElementById('empty-upload').addEventListener('click', comingSoonUpload);
+async function readAgreement(file) {
+  circleUploadIcons(false);
+  if (filter) { filter = null; renderHome(); }
+  userSay(`📎 ${file.name || 'Photo'}`);
+  const prepared = await prepareFile(file);
+  if (prepared.error) { agentSay(prepared.error); return; }
+  await sendForReading([prepared]);
+}
+
+async function sendForReading(files) {
+  const loader = loaderBubble('Reading your agreement… 📄');
+  const result = await askHelper({ mode: 'read', files, today: todayISO(), profile: load('profile', null) });
+  loader.remove();
+  if (result.error) {
+    agentSay(result.slow ? 'This is taking longer than usual. Try again?' : result.error, [
+      { label: 'Try again', onClick: () => sendForReading(files) },
+    ]);
+    return;
+  }
+  handleReadReply(result.reply, files[0].name);
+}
+
+function slug(text, words = 2) {
+  return String(text || '')
+    .replace(/\b(ltd|inc|corp|corporation|limited|llc|co)\.?\b/gi, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(Boolean).slice(0, words).join('-');
+}
+
+function makeFileName(r) {
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(r.agreement_date || '') ? r.agreement_date : todayISO();
+  const purpose = slug(r.file_purpose || r.type_label || 'agreement', 3) || 'agreement';
+  return `${date}-${slug(r.party_name) || 'unknown'}-${purpose}.pdf`;
+}
+
+function statusFor(r) {
+  if (!r.signed) return 'Unsigned';
+  if (r.term_end && r.term_end < todayISO()) return 'Term ended';
+  return 'Signed';
+}
+
+function handleReadReply(r, sourceName) {
+  if (r.readable === false || r.is_agreement === false) {
+    agentSay(r.message);
+    return;
+  }
+  const fileName = makeFileName(r);
+  const agreement = {
+    id: `a${Date.now()}`,
+    fileName,
+    sourceName,
+    type: r.type,
+    typeLabel: r.type_label,
+    category: r.category || 'housing',
+    party: r.party_name,
+    status: statusFor(r),
+    pendingAction: null,
+    facts: r,
+    addedAt: todayISO(),
+  };
+  if (r.action === 'store_or_review') {
+    // Store / Review choice is completed in a later build step (slice 5).
+    agentSay(r.message);
+    datesCard(r.key_dates_and_actions);
+    contactsCard(r.contacts, fileName);
+    chipsRow([
+      { label: 'Store', onClick: () => agentSay('Storing arrives in an upcoming build step 🛠️.') },
+      { label: 'Review', soon: true, onClick: () => agentSay('A full review is coming soon 🔍.') },
+    ]);
+    return;
+  }
+  const agreements = load('agreements', []);
+  agreements.push(agreement);
+  save('agreements', agreements);
+  current = { id: agreement.id, awaiting: r.action };
+  save('current', current);
+  renderHome();
+  agentSay(`Filed as ${fileName} 🗂️`);
+  contactsCard(r.contacts, fileName);
+  agentSay(r.message);
+}
 document.getElementById('composer').addEventListener('submit', (e) => {
   e.preventDefault();
   const input = document.getElementById('composer-input');
@@ -418,10 +616,14 @@ document.getElementById('composer').addEventListener('submit', (e) => {
   handleUserMessage(text);
 });
 
-// Slice 1 placeholder: the AI conversation is connected in a later build step.
+// Free-typed replies and questions are connected to the AI in the next build step (slice 3).
 function handleUserMessage(text) {
   userSay(text);
-  agentSay("Great question! Answering contract questions arrives in an upcoming build step 🛠️. You can also upload an agreement with ＋ or 📷.");
+  if (current && current.awaiting === 'ask_renewal') {
+    agentSay("Got it. Helping with your next steps arrives in the next build step 🛠️.");
+  } else {
+    agentSay("Great question! Answering contract questions arrives in an upcoming build step 🛠️. You can also upload an agreement with ＋ or 📷.");
+  }
 }
 
 /* ---------- Practice mode banner ---------- */

@@ -1,12 +1,82 @@
 // api/agent.js — the helper (a Vercel Function).
-// The app on the phone talks to this. It holds the hidden API key (from Vercel's
-// settings) and, in later build steps, passes contracts and conversation to the AI.
-// Slice 1: a health check so the app knows whether the AI is connected.
+// The phone app talks to this. It holds the hidden API key (from Vercel's settings),
+// adds the agent's instructions, asks the AI, checks the reply is in the agreed format,
+// and passes it back. It stores nothing.
+//
+// GET  /api/agent                      -> { ok, practice }  (is the AI connected?)
+// POST /api/agent { mode: 'read', files: [{ name, type, data(base64) }], today, profile }
+
+import { askAI, hasKey } from '../lib/ai.js';
+import { READ_PROMPT, readUserText, CATEGORIES } from '../lib/prompts.js';
+import { practiceRead } from '../lib/practice.js';
+
+// Pull the JSON object out of the AI's reply, even if it wrapped it in extra text.
+export function parseReply(text) {
+  if (!text) return null;
+  const cleaned = text.replace(/```(?:json)?/gi, '').trim();
+  const start = cleaned.indexOf('{');
+  const end = cleaned.lastIndexOf('}');
+  if (start === -1 || end <= start) return null;
+  try { return JSON.parse(cleaned.slice(start, end + 1)); } catch { return null; }
+}
+
+// The reply must have what the app needs before it's allowed through.
+export function validRead(r) {
+  if (!r || typeof r !== 'object' || typeof r.message !== 'string' || !r.message.trim()) return false;
+  if (r.readable === false) return true;
+  if (r.is_agreement === false) return true;
+  if (r.category && !CATEGORIES.includes(r.category)) r.category = 'housing';
+  if (!Array.isArray(r.contacts)) r.contacts = [];
+  if (!Array.isArray(r.key_dates_and_actions)) r.key_dates_and_actions = [];
+  return typeof r.type === 'string' && typeof r.signed === 'boolean';
+}
+
+function filesToContent(files) {
+  return files.map((f) => (f.type === 'application/pdf'
+    ? { kind: 'pdf', data: f.data }
+    : { kind: 'image', data: f.data, mediaType: f.type || 'image/jpeg' }));
+}
+
+async function read(body) {
+  const files = Array.isArray(body.files) ? body.files.filter((f) => f && f.data) : [];
+  if (!files.length) return { status: 400, json: { error: 'No file was received. Please try uploading again.' } };
+  if (!hasKey()) return { status: 200, json: { practice: true, reply: practiceRead(files) } };
+
+  const content = [...filesToContent(files), { kind: 'text', text: readUserText(body) }];
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const text = await askAI({
+      speed: 'careful',
+      system: READ_PROMPT + (attempt === 2 ? '\n\nIMPORTANT: Your last reply was not valid. Reply with the JSON object only.' : ''),
+      content,
+      maxTokens: 2000,
+    });
+    const reply = parseReply(text);
+    if (validRead(reply)) return { status: 200, json: { practice: false, reply } };
+  }
+  return { status: 502, json: { error: 'Something went wrong reading that. Try again?' } };
+}
 
 export default async function handler(req, res) {
-  const practice = !process.env.ANTHROPIC_API_KEY;
   if (req.method === 'GET') {
-    return res.status(200).json({ ok: true, practice });
+    return res.status(200).json({ ok: true, practice: !hasKey() });
   }
-  return res.status(501).json({ error: 'Reading agreements arrives in the next build step.' });
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const body = req.body || {};
+  try {
+    if (body.mode === 'read') {
+      const out = await read(body);
+      return res.status(out.status).json(out.json);
+    }
+    return res.status(400).json({ error: 'Unknown request.' });
+  } catch (err) {
+    const notConnected = err.status === 401 || err.status === 403;
+    const outOfCredit = err.status === 400 && /credit|billing/i.test(err.detail || '');
+    console.error('agent error', err.status, err.detail || err.message);
+    return res.status(502).json({
+      error: notConnected || outOfCredit
+        ? "The AI isn't connected right now."
+        : 'Something went wrong reading that. Try again?',
+    });
+  }
 }

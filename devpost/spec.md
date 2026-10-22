@@ -101,6 +101,9 @@ PRD ref: `prd.md > Agreement Reading`, `prd.md > Rental Agreement: Move-Out Help
 ### AI Connector
 `lib/ai.js`. This is the only file that knows which AI company is used. It sends `POST https://api.anthropic.com/v1/messages` and returns the text. Switching to Gemini later means rewriting just this file.
 
+### Contacts
+`public/contacts.js`, `public/app.js`. Implements `prd.md > Contacts From Agreements`. The `read` reply includes `contacts[]` for the other party. Each gets a vCard 3.0 (`.vcf`) built on the phone with a `NOTE` naming the source agreement. Tapping "Save to phone contacts" downloads it, and the phone offers to add it. "Email contacts" is a coming-soon chip.
+
 ### Notice Builder
 `public/notice.js`. Implements `prd.md > Rental Agreement: Move-Out Help`.
 - **End-date calculation (code, not AI):** from today and the rent day, it finds the end of the next complete tenancy month. Example: with rent due on the 1st and notice given Oct 20, the end date is Nov 30. If notice were given on the 1st itself, it would be the last day of that month. The rule is verified with a few test dates during the build.
