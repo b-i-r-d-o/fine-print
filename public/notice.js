@@ -55,7 +55,8 @@ export function longDate(iso) {
 /** Build the notice from the agreement's facts. Everything here can be edited by the user. */
 export function buildNotice(facts, { todayISO, landlordAddress = '' }) {
   const endISO = noticeEndDate(todayISO, facts.rent_day || 1);
-  const agreementRef = [facts.lease_identifiers, facts.agreement_date ? `dated ${longDate(facts.agreement_date)}` : '']
+  const number = String(facts.lease_identifiers || '').split(/[;\n]/)[0].trim(); // just the agreement number
+  const agreementRef = [number, facts.agreement_date ? `dated ${longDate(facts.agreement_date)}` : '']
     .filter(Boolean).join(', ');
   return {
     title: "Notice to End a Periodic Tenancy (Tenant's Notice)",

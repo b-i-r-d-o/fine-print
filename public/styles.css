@@ -418,3 +418,16 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 .speak-btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .bubble-text { display: block; }
 .mic-btn { font-size: 1rem; }
+
+/* Agreement page: delete on top, collapsible conversations */
+.detail-top { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; margin-top: -40px; pointer-events: none; }
+.detail-top > * { pointer-events: auto; }
+.detail-top .confirm-delete { align-self: stretch; }
+.btn-small { padding: 7px 12px; font-size: .82rem; }
+.detail-convos { display: flex; flex-direction: column; gap: 10px; }
+.convo { padding: 0; gap: 0; }
+.convo summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px; font-weight: 600; }
+.convo summary::-webkit-details-marker { display: none; }
+.convo summary::after { content: "▾"; color: var(--muted); }
+.convo[open] summary::after { content: "▴"; }
+.convo-body { display: flex; flex-direction: column; gap: 8px; padding: 0 14px 14px; }

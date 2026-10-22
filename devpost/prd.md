@@ -137,7 +137,8 @@ Added during the build at Joann's request, as part of the mortgage step (slice 5
 Added during the build at Joann's request.
 - [ ] **Fresh chat each time.** Each sign-in starts a clean chat with a short "Welcome back 👋" summary (agreements on file, actions pending). The previous conversation is saved, not lost.
 - [ ] **Agreement page.** Tapping an agreement on the home list opens its page: name, type · party, status, summary, key details (parties, term, rent, property, other party's address or "Not listed in the agreement", agreement number, signed, category, date added), dates and actions, contacts (with Save to phone contacts), and the past conversation about it.
-- [ ] **Ask about this agreement** returns to the chat and picks the conversation back up.
+- [ ] **Conversations** on the agreement page are collapsible sections (date · message count, newest open, "Current chat" tagged). Each has **Continue this chat**, which brings that conversation back into the chat (the current chat is saved first), with its messages as context for the agent.
+- [ ] **Start new chat** (bottom of the page) saves the current chat and starts a fresh one about this agreement. **Delete agreement** sits at the top of the page, out of the way.
 - [ ] **Delete agreement** asks for confirmation in the app ("This can't be undone"), then removes it from the phone.
 - [ ] **Same agreement again.** If the date, other party and agreement number match one already stored after reading, it's also treated as a repeat (this catches photos and older uploads).
 - [ ] **Same file again.** Re-uploading the exact same file is recognized on the phone by its digital fingerprint, without reading it with the AI again: "This was previously uploaded and is already stored as [name]. Would you like to review this agreement?" with **Yes, review it** and **Not now**.

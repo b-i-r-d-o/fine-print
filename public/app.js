@@ -482,7 +482,7 @@ export function userSay(text) {
 function archiveSession() {
   if (chatLog.length) {
     const sessions = load('sessions', []);
-    sessions.push({ date: todayISO(), messages: chatLog });
+    sessions.push({ id: `s${Date.now()}`, date: todayISO(), messages: chatLog });
     save('sessions', sessions.slice(-30));
   }
   chatLog = [];
@@ -492,6 +492,59 @@ function archiveSession() {
   save('current', null);
   guidanceShown = false;
   circleUploadIcons(false);
+}
+
+// Draw a saved conversation back into the chat (bubbles and cards).
+function renderLog(messages) {
+  chatEl.innerHTML = '';
+  messages.forEach((m) => {
+    if (m.kind === 'contacts') { const c = buildContactsCard(m.contacts, m.source); if (c) chatEl.appendChild(c); return; }
+    if (m.kind === 'dates') { const c = buildDatesCard(m.items); if (c) chatEl.appendChild(c); return; }
+    if (m.kind === 'notice') { const a = getAgreement(m.about); if (a && a.notice) chatEl.appendChild(buildNoticeCard(a)); return; }
+    if (!m.text) return;
+    bubble(m.role, m.text);
+    if (m.kind === 'upload-prompt') chipsRow([emailChip()]);
+  });
+  scrollDown();
+}
+
+// All conversations that mention an agreement: saved sessions plus the live chat, newest first.
+function conversationsFor(id) {
+  const out = load('sessions', []).map((s, i) => ({ sid: s.id || `idx${i}`, date: s.date, messages: s.messages, live: false }));
+  out.push({ sid: 'live', date: todayISO(), messages: chatLog, live: true });
+  return out
+    .map((c) => ({ ...c, lines: c.messages.filter((m) => m.about === id && m.text && !m.kind) }))
+    .filter((c) => c.lines.length)
+    .reverse();
+}
+
+// Pick an earlier conversation back up in the chat.
+function continueConversation(sid, agreementId) {
+  if (sid !== 'live') {
+    const sessions = load('sessions', []);
+    const i = sessions.findIndex((s, idx) => (s.id || `idx${idx}`) === sid);
+    if (i === -1) return;
+    const [s] = sessions.splice(i, 1);
+    save('sessions', sessions); // take it out of the saved list…
+    archiveSession(); // …save whatever is in the chat now…
+    chatLog = s.messages; // …and bring the earlier conversation back as the live chat
+    save('chat', chatLog);
+    renderLog(chatLog);
+  }
+  current = { id: agreementId, awaiting: null };
+  save('current', current);
+  filter = null;
+  show('home');
+  if (sid !== 'live') agentSay('Picking up where we left off 👋');
+  scrollDown();
+}
+
+// Start a brand-new chat about one agreement (the current chat is saved first).
+function startNewChat(id) {
+  archiveSession();
+  filter = null;
+  show('home');
+  reviewAgreement(id);
 }
 
 function welcomeBack() {
@@ -824,34 +877,56 @@ function renderAgreement(id) {
   const dates = buildDatesCard(f.key_dates_and_actions); if (dates) box.append(dates);
   const contacts = buildContactsCard(f.contacts, a.fileName); if (contacts) box.append(contacts);
 
-  // Past conversation about this agreement (earlier sessions + this one).
-  const past = [...load('sessions', []).flatMap((s) => s.messages), ...chatLog]
-    .filter((m) => m.about === a.id && m.text && !m.kind);
-  const conv = document.createElement('div');
-  conv.className = 'card detail-convo';
-  const ct = document.createElement('p'); ct.className = 'card-title'; ct.textContent = '💬 Conversation about this agreement';
-  conv.append(ct);
-  if (!past.length) {
-    const none = document.createElement('p'); none.className = 'card-note'; none.textContent = 'No conversation yet.';
-    conv.append(none);
-  } else {
-    past.forEach((m) => {
+  // Conversations about this agreement: one collapsible section each, newest open.
+  const convos = conversationsFor(a.id);
+  const wrap = document.createElement('div');
+  wrap.className = 'detail-convos';
+  const ct = document.createElement('p'); ct.className = 'card-title'; ct.textContent = `💬 Conversations (${convos.length})`;
+  wrap.append(ct);
+  if (!convos.length) {
+    const none = document.createElement('p'); none.className = 'card-note'; none.textContent = 'No conversations yet.';
+    wrap.append(none);
+  }
+  convos.forEach((c, i) => {
+    const d = document.createElement('details');
+    d.className = 'card convo';
+    if (i === 0) d.open = true;
+    const sum = document.createElement('summary');
+    const label = document.createElement('span');
+    label.textContent = `${prettyDate(c.date)} · ${c.lines.length} message${c.lines.length === 1 ? '' : 's'}`;
+    sum.append(label);
+    if (c.live) { const tag = document.createElement('span'); tag.className = 'tag tag-soon'; tag.textContent = 'Current chat'; sum.append(tag); }
+    d.append(sum);
+    const body = document.createElement('div'); body.className = 'convo-body';
+    c.lines.forEach((m) => {
       const line = document.createElement('p');
       line.className = `convo-line convo-${m.role}`;
       const who = document.createElement('strong'); who.textContent = m.role === 'user' ? 'You' : 'Fine Print';
       line.append(who, ` ${m.text.replace(/^\[Practice reply\]\s*/, '')}`);
-      conv.append(line);
+      body.append(line);
     });
-  }
-  box.append(conv);
+    const cont = document.createElement('button');
+    cont.type = 'button'; cont.className = 'btn btn-quiet'; cont.textContent = 'Continue this chat';
+    cont.addEventListener('click', () => continueConversation(c.sid, a.id));
+    body.append(cont);
+    d.append(body);
+    wrap.append(d);
+  });
+  box.append(wrap);
 
   const actions = document.createElement('div');
   actions.className = 'detail-actions';
   const ask = document.createElement('button');
-  ask.type = 'button'; ask.className = 'btn btn-primary'; ask.textContent = 'Ask about this agreement';
-  ask.addEventListener('click', () => reviewAgreement(a.id));
+  ask.type = 'button'; ask.className = 'btn btn-primary'; ask.textContent = 'Start new chat';
+  ask.addEventListener('click', () => startNewChat(a.id));
+  actions.append(ask);
+  box.append(actions);
+
+  // Delete sits at the top, out of the way of the conversations.
+  const top = document.createElement('div');
+  top.className = 'detail-top';
   const del = document.createElement('button');
-  del.type = 'button'; del.className = 'btn btn-danger-quiet'; del.textContent = 'Delete agreement';
+  del.type = 'button'; del.className = 'btn btn-danger-quiet btn-small'; del.textContent = 'Delete agreement';
   const confirmBox = document.createElement('div');
   confirmBox.className = 'confirm-delete'; confirmBox.hidden = true;
   const msg = document.createElement('p'); msg.textContent = 'Delete this agreement and its notes from this phone? This can\'t be undone.';
@@ -862,8 +937,8 @@ function renderAgreement(id) {
   del.addEventListener('click', () => { confirmBox.hidden = false; del.hidden = true; });
   const row = document.createElement('div'); row.className = 'confirm-buttons'; row.append(yes, no);
   confirmBox.append(msg, row);
-  actions.append(ask, del, confirmBox);
-  box.append(actions);
+  top.append(del, confirmBox);
+  box.prepend(top);
 }
 
 function deleteAgreement(id) {
