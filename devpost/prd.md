@@ -100,7 +100,7 @@ Added during the build at Joann's request, to "make it seem more app-y."
 ### Contacts From Agreements
 Added during the build at Joann's request.
 - [ ] After reading an agreement, the agent shows the other party's contacts it found (name, organization, role, phone, email, address).
-- [ ] **Save to phone contacts** works for real. It gives the phone a contact card that, when opened, offers "Add to contacts," with a note saying which agreement it came from (e.g. "Saved by Fine Print from: 2025-08-15-prairie-peak-residential-lease.pdf (Property manager)").
+- [ ] **Save to phone contacts** works for real. It gives the phone a contact card that, when opened, offers "Add to contacts," with a note saying which agreement it came from (e.g. "Saved by Fine Print from: 2025-08-15-drop-tine-residential-lease.pdf (Property manager)").
 - [ ] **Email contacts** (Gmail, Outlook) is a visible "coming soon" button.
 
 ### Rental Agreement: Move-Out Help

@@ -84,6 +84,7 @@ Activity mode:
 
 ## Revisions
 
+- Sample lease landlord changed at Joann's request: property manager **Quan Yuan** (her own name), **Drop Tine Properties Ltd.**, phone 587-000-0000, email demotest@notrealemail.com, agreement no. DT-2025-0417. The file now files as `2025-08-15-drop-tine-residential-lease.pdf`.
 - Added a fourth theme, **Popstar** (bright pink, electric blue, lime green, Fredoka display font), for a young, fun, energetic appeal (Joann's request).
 - Added `prd.md > Contacts From Agreements` to slice 2. Contacts the agent finds can be saved to phone contacts for real (a vCard with a note naming the source agreement), with email contacts as coming soon. Joann wanted the contacts in agreements easy to keep.
 - Sample PDFs are also published at `/samples/…` on the live link, so they can be opened and saved on the phone for the demo.

@@ -1,5 +1,6 @@
 """Generates FICTIONAL sample agreements for the Fine Print demo.
-Every person, company, address, phone number and email here is invented.
+The lease's property manager uses Joann's own name (Quan Yuan) at her request, with a made-up
+company (Drop Tine Properties Ltd.), phone and email; every other detail is invented.
 Run: python3 tools/make-samples.py  -> samples/sample-alberta-lease.pdf, samples/sample-mortgage.pdf
 """
 from reportlab.lib.pagesizes import letter
@@ -48,18 +49,18 @@ def lease():
     path = "samples/sample-alberta-lease.pdf"
     doc = SimpleDocTemplate(path, pagesize=letter, leftMargin=0.75 * inch, rightMargin=0.75 * inch,
                             topMargin=0.7 * inch, bottomMargin=0.8 * inch,
-                            title="Residential Tenancy Agreement (Fixed Term) - SAMPLE", author="Prairie Peak Properties Ltd. (fictional)")
+                            title="Residential Tenancy Agreement (Fixed Term) - SAMPLE", author="Drop Tine Properties Ltd. (fictional)")
     s = []
     s.append(Paragraph("RESIDENTIAL TENANCY AGREEMENT", H1))
     s.append(Paragraph("Fixed-Term Tenancy · Province of Alberta", ParagraphStyle("sub", parent=P, alignment=1, fontSize=11)))
-    s.append(Paragraph("Agreement No. PP-2025-0417", ParagraphStyle("sub2", parent=SMALL, alignment=1)))
+    s.append(Paragraph("Agreement No. DT-2025-0417", ParagraphStyle("sub2", parent=SMALL, alignment=1)))
     s.append(Spacer(1, 8))
     s.append(Paragraph("This Agreement is made on <b>August 15, 2025</b> between the Landlord and the Tenant named below "
                        "for the residential premises described below, under the <i>Residential Tenancies Act</i> (Alberta).", P))
     s.append(table([
-        ("Landlord", "Prairie Peak Properties Ltd."),
-        ("Landlord's agent / property manager", "Dana Whitfield, Property Manager"),
-        ("Landlord contact", "Phone: 780-555-0142 · Email: rentals@prairiepeak.example"),
+        ("Landlord", "Drop Tine Properties Ltd."),
+        ("Landlord's agent / property manager", "Quan Yuan, Property Manager"),
+        ("Landlord contact", "Phone: 587-000-0000 · Email: demotest@notrealemail.com"),
         ("Tenant(s)", "Alex Morgan"),
         ("Tenant contact", "Phone: 780-555-0199 · Email: alex.morgan@mail.example"),
         ("Rental premises", "Unit 204, 10123 – 99 Avenue, Grande Prairie, Alberta T8V 0R5"),
@@ -74,7 +75,7 @@ def lease():
         ]),
         ("Rent", [
             "Rent is <b>$1,450.00 per month</b>, payable in advance on the <b>first (1st) day of each month</b>.",
-            "Rent is payable by electronic transfer to rentals@prairiepeak.example or by post-dated cheques delivered to the property manager.",
+            "Rent is payable by electronic transfer to demotest@notrealemail.com or by post-dated cheques delivered to the property manager.",
             "A late payment fee of $25.00 applies to rent received after the 3rd day of the month.",
         ]),
         ("Security Deposit", [
@@ -123,8 +124,8 @@ def lease():
     s.append(Paragraph("SIGNATURES", H2))
     sig = Table([
         [Paragraph("<b>Landlord</b> (by its agent)", P), Paragraph("<b>Tenant</b>", P)],
-        [Paragraph("Dana Whitfield", SIG), Paragraph("Alex Morgan", SIG)],
-        [Paragraph("Dana Whitfield, for Prairie Peak Properties Ltd.", P), Paragraph("Alex Morgan", P)],
+        [Paragraph("Quan Yuan", SIG), Paragraph("Alex Morgan", SIG)],
+        [Paragraph("Quan Yuan, for Drop Tine Properties Ltd.", P), Paragraph("Alex Morgan", P)],
         [Paragraph("Date: August 15, 2025", P), Paragraph("Date: August 15, 2025", P)],
     ], colWidths=(3.35 * inch, 3.35 * inch))
     sig.setStyle(TableStyle([("LINEBELOW", (0, 1), (-1, 1), 0.6, colors.black), ("VALIGN", (0, 0), (-1, -1), "TOP")]))
@@ -132,7 +133,7 @@ def lease():
     s.append(Spacer(1, 14))
     s.append(Paragraph("FICTIONAL SAMPLE DOCUMENT created for the Fine Print hackathon demo. All names, companies, addresses, "
                        "phone numbers and emails are invented. Not a legal form.", SMALL))
-    note = footer("Residential Tenancy Agreement · PP-2025-0417 · FICTIONAL SAMPLE")
+    note = footer("Residential Tenancy Agreement · DT-2025-0417 · FICTIONAL SAMPLE")
     doc.build(s, onFirstPage=note, onLaterPages=note)
     print("wrote", path)
 
