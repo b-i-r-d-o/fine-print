@@ -217,15 +217,15 @@ def employment():
     path = "samples/sample-employment-contract.pdf"
     doc = SimpleDocTemplate(path, pagesize=letter, leftMargin=0.75 * inch, rightMargin=0.75 * inch,
                             topMargin=0.7 * inch, bottomMargin=0.8 * inch,
-                            title="Employment Agreement - SAMPLE", author="Tralalero Tralala Seafood Co. (fictional)")
+                            title="Employment Agreement - SAMPLE", author="Tralalero Tralala Abattoir Ltd. (fictional)")
     s = []
     s.append(Paragraph("EMPLOYMENT AGREEMENT", H1))
     s.append(Paragraph("Full-Time, Permanent · Province of Alberta", ParagraphStyle("sub", parent=P, alignment=1, fontSize=11)))
-    s.append(Paragraph("Agreement No. TTS-HR-2026-118", ParagraphStyle("sub2", parent=SMALL, alignment=1)))
+    s.append(Paragraph("Agreement No. TTA-HR-2026-118", ParagraphStyle("sub2", parent=SMALL, alignment=1)))
     s.append(Spacer(1, 8))
     s.append(Paragraph("This Agreement is made on <b>October 19, 2026</b> between the Employer and the Employee named below.", P))
     s.append(table([
-        ("Employer", "Tralalero Tralala Seafood Co."),
+        ("Employer", "Tralalero Tralala Abattoir Ltd."),
         ("Employer address", "789 Placeholder Avenue, Grande Prairie, Alberta TXX 0ZZ"),
         ("Manager", "Lirili Larila, Operations Manager"),
         ("HR contact", "Phone: 780-000-0000 · Email: hiring@tralalero.example"),
@@ -239,6 +239,10 @@ def employment():
         ("Probation", [
             "The first <b>three (3) months</b> of employment are a probationary period, ending on <b>February 2, 2027</b>. "
             "Your manager will meet with you before that date to review your progress.",
+        ]),
+        ("Safety Training", [
+            "You must complete WHMIS, food safety and knife-safety training within your <b>first 30 days</b> (by <b>December 2, 2026</b>). "
+            "The Employer provides steel-toe boots, cut-resistant gloves and cold-room gear.",
         ]),
         ("Benefits", [
             "You will be eligible for the company health and dental plan after <b>90 days</b> of employment. "
@@ -254,7 +258,7 @@ def employment():
             "Your performance and salary will be reviewed each year in <b>November</b>, starting November 2027.",
         ]),
         ("Confidentiality", [
-            "You will keep the Employer's supplier pricing, customer lists and recipes confidential, during and after your employment.",
+            "You will keep the Employer's supplier and producer pricing, customer lists and processing specifications confidential, during and after your employment.",
         ]),
         ("Non-Solicitation", [
             "For <b>six (6) months</b> after your employment ends, you will not ask the Employer's customers or staff to move to a competitor.",
@@ -276,7 +280,7 @@ def employment():
     sig = Table([
         [Paragraph("<b>Employer</b>", P), Paragraph("<b>Employee</b>", P)],
         [Paragraph("Lirili Larila", SIG), Paragraph("Ballerina Cappucina", SIG)],
-        [Paragraph("Lirili Larila, for Tralalero Tralala Seafood Co.", P), Paragraph("Ballerina Cappucina", P)],
+        [Paragraph("Lirili Larila, for Tralalero Tralala Abattoir Ltd.", P), Paragraph("Ballerina Cappucina", P)],
         [Paragraph("Date: October 19, 2026", P), Paragraph("Date: October 20, 2026", P)],
     ], colWidths=(3.35 * inch, 3.35 * inch))
     sig.setStyle(TableStyle([("LINEBELOW", (0, 1), (-1, 1), 0.6, colors.black), ("VALIGN", (0, 0), (-1, -1), "TOP")]))
@@ -284,7 +288,7 @@ def employment():
     s.append(Spacer(1, 14))
     s.append(Paragraph("FICTIONAL SAMPLE DOCUMENT created for the Fine Print hackathon demo. All names, companies, addresses, "
                        "phone numbers and emails are invented. Not a legal form.", SMALL))
-    note = footer("Employment Agreement · TTS-HR-2026-118 · FICTIONAL SAMPLE")
+    note = footer("Employment Agreement · TTA-HR-2026-118 · FICTIONAL SAMPLE")
     doc.build(s, onFirstPage=note, onLaterPages=note)
     print("wrote", path)
 
