@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fine Print App Map</title>
+<style>
+  :root {
+    --bg: #F4EEE6; --surface: #FBF8F3; --ink: #3B342E; --muted: #6E655C; --line: #DDD3C6;
+    --accent: #5E6E52; --ai: #2F62C9; --app: #9A5B2E; --code-bg: #EFE8DD;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1E1B18; --surface: #28241F; --ink: #EFE7DC; --muted: #B3A797; --line: #3D372F;
+      --accent: #A9BC98; --ai: #8DB4FF; --app: #E4A877; --code-bg: #322D27;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 28px 16px 56px; }
+  h1 { font-size: 1.7rem; margin: 0 0 4px; }
+  h2 { font-size: 1.2rem; margin: 32px 0 10px; }
+  p { margin: 0 0 12px; }
+  .lede { color: var(--muted); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin: 0 0 12px; }
+  .pieces { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+  .pieces .card { margin: 0; }
+  .tag { display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; margin-bottom: 6px; }
+  .t-app { color: var(--app); } .t-ai { color: var(--ai); } .t-rule { color: var(--accent); }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88em; background: var(--code-bg); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
+  ol.route { padding-left: 22px; margin: 0; }
+  ol.route li { margin-bottom: 14px; }
+  .where { display: block; margin: 2px 0 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: .85rem; }
+  svg { width: 100%; height: auto; display: block; }
+  .diagram svg { max-width: 420px; margin: 0 auto; }
+  svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+  svg .box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+  svg .ai { stroke: var(--ai); } svg .app { stroke: var(--app); }
+  svg .arrow { stroke: var(--muted); stroke-width: 1.6; fill: none; marker-end: url(#arrowhead); }
+  svg .small { font-size: 12px; fill: var(--muted); }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; font-weight: 600; }
+  .foot { color: var(--muted); font-size: .85rem; margin-top: 36px; }
+  a { color: var(--ai); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Fine Print: App Map</h1>
+  <p class="lede">A one-page guide to how Fine Print fits together: what the main pieces are, how one action travels through the code, and where to start when you want to change something.</p>
+
+  <h2>What it is</h2>
+  <p>Fine Print is a phone web app with an AI agent for personal agreements. You upload or photograph a contract. The agent reads it, files it, lists its dates and contacts, asks a plain question about where you stand, and helps with the next step, like drafting an Alberta move-out notice or suggesting automatic mortgage payments. It's guidance, not legal advice.</p>
+
+  <div class="pieces">
+    <div class="card"><span class="tag t-app">The app</span><p><code>public/</code> holds the screens, chat, themes, calendar and contact files, and the notice PDF. Your agreements and chats are saved on the phone itself.</p></div>
+    <div class="card"><span class="tag t-ai">The helper</span><p><code>api/agent.js</code> runs on Vercel and holds the hidden API key. It adds the agent's instructions, asks Claude, and checks the reply before passing it on.</p></div>
+    <div class="card"><span class="tag t-rule">The instructions</span><p><code>lib/prompts.js</code> holds the agent's voice and the Alberta tenancy rule, word for word. <code>lib/ai.js</code> is the only file that knows which AI is used.</p></div>
+  </div>
+
+  <h2>One action, start to finish: storing the mortgage</h2>
+  <p>You upload the mortgage, tap <strong>Store</strong>, and a blue "💡 Suggested next step" card appears. Here's the path it takes.</p>
+  <div class="card diagram" role="img" aria-label="Diagram: the phone sends the mortgage to the helper; the helper adds the instructions and asks Claude; Claude replies in a fixed format; the helper checks the reply; the app files the mortgage and shows the dates, the suggestion card and the calendar offer.">
+    <svg viewBox="0 0 340 404" aria-hidden="true">
+      <defs><marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8A7F72"/></marker></defs>
+      <rect class="box app" x="4" y="4" width="332" height="76" rx="12"/>
+      <text x="20" y="32" font-weight="700" font-size="16">Phone: you upload</text>
+      <text class="small" x="20" y="54" font-size="13">sendForReading()</text>
+      <text class="small" x="20" y="71" font-size="12">public/app.js</text>
+      <path class="arrow" d="M170 82 V104"/>
+      <rect class="box ai" x="4" y="106" width="332" height="76" rx="12"/>
+      <text x="20" y="134" font-weight="700" font-size="16">Helper asks Claude</text>
+      <text class="small" x="20" y="156" font-size="13">read() + READ_PROMPT</text>
+      <text class="small" x="20" y="173" font-size="12">api/agent.js · lib/prompts.js</text>
+      <path class="arrow" d="M170 184 V206"/>
+      <rect class="box ai" x="4" y="208" width="332" height="76" rx="12"/>
+      <text x="20" y="236" font-weight="700" font-size="16">Helper checks the reply</text>
+      <text class="small" x="20" y="258" font-size="13">validRead()</text>
+      <text class="small" x="20" y="275" font-size="12">api/agent.js</text>
+      <path class="arrow" d="M170 286 V308"/>
+      <rect class="box app" x="4" y="310" width="332" height="76" rx="12"/>
+      <text x="20" y="338" font-weight="700" font-size="16">App decides what's shown</text>
+      <text class="small" x="20" y="360" font-size="13">handleReadReply() &#8594; suggestCard()</text>
+      <text class="small" x="20" y="377" font-size="12">public/app.js · saved on the phone</text>
+    </svg>
+  </div>
+
+  <h2>The route through the code</h2>
+  <p class="lede">A reference route: three stops, using names you can search for in each file.</p>
+  <ol class="route">
+    <li><strong>The agent's instructions</strong>
+      <span class="where"><code>lib/prompts.js</code>, search <code>"suggested_action"</code> inside <code>READ_PROMPT</code></span>
+      Tells Claude what to send back and in what shape: a short <code>label</code> and a <code>how</code>, worded from the contract's own payment day and amount.</li>
+    <li><strong>The helper checks the reply</strong>
+      <span class="where"><code>api/agent.js</code>, search <code>export function validRead</code></span>
+      The reply has to have the fields the app needs. The suggestion is kept only if it has a real label, and it's trimmed to a sensible length. Otherwise it's dropped, and a bad reply is retried once.</li>
+    <li><strong>The app decides what's shown</strong>
+      <span class="where"><code>public/app.js</code>, search <code>function handleReadReply</code>, then <code>function suggestionCheck</code></span>
+      After Store, the app files the agreement and shows the blue card. The checkbox, How? and keeping list, page and chat in sync are plain app code, with no AI involved.</li>
+  </ol>
+
+  <h2>To change this, start here</h2>
+  <table>
+    <thead><tr><th scope="col">If you want to change…</th><th scope="col">Start in</th></tr></thead>
+    <tbody>
+      <tr><td>How the agent talks, or what it pulls from a contract</td><td><code>lib/prompts.js</code>: <code>VOICE</code>, <code>READ_PROMPT</code>, <code>CHAT_PROMPT</code></td></tr>
+      <tr><td>The Alberta tenancy rule</td><td><code>lib/prompts.js</code>: <code>ALBERTA_RULE</code></td></tr>
+      <tr><td>Notice end date and deliver-by date (calculated, not AI)</td><td><code>public/notice.js</code>: <code>noticeEndDate</code>, <code>deliverBy</code></td></tr>
+      <tr><td>Which AI reads the contracts (e.g. Gemini, or your own model)</td><td><code>lib/ai.js</code>: <code>askAI</code></td></tr>
+      <tr><td>Theme colours and fonts</td><td><code>public/styles.css</code> (<code>[data-theme=…]</code>) and <code>THEME_COLOURS</code> in <code>public/app.js</code></td></tr>
+      <tr><td>Calendar events and reminders</td><td><code>public/calendar.js</code>: <code>buildICS</code>, <code>googleCalendarLink</code></td></tr>
+      <tr><td>Phone contact cards</td><td><code>public/contacts.js</code>: <code>buildVCard</code></td></tr>
+      <tr><td>The new-home celebration post</td><td><code>public/app.js</code>: <code>function celebrate</code></td></tr>
+      <tr><td>Practice-mode replies (no API key)</td><td><code>lib/practice.js</code>: <code>practiceRead</code></td></tr>
+      <tr><td>The fictional demo agreements</td><td><code>tools/make-samples.py</code>, then rerun it</td></tr>
+    </tbody>
+  </table>
+
+  <h2>A practice to reuse</h2>
+  <div class="card">
+    <p><strong>Split every agent feature three ways: what the AI produces, how it's checked, and what the app does with it.</strong></p>
+    <p>Fine Print's spec set the rule early: <em>the AI decides what to say; the app decides what's allowed</em>. The suggested-action feature followed it exactly: a field in <code>READ_PROMPT</code>, a check in <code>validRead</code>, and the card and checkbox in <code>public/app.js</code>. The same split is why the Alberta rule is written into the instructions word for word, and why the notice dates come from <code>noticeEndDate</code> in code, never from the AI.</p>
+    <p>On another agent project, write those three lines for each feature before building it. It shows early what the AI must return, what could go wrong, and what stays fixed whatever the AI says.</p>
+  </div>
+
+  <details>
+    <summary>Run it again</summary>
+    <p>Live: open the Vercel link on your phone, or add it to your home screen. Locally: in the project folder run <code>node dev-server.js</code> and open <code>http://localhost:3000</code>. Without an API key it runs in labelled practice mode with canned replies.</p>
+  </details>
+
+  <p class="foot">Snapshot of the code at commit <code>51f6738</code> (October 2026). The code can move on after this, so search the names above if a line has shifted.</p>
+</main>
+</body>
+</html>

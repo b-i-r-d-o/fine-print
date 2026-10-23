@@ -74,15 +74,15 @@ Build mode: learn
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence:
-Route and stops:
-Edit outcome:
-Reflection:
-Activity mode:
+Activity and evidence: guided static walkthrough (GitHub links on her phone) following the suggested-action feature she asked for during the final review. It connects to her goal of organizing ideas around building an AI agent, through the spec's rule "the AI decides what to say, the app decides what's allowed".
+Route and stops: 1) `lib/prompts.js` `READ_PROMPT` `suggested_action` → 2) `api/agent.js` `validRead` → 3) `public/app.js` `handleReadReply` / `suggestionCheck`. Links sent at commit 51f6738. This was a static walkthrough, with no observed run.
+Edit outcome: optional wording edit offered, and declined ("let's skip").
+Reflection: not asked separately. She chose to skip and move on, and the takeaway was given with the route.
+Activity mode: guided route (static). App map: `devpost/app-map.html` (checked at phone width in light and dark, no horizontal scroll, works offline with no scripts).
 
 ## Revisions
 
