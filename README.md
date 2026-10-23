@@ -72,4 +72,4 @@ Without an API key it runs in clearly labelled **practice mode** with canned rep
 
 ## License
 
-MIT. Fonts: Figtree, Lora and Fredoka, SIL Open Font License (see `public/fonts/`). PDF: jsPDF 2.5.1, MIT (see `public/vendor/`).
+MIT. Fonts: Figtree, Lora and Fredoka, SIL Open Font License (see `public/fonts/`). PDF: jsPDF 2.5.1, MIT; PDF.js 3.11.174, Apache 2.0 (see `public/vendor/`).

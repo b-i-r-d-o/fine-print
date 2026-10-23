@@ -465,3 +465,16 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 .page-thumb figcaption { position: absolute; left: 6px; bottom: 6px; background: var(--accent); color: var(--accent-ink); font: 700 .7rem/1 var(--font); padding: 3px 6px; border-radius: 999px; }
 .thumb-remove { position: absolute; top: -6px; right: -6px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: .9rem; line-height: 1; }
 .chip-strong { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+.original-body { display: flex; flex-direction: column; gap: 8px; }
+.original-open { text-align: center; text-decoration: none; }
+.original-pages .page-thumb { text-decoration: none; }
+
+/* Original viewer */
+.screen-viewer { gap: 10px; }
+.viewer-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.viewer-top .btn { text-decoration: none; }
+.viewer-title { margin: 0; font-weight: 600; font-size: .9rem; color: var(--muted); overflow-wrap: anywhere; }
+.viewer-pages { display: flex; flex-direction: column; gap: 12px; align-items: center; padding-bottom: 24px; }
+.viewer-page { display: block; max-width: 100%; height: auto; background: #fff; border-radius: 4px; box-shadow: 0 6px 18px -10px rgba(0,0,0,.45); }
+.original-pages .page-thumb { border: 0; padding: 0; background: none; }

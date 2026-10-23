@@ -161,6 +161,13 @@ Added during the build at Joann's request.
 ### Write a Simple Agreement (Coming Soon)
 - [ ] The side menu has **Write a simple agreement ▾**: Room or basement rental, Borrowing a vehicle, Loaning money, Cash for work, Bill of sale, Other. Each shows a "coming soon" message noting drafts will be for education and guidance only, to be reviewed with a lawyer.
 
+### Viewing the Original
+Added during the build after Joann found she couldn't open her agreements.
+- [ ] Each agreement keeps its original on the phone: the PDF, or the photographed pages.
+- [ ] The agreement page has **📄 View original PDF** (or **📷 View N photographed pages**), which opens the original inside the app, plus **⬇ Save a copy** to open it in the phone's own PDF viewer.
+- [ ] Agreements stored before this change say "The original wasn't kept for this one. Upload it again to keep a copy." Re-uploading keeps the copy.
+- [ ] Deleting an agreement or Reset demo removes the stored originals.
+
 ### Home List
 - [ ] Each row shows the agreement's file name, its type and party, and its status, such as "Signed" or "Term ended."
 - [ ] An agreement with something to do is highlighted with its pending action, for example "Action pending: deliver notice to landlord."

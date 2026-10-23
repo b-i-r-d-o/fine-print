@@ -148,7 +148,7 @@ Everything the app remembers is saved in the phone browser's **local storage**, 
 | `conversation` (messages for the current agreement) | in memory, plus local storage | each message | stays for the current agreement |
 | `sessions[]` (past chats, each message tagged with the agreement it was about) | local storage | at each sign-in | stays (last 30) |
 | `notice` (draft text, end date) | local storage | when drafted or edited | stays |
-| The uploaded file itself | in memory only, sent once to the helper | at upload | **not kept** (see What Was Simplified) |
+| The uploaded file itself (original PDF, or the shrunk page photos) | **IndexedDB** on the phone (`public/filestore.js`), by agreement id | when the agreement is filed or stored | stays; removed on Delete or Reset demo (build revision: originally not kept) |
 
 A small "Reset demo" link in a corner (hidden in the video) clears everything so the demo can be filmed again from a blank first use.
 
@@ -213,7 +213,7 @@ fine-print/
 - **Demo sign-in buttons** instead of real Google/Facebook accounts, because accounts don't prove the idea (Joann's call). The full version would need an identity service and secure sessions.
 - **One hosted AI, fictional documents** instead of privacy controls and bring-your-own-AI. This is a demo shell. Because only `lib/ai.js` knows which AI is used, a later version could let each user plug in their own key, a private business model, or a model on their own device, without rebuilding the app.
 - **Saved on the phone** instead of a cloud database, because there's a single user and a single demo. The full version would need accounts and a database to sync across devices and household members.
-- **Agreements are filed by name and facts, not by keeping the original file.** Phone browser storage is too small for PDFs. The home list shows the clean file name, status and facts. The full version would keep originals in cloud storage (Dropbox/Google Drive, already on the Later list).
+- ~~Agreements filed by name and facts only~~ **Revised during the build:** originals are kept on the phone in IndexedDB (the browser's larger storage) and shown with an in-app viewer (PDF.js) plus Save a copy. Cloud storage (Dropbox/Google Drive) is still on the Later list.
 - **The document is read once, then only the facts are sent on.** Follow-up chat stays fast and cheap. The full version might re-read the document for clause-level questions.
 - **The notice end date is calculated in code**, because legal correctness shouldn't depend on the AI's arithmetic.
 - **Practice mode for building,** so screens can be built and checked without spending credit or sharing the key. It's never used for the demo.

@@ -6,6 +6,8 @@ import { load, save, clearAll } from './storage.js';
 import { askHelper, todayISO } from './agent.js';
 import { prepareFile, preparePages } from './upload.js';
 import { saveVCard, contactLabel } from './contacts.js';
+import { saveOriginals, getOriginals, deleteOriginals, clearOriginals } from './filestore.js';
+import { renderOriginal } from './viewer.js';
 import { buildNotice, deliverBy, longDate, downloadNoticePDF, NOTICE_FIELDS } from './notice.js';
 
 /* ---------- Themes ---------- */
@@ -54,6 +56,7 @@ window.addEventListener('popstate', (e) => {
   if (name === 'profile') { startProfile({ push: false }); return; }
   if (name === 'agreement') { renderAgreement(load('openAgreement', null)); }
   if (name === 'notice') { renderNotice(); }
+  if (name === 'viewer') { history.back(); return; } // viewer can't be restored from history alone
   show(name, { push: false });
 });
 
@@ -80,7 +83,7 @@ document.querySelectorAll('[data-signin]').forEach((btn) => {
 
 document.getElementById('reset-demo').addEventListener('click', () => {
   clearAll();
-  location.reload();
+  clearOriginals().finally(() => location.reload());
 });
 
 /* ---------- Start choice ---------- */
@@ -745,6 +748,8 @@ async function finishCamera() {
   userSay(`📷 ${photos.length} photographed page${photos.length === 1 ? '' : 's'}`);
   const prepared = await preparePages(photos);
   if (prepared.error) { agentSay(prepared.error); return; }
+  // keep the (shrunk) page photos so they can be viewed later
+  pendingOriginals = prepared.files.map((f) => ({ blob: base64ToBlob(f.data, 'image/jpeg'), name: f.name, type: 'image/jpeg' }));
   await sendForReading(prepared.files);
 }
 
@@ -755,6 +760,14 @@ function retakePrompt(message) {
 }
 
 let current = load('current', null); // the agreement the conversation is about
+let pendingOriginals = null; // the file(s) being read, kept on the phone once filed
+
+function base64ToBlob(b64, type) {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Blob([bytes], { type });
+}
 
 function loaderBubble(text) {
   const el = bubble('agent', text, { speakable: false });
@@ -770,8 +783,22 @@ async function readAgreement(file) {
   if (prepared.error) { agentSay(prepared.error); return; }
   // Same exact file as one already stored? Offer to review it instead of reading it again.
   const existing = prepared.hash && load('agreements', []).find((a) => a.hash === prepared.hash);
-  if (existing) { alreadyStored(existing); return; }
+  if (existing) {
+    if (!existing.hasOriginal) keepMissingOriginal(existing.id, [{ blob: file, name: file.name || 'file', type: prepared.type }]);
+    alreadyStored(existing);
+    return;
+  }
+  pendingOriginals = [{ blob: file, name: file.name || 'file', type: prepared.type === 'application/pdf' ? 'application/pdf' : (file.type || 'image/jpeg') }];
   await sendForReading([prepared]);
+}
+
+// An agreement stored before originals were kept: save the copy now.
+function keepMissingOriginal(id, originals) {
+  saveOriginals(id, originals).then((ok) => {
+    if (!ok) return;
+    save('agreements', load('agreements', []).map((a) => (a.id === id ? { ...a, hasOriginal: true } : a)));
+    agentSay('I\'ve also kept a copy of the original on this phone 📄');
+  });
 }
 
 function alreadyStored(existing) {
@@ -789,7 +816,8 @@ function findSameAgreement(fileName, r) {
     norm(a.facts && a.facts.lease_identifiers) === norm(r.lease_identifiers)) || null;
 }
 
-function storeAgreement(agreement, r) {
+function storeAgreement(agreement, r, originals = null) {
+  if (originals && originals.length) { agreement.hasOriginal = true; saveOriginals(agreement.id, originals); }
   const agreements = load('agreements', []);
   agreements.push(agreement);
   save('agreements', agreements);
@@ -833,14 +861,17 @@ function statusFor(r) {
 }
 
 function handleReadReply(r, sourceName, hash = null) {
+  const originals = pendingOriginals;
+  pendingOriginals = null;
   if (r.readable === false) { retakePrompt(r.message); return; }
-  if (r.is_agreement === false) { offerToStoreOther(r, sourceName, hash); return; }
+  if (r.is_agreement === false) { offerToStoreOther(r, sourceName, hash, originals); return; }
   const fileName = makeFileName(r);
   const same = findSameAgreement(fileName, r);
   if (same) {
     if (hash && !same.hash) { // remember this file's fingerprint for next time
       save('agreements', load('agreements', []).map((a) => (a.id === same.id ? { ...a, hash } : a)));
     }
+    if (originals && !same.hasOriginal) keepMissingOriginal(same.id, originals);
     alreadyStored(same);
     return;
   }
@@ -865,7 +896,7 @@ function handleReadReply(r, sourceName, hash = null) {
     chipsRow([
       { label: 'Store', onClick: () => {
         if (findSameAgreement(fileName, r)) { agentSay(`${fileName} is already stored 🗂️`); return; }
-        storeAgreement(agreement, r);
+        storeAgreement(agreement, r, originals);
         agentSay(`Stored as ${fileName} 🗂️ You'll find it under ${(CATEGORIES.find((c) => c.id === agreement.category) || { label: 'All agreements' }).label}.`);
         if (r.is_new_home_purchase) celebrate(r);
       } },
@@ -873,13 +904,13 @@ function handleReadReply(r, sourceName, hash = null) {
     ]);
     return;
   }
-  storeAgreement(agreement, r);
+  storeAgreement(agreement, r, originals);
   agentSay(`Filed as ${fileName} 🗂️`);
   contactsCard(r.contacts, fileName);
   agentSay(r.message);
 }
 // Not an agreement: say what it looks like and offer to store it. No review, no rejection.
-function offerToStoreOther(r, sourceName, hash) {
+function offerToStoreOther(r, sourceName, hash, originals = null) {
   const desc = (r.description || 'a document').trim();
   agentSay(r.message || `The document you've uploaded looks like ${desc}. Would you like to continue to store this document?`, [
     { label: 'Yes, store it', onClick: () => {
@@ -899,7 +930,7 @@ function offerToStoreOther(r, sourceName, hash) {
         hash,
         addedAt: todayISO(),
       };
-      storeAgreement(doc, { action: 'none' });
+      storeAgreement(doc, { action: 'none' }, originals);
       agentSay(`Stored as ${doc.fileName} 🗂️`);
     } },
     { label: 'No thanks', onClick: () => { userSay('No thanks'); agentSay("No problem, I won't keep it 👍"); } },
@@ -1023,6 +1054,7 @@ function renderAgreement(id) {
   box.append(dl);
 
   if (a.notice) box.append(buildNoticeCard(a));
+  box.append(buildOriginalCard(a));
   const dates = buildDatesCard(f.key_dates_and_actions); if (dates) box.append(dates);
   const contacts = buildContactsCard(f.contacts, a.fileName); if (contacts) box.append(contacts);
 
@@ -1090,7 +1122,74 @@ function renderAgreement(id) {
   box.prepend(top);
 }
 
+// The original file(s): a button for a PDF, the pages themselves for photos.
+function buildOriginalCard(a) {
+  const card = document.createElement('div');
+  card.className = 'card original-card';
+  const t = document.createElement('p'); t.className = 'card-title'; t.textContent = '📄 Original';
+  card.append(t);
+  const body = document.createElement('div'); body.className = 'original-body';
+  body.textContent = 'Loading…';
+  card.append(body);
+  getOriginals(a.id).then((items) => {
+    body.textContent = '';
+    if (!items || !items.length) {
+      const p = document.createElement('p'); p.className = 'card-note';
+      p.textContent = "The original wasn't kept for this one. Upload it again to keep a copy on this phone.";
+      body.append(p);
+      return;
+    }
+    const isPdf = items.length === 1 && /pdf/.test(items[0].type);
+    const open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'btn btn-quiet original-open';
+    open.textContent = isPdf ? '📄 View original PDF' : `📷 View ${items.length} photographed page${items.length === 1 ? '' : 's'}`;
+    open.addEventListener('click', () => openViewer(a, items));
+    body.append(open);
+    if (!isPdf) {
+      const strip = document.createElement('div'); strip.className = 'page-strip original-pages';
+      items.forEach((it, i) => {
+        const fig = document.createElement('button'); fig.type = 'button'; fig.className = 'page-thumb';
+        fig.setAttribute('aria-label', `Open page ${i + 1}`);
+        const img = document.createElement('img'); img.src = URL.createObjectURL(it.blob); img.alt = `Page ${i + 1}`;
+        const cap = document.createElement('figcaption'); cap.textContent = `${i + 1}`;
+        fig.append(img, cap);
+        fig.addEventListener('click', () => openViewer(a, items));
+        strip.append(fig);
+      });
+      body.append(strip);
+    }
+  });
+  return card;
+}
+
+// Show the original inside the app, with a Save a copy button for the phone's own viewer.
+async function openViewer(a, items) {
+  document.getElementById('viewer-title').textContent = a.fileName;
+  const save = document.getElementById('viewer-save');
+  const first = items[0];
+  if (items.length === 1) {
+    save.hidden = false;
+    save.href = URL.createObjectURL(first.blob);
+    save.download = /pdf/.test(first.type) ? a.fileName : a.fileName.replace(/\.pdf$/, '.jpg');
+  } else {
+    save.hidden = true;
+  }
+  const box = document.getElementById('viewer-pages');
+  box.innerHTML = '<p class="card-note">Opening…</p>';
+  show('viewer');
+  try {
+    await renderOriginal(box, items);
+  } catch {
+    box.innerHTML = '';
+    const p = document.createElement('p'); p.className = 'card-note';
+    p.textContent = "Couldn't show it here. Tap Save a copy to open it in your phone's PDF viewer.";
+    box.append(p);
+  }
+}
+
 function deleteAgreement(id) {
+  deleteOriginals(id);
   const a = getAgreement(id);
   save('agreements', load('agreements', []).filter((x) => x.id !== id));
   if (current && current.id === id) { current = null; save('current', null); }
