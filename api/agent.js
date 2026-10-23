@@ -96,6 +96,8 @@ async function read(body) {
     const reply = parseReply(text);
     if (validRead(reply)) {
       reply.page_order = files.length > 1 ? validPageOrder(reply.page_order, files.length) : null;
+      const photos = files.every((f) => f.type !== 'application/pdf');
+      reply.photo_issue = photos && typeof reply.photo_issue === 'string' && reply.photo_issue.trim() ? reply.photo_issue.trim().slice(0, 300) : null;
       return { status: 200, json: { practice: false, reply } };
     }
   }

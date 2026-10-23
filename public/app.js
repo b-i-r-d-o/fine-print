@@ -1052,6 +1052,26 @@ function inPageOrder(files, order) {
 }
 
 function handleReadReply(r, sourceName, hash = null, updateId = null) {
+  // Readable, but a photographed page looks cut off or missing: offer a retake before filing.
+  if (r.photo_issue && r.readable !== false && pendingOriginals && pendingOriginals.every((o) => /image/.test(o.type))) {
+    const taken = pendingOriginals;
+    pendingOriginals = null;
+    agentSay(`Heads up 📷 ${r.photo_issue} Would you like to retake it, or keep going with what I could read?`, [
+      { label: '📷 Retake', onClick: () => {
+        userSay('Retake');
+        if (camera && camera.card) camera.card.remove();
+        camera = { pages: taken.map((o) => o.blob), card: null, target: updateId, existing: 0 };
+        agentSay('Tap × on that page in the tray, then 📷 Next page to take it again. Add any missing page the same way.');
+        renderCameraCard();
+      } },
+      { label: 'Keep going', onClick: () => {
+        userSay('Keep going');
+        pendingOriginals = taken;
+        handleReadReply({ ...r, photo_issue: null }, sourceName, hash, updateId);
+      } },
+    ]);
+    return;
+  }
   const originals = inPageOrder(pendingOriginals, r.page_order);
   pendingOriginals = null;
   if (updateId) { updateFromPages(updateId, r, originals); return; }
