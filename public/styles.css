@@ -29,6 +29,7 @@
   --accent-soft: #E4E8DC;
   --second: #B98C6B;        /* clay */
   --flag: #C9853F;
+  --suggest: #2F62C9;
   --flag-soft: #F6E6CF;
   --bubble-agent: #FFFFFF;
   --bubble-user: #7C8B6F;
@@ -53,6 +54,7 @@
   --accent-soft: #17284A;
   --second: #7FB0FF;
   --flag: #FFB547;
+  --suggest: #8DB4FF;
   --flag-soft: #3A2C12;
   --bubble-agent: #1B2333;
   --bubble-user: #4C8DFF;
@@ -74,6 +76,7 @@
   --accent-soft: #5C2638;
   --second: #8F9459;        /* olive */
   --flag: #A9AE6C;
+  --suggest: #A9C2FF;
   --flag-soft: #4A4A2A;
   --bubble-agent: #3A2330;
   --bubble-user: #A8324D;
@@ -98,6 +101,7 @@
   --accent-soft: #FFE0F1;
   --second: #1E6BFF;        /* electric blue */
   --flag: #00A85A;          /* lime-green (deep enough to read) */
+  --suggest: #1E6BFF;
   --flag-soft: #D6FFE9;
   --bubble-agent: #FFFFFF;
   --bubble-user: #1E6BFF;
@@ -139,6 +143,7 @@
   --accent-soft: #FFE3D6;
   --second: #FF4C00;
   --flag: #C23A00;
+  --suggest: #0B4FB3;
   --flag-soft: #FFE3D6;
   --bubble-agent: #FFFFFF;
   --bubble-user: #041E42;
@@ -499,3 +504,12 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 .action-check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 0; }
 .action-check input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); flex: none; cursor: pointer; }
 .action-check.is-done { color: var(--muted); font-weight: 500; }
+
+/* Suggested action (a tip, softer than a pending action) */
+.suggest-wrap { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+.suggest-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.row-suggest { color: var(--suggest); font-weight: 600; font-size: .82rem; }
+.row-suggest input { accent-color: var(--suggest); }
+.row-suggest.is-done { color: var(--muted); font-weight: 500; }
+.suggest-how { border: 1px solid var(--suggest); color: var(--suggest); background: transparent; border-radius: 999px; padding: 2px 10px; font: inherit; font-size: .78rem; font-weight: 600; cursor: pointer; }
+.suggest-detail { margin: 0 0 0 28px; font-size: .85rem; color: var(--ink); }

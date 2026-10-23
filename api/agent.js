@@ -29,6 +29,10 @@ export function validRead(r) {
   if (!CATEGORIES.includes(r.category)) r.category = 'other';
   if (!Array.isArray(r.contacts)) r.contacts = [];
   if (!Array.isArray(r.key_dates_and_actions)) r.key_dates_and_actions = [];
+  const s = r.suggested_action;
+  r.suggested_action = s && typeof s.label === 'string' && s.label.trim()
+    ? { label: s.label.trim().slice(0, 90), how: typeof s.how === 'string' ? s.how.trim().slice(0, 400) : '' }
+    : null;
   return typeof r.type === 'string' && typeof r.signed === 'boolean';
 }
 

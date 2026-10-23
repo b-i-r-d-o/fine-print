@@ -378,6 +378,8 @@ export function renderList(items) {
     body.append(name, sub);
     const act = actionCheck(a);
     if (act) body.append(act);
+    const tip = suggestionCheck(a, { inList: true });
+    if (tip) body.append(tip);
     const status = document.createElement('span');
     status.className = 'row-status';
     status.textContent = a.status;
@@ -408,6 +410,52 @@ function actionCheck(a) {
   ['click', 'keydown'].forEach((ev) => label.addEventListener(ev, (e) => e.stopPropagation()));
   box.addEventListener('change', () => setActionDone(a.id, box.checked));
   return label;
+}
+
+// A suggested action (blue): a helpful tip from the agreement, with How? and a tick-off box.
+function suggestionCheck(a, { inList }) {
+  const s = a.suggested;
+  if (!s || !s.label) return null;
+  const done = !!a.suggestedDone;
+  const wrap = document.createElement('div');
+  wrap.className = 'suggest-wrap';
+  ['click', 'keydown'].forEach((ev) => wrap.addEventListener(ev, (e) => e.stopPropagation()));
+  const line = document.createElement('div');
+  line.className = 'suggest-line';
+  const label = document.createElement('label');
+  label.className = 'action-check row-suggest' + (done ? ' is-done' : '');
+  const box = document.createElement('input');
+  box.type = 'checkbox';
+  box.checked = done;
+  box.setAttribute('aria-label', done ? `Done: ${s.label}. Untick to undo` : `Mark done: ${s.label}`);
+  const text = document.createElement('span');
+  text.textContent = done ? `✓ Done: ${s.label} · ${prettyDate(a.suggestedDone)}` : `💡 Suggested: ${s.label}`;
+  label.append(box, text);
+  box.addEventListener('change', () => {
+    updateAgreement(a.id, { suggestedDone: box.checked ? todayISO() : null });
+    if (box.checked) agentSay(`Nice ✅ ${s.label} (${a.fileName}).`);
+    renderHome();
+    if (!inList) renderAgreement(a.id);
+  });
+  line.append(label);
+  if (s.how && !done) {
+    if (inList) {
+      const how = document.createElement('button');
+      how.type = 'button';
+      how.className = 'suggest-how';
+      how.textContent = 'How?';
+      how.addEventListener('click', () => agentSay(`💡 ${s.label}: ${s.how}`));
+      line.append(how);
+    } else {
+      const p = document.createElement('p');
+      p.className = 'suggest-detail';
+      p.textContent = s.how;
+      wrap.append(line, p);
+      return wrap;
+    }
+  }
+  wrap.append(line);
+  return wrap;
 }
 
 function setActionDone(id, done) {
@@ -948,7 +996,7 @@ function updateFromPages(id, r, originals) {
   facts.key_dates_and_actions = [...oldDates, ...newDates];
   facts.contacts = [...oldContacts, ...newContacts];
   saveOriginals(id, originals);
-  updateAgreement(id, { facts, hasOriginal: true, status: statusFor(facts) });
+  updateAgreement(id, { facts, hasOriginal: true, status: statusFor(facts), ...(r.suggested_action && !a.suggested ? { suggested: r.suggested_action } : {}) });
   renderHome();
   agentSay(`Updated ${a.fileName} 📄 It now has ${originals.length} page${originals.length === 1 ? '' : 's'}, in the contract's own order.`);
   if (newDates.length) {
@@ -1128,6 +1176,7 @@ function handleReadReply(r, sourceName, hash = null, updateId = null) {
     facts: r,
     hash,
     addedAt: todayISO(),
+    suggested: r.suggested_action || null,
   };
   if (r.action === 'store_or_review') {
     agentSay(r.message);
@@ -1138,6 +1187,7 @@ function handleReadReply(r, sourceName, hash = null, updateId = null) {
         if (findSameAgreement(fileName, r)) { agentSay(`${fileName} is already stored 🗂️`); return; }
         storeAgreement(agreement, r, originals);
         agentSay(`Stored as ${fileName} 🗂️ You'll find it under ${(CATEGORIES.find((c) => c.id === agreement.category) || { label: 'All agreements' }).label}.`);
+        if (r.suggested_action) agentSay(`💡 Suggested next step: ${r.suggested_action.label}. It's on the agreement's page with how to do it, and you can tick it off when it's done.`);
         if (r.is_new_home_purchase) celebrate(r);
         offerCalendar(r.key_dates_and_actions, fileName, r.party_name, r.term_end);
       } },
@@ -1273,6 +1323,8 @@ function renderAgreement(id) {
 
   const act = actionCheck(a);
   if (act) box.append(act);
+  const tip = suggestionCheck(a, { inList: false });
+  if (tip) box.append(tip);
   if (f.summary) { const p = document.createElement('p'); p.className = 'detail-summary'; p.textContent = f.summary; box.append(p); }
 
   const dl = document.createElement('dl');
