@@ -70,7 +70,7 @@ _Any of these may appear in the app as a visible "coming soon" control, per the 
 - "Learn about contract topics" path.
 - Real Google / Facebook sign-in and accounts.
 - Learning over time from your answers and usage.
-- Calendar integration for key dates, linked to the contract and clause.
+- Linked calendar integration (Google, Outlook) for key dates, linked to the contract and clause. The demo adds dates through a calendar file.
 - Real folder linking (desktop), Dropbox / Google Drive / phone files storage.
 - Comparing a new contract version against the previous one.
 - Deep built-in knowledge for every common contract type and province.

@@ -15,6 +15,7 @@ Created by Joann Dobish for Devpost's **Build With AI: Basics** hackathon, Octob
 - **Asks you a plain question** about where you stand. For example: *"This fixed-term tenancy ended 2 months ago. Are you looking to renew with your landlord?"*
 - **Helps you act.** Say "No, I want to move out" and it explains Alberta's notice rule, asks about anything missing (like the landlord's address), and drafts an editable **Notice to End Tenancy** as a PDF. The end date and deliver-by date are calculated in code.
 - **Lists dates and actions** for a mortgage (payments, tax and insurance proof, renewal), and offers a **celebration post** for a new home, without your address, amounts or lender.
+- **Adds dates to your calendar** as a calendar file, with reminders. Repeating dates (like payments) stop when the agreement ends.
 - **Saves contacts** from an agreement to your phone contacts, with a note about which agreement they came from.
 - **Keeps each agreement's page and conversation history**, so you can continue a past chat, start a new one, or delete it.
 - **Five themes:** Linen, Midnight, Heirloom, Popstar and Large Script (larger text, high contrast). It also has 🔊 read aloud.

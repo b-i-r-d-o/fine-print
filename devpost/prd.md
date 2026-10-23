@@ -104,6 +104,9 @@ Added during the build at Joann's request.
 - [ ] **Save to phone contacts** works for real. It gives the phone a contact card that, when opened, offers "Add to contacts," with a note saying which agreement it came from (e.g. "Saved by Fine Print from: 2025-08-15-drop-tine-residential-lease.pdf (Property manager)").
 - [ ] **Email contacts** (Gmail, Outlook) is a visible "coming soon" button.
 
+### Add Dates to Calendar
+After an agreement is stored, the agent asks: "Would you like me to add these N dates to your calendar? Each one gets a reminder." Yes gives a calendar file (.ics) the phone opens with "Add to Calendar", and No says they can add the dates any time from the agreement's page. The agreement page's dates card has the same **📅 Add to calendar** button. The move-out notice offers its deliver-by date and the tenancy end date the same way. Only upcoming or repeating dates go in, and past dates are left out. Repeating dates (monthly payments, yearly tasks) repeat until the agreement's term ends. Each event says which agreement it came from and that it's guidance, not legal advice. Linking straight into Google or Outlook calendar is a coming-soon chip, because it needs a calendar sign-in.
+
 ### Rental Agreement: Move-Out Help
 Source: `scope.md > The Unique Kernel`.
 - [ ] The agent notices that the fixed term ended, says how long ago relative to today, and asks whether the user wants to renew.
@@ -219,7 +222,7 @@ Theme switching, demo sign-in, profile setup, agreement upload (file or page-by-
 - **Age range:** tunes which agreements to expect and how much to explain, without being presumptuous.
 - **Learn path:** contract topics matched to life stage, such as RRSP agreements versus truck lease payments.
 - **Pre-signing review:** 5 highlights tied to the profile, relevance taps, "are you okay with this?" questions, and an issuer summary.
-- **Calendar integration** for key dates, linked to the contract and clause.
+- **Linked calendar integration** (Google, Outlook) for key dates, linked to the contract and clause. The demo makes a calendar file instead.
 - **Learning over time** from answers and usage.
 - **Folder linking and cloud storage** with Dropbox, Google Drive, or phone files.
 - **Version comparison** for new contract versions.

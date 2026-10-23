@@ -105,6 +105,9 @@ PRD ref: `prd.md > Agreement Reading`, `prd.md > Rental Agreement: Move-Out Help
 ### Contacts
 `public/contacts.js`, `public/app.js`. Implements `prd.md > Contacts From Agreements`. The `read` reply includes `contacts[]` for the other party. Each gets a vCard 3.0 (`.vcf`) built on the phone with a `NOTE` naming the source agreement. Tapping "Save to phone contacts" downloads it, and the phone offers to add it. "Email contacts" is a coming-soon chip.
 
+### Calendar
+`public/calendar.js`, `public/app.js`. Implements `prd.md > Add Dates to Calendar`. `whenIs()` turns each `key_dates_and_actions` date into the next occurrence: `YYYY-MM-DD` (skipped if past), "Monthly on the 15th" (`RRULE:FREQ=MONTHLY`), and "Every year by July 31" or "Every year in November" (`FREQ=YEARLY`). Other wording is skipped, and the read prompt asks for these forms. Repeating events get `UNTIL` = `term_end`, and are left out if the term has already ended. `buildICS()` writes an iCalendar 2.0 file of all-day events, each with a `DESCRIPTION` naming the source agreement and a `VALARM` reminder (3 days before one-off dates, 1 day before repeating ones). `saveICS()` downloads it like the contact card. No calendar account or permission is needed.
+
 ### Sessions, Agreement Page and Duplicates
 `public/app.js`, `public/upload.js`, `public/index.html`. Implements `prd.md > Sessions, Agreement Pages and Duplicates`.
 - Every chat message carries `about` (the agreement id it concerns). On demo sign-in, the current chat is archived to `sessions[]` (last 30 kept) and a fresh chat starts with a welcome-back summary.

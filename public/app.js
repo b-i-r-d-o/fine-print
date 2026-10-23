@@ -6,6 +6,7 @@ import { load, save, clearAll } from './storage.js';
 import { askHelper, todayISO } from './agent.js';
 import { prepareFile, preparePages } from './upload.js';
 import { saveVCard, contactLabel } from './contacts.js';
+import { saveICS, calendarItems } from './calendar.js';
 import { saveOriginals, getOriginals, deleteOriginals, clearOriginals } from './filestore.js';
 import { renderOriginal } from './viewer.js';
 import { buildNotice, deliverBy, longDate, downloadNoticePDF, NOTICE_FIELDS } from './notice.js';
@@ -504,7 +505,7 @@ function renderLog(messages) {
   chatEl.innerHTML = '';
   messages.forEach((m) => {
     if (m.kind === 'contacts') { const c = buildContactsCard(m.contacts, m.source); if (c) chatEl.appendChild(c); return; }
-    if (m.kind === 'dates') { const c = buildDatesCard(m.items); if (c) chatEl.appendChild(c); return; }
+    if (m.kind === 'dates') { const c = buildDatesCard(m.items, m.source, m.party, m.until); if (c) chatEl.appendChild(c); return; }
     if (m.kind === 'post') { const p = document.createElement('div'); p.className = 'card post-card'; const t = document.createElement('p'); t.className = 'post-text'; t.textContent = m.post; p.append(t); chatEl.appendChild(p); return; }
     if (m.kind === 'notice') { const a = getAgreement(m.about); if (a && a.notice) chatEl.appendChild(buildNoticeCard(a)); return; }
     if (!m.text) return;
@@ -621,16 +622,16 @@ function buildContactsCard(contacts, source) {
   return card;
 }
 
-function datesCard(items) {
-  const card = buildDatesCard(items);
+function datesCard(items, source, party, until) {
+  const card = buildDatesCard(items, source, party, until);
   if (!card) return;
   chatEl.appendChild(card);
   scrollDown();
-  chatLog.push({ role: 'agent', kind: 'dates', items, about: current ? current.id : null });
+  chatLog.push({ role: 'agent', kind: 'dates', items, source, party, until, about: current ? current.id : null });
   save('chat', chatLog);
 }
 
-function buildDatesCard(items) {
+function buildDatesCard(items, source, party, until) {
   if (!items || !items.length) return null;
   const card = document.createElement('div');
   card.className = 'card card-dates';
@@ -647,7 +648,48 @@ function buildDatesCard(items) {
     ul.append(li);
   });
   card.append(ul);
+  const upcoming = calendarItems(items, todayISO(), until);
+  if (upcoming.length && source) {
+    const actions = document.createElement('div');
+    actions.className = 'contact-actions';
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'chip';
+    add.textContent = '📅 Add to calendar';
+    add.addEventListener('click', () => { addToCalendar(items, source, party, until); add.textContent = 'Calendar file ready ✓'; });
+    const linked = document.createElement('button');
+    linked.type = 'button';
+    linked.className = 'chip chip-soon';
+    linked.append('Linked calendar ');
+    const t = document.createElement('span'); t.className = 'tag tag-soon'; t.textContent = 'Coming soon';
+    linked.append(t);
+    linked.addEventListener('click', () => agentSay('Adding straight into a linked Google or Outlook calendar is coming soon 📆. The calendar file works today.'));
+    actions.append(add, linked);
+    const note = document.createElement('p');
+    note.className = 'card-note';
+    const skipped = items.length - upcoming.length;
+    note.textContent = `${upcoming.length} upcoming or repeating date${upcoming.length === 1 ? '' : 's'}, each with a reminder and a note that it came from ${source}.${skipped ? ` ${skipped} past date${skipped === 1 ? '' : 's'} left out.` : ''}`;
+    card.append(actions, note);
+  }
   return card;
+}
+
+function addToCalendar(items, source, party, until = null) {
+  saveICS(items, { source, party, until, todayISO: todayISO() });
+}
+
+// After storing: offer to put the agreement's upcoming dates in the calendar.
+function offerCalendar(items, source, party, until) {
+  const n = calendarItems(items, todayISO(), until).length;
+  if (!n) return;
+  agentSay(`Would you like me to add ${n === 1 ? 'this date' : `these ${n} dates`} to your calendar? 📅 Each one gets a reminder.`, [
+    { label: 'Yes, add them', onClick: () => {
+      userSay('Yes, add them');
+      addToCalendar(items, source, party, until);
+      agentSay('Your calendar file is ready 📅 Open it and tap Add to Calendar. Each event notes which agreement it came from.');
+    } },
+    { label: 'No thanks', onClick: () => { userSay('No thanks'); agentSay("No problem 👍 You can add them any time from the agreement's page."); } },
+  ]);
 }
 
 function prettyDate(s) {
@@ -891,7 +933,7 @@ function handleReadReply(r, sourceName, hash = null) {
   };
   if (r.action === 'store_or_review') {
     agentSay(r.message);
-    datesCard(r.key_dates_and_actions);
+    datesCard(r.key_dates_and_actions); // the agent asks about the calendar after Store
     contactsCard(r.contacts, fileName);
     chipsRow([
       { label: 'Store', onClick: () => {
@@ -899,6 +941,7 @@ function handleReadReply(r, sourceName, hash = null) {
         storeAgreement(agreement, r, originals);
         agentSay(`Stored as ${fileName} 🗂️ You'll find it under ${(CATEGORIES.find((c) => c.id === agreement.category) || { label: 'All agreements' }).label}.`);
         if (r.is_new_home_purchase) celebrate(r);
+        offerCalendar(r.key_dates_and_actions, fileName, r.party_name, r.term_end);
       } },
       { label: 'Review', soon: true, keep: true, onClick: () => agentSay('A full review is coming soon 🔍. You can still tap Store.') },
     ]);
@@ -1055,7 +1098,7 @@ function renderAgreement(id) {
 
   if (a.notice) box.append(buildNoticeCard(a));
   box.append(buildOriginalCard(a));
-  const dates = buildDatesCard(f.key_dates_and_actions); if (dates) box.append(dates);
+  const dates = buildDatesCard(f.key_dates_and_actions, a.fileName, f.party_name, f.term_end); if (dates) box.append(dates);
   const contacts = buildContactsCard(f.contacts, a.fileName); if (contacts) box.append(contacts);
 
   // Conversations about this agreement: one collapsible section each, newest open.
@@ -1335,7 +1378,17 @@ function noticeReady(id) {
   const by = a.notice.deliverBy ? ` Make sure ${a.notice.to || 'your landlord'} gets it by ${longDate(a.notice.deliverBy)} so your tenancy ends ${longDate(a.notice.endISO)}.` : '';
   agentSay(`The notice is ready as a PDF to print and mail or drop off, or email if that's the agreed contact method 📬 Next step: deliver it to your landlord.${by}`, [
     { label: 'Get PDF', keep: true, onClick: () => getPDF(id) },
+    ...(a.notice.deliverBy ? [{ label: '📅 Add to calendar', keep: true, onClick: () => {
+      addToCalendar(noticeDates(a), a.fileName, a.party);
+      agentSay('Your calendar file is ready 📅 Open it and tap Add to Calendar.');
+    } }] : []),
   ]);
+}
+
+function noticeDates(a) {
+  const out = [{ date: a.notice.deliverBy, action: `Deliver notice to end tenancy to ${a.notice.to || 'landlord'}` }];
+  if (a.notice.endISO) out.push({ date: a.notice.endISO, action: 'Tenancy ends: move out and return keys' });
+  return out;
 }
 
 /* ---------- Notice screen (view / edit) ---------- */
