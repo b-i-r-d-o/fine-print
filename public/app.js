@@ -6,7 +6,7 @@ import { load, save, clearAll } from './storage.js';
 import { askHelper, todayISO } from './agent.js';
 import { prepareFile, preparePages } from './upload.js';
 import { saveVCard, contactLabel } from './contacts.js';
-import { saveICS, calendarItems, icsFileName } from './calendar.js';
+import { calendarItems, icsFileName, icsBlob, describeWhen, googleCalendarLink } from './calendar.js';
 import { saveOriginals, getOriginals, deleteOriginals, clearOriginals } from './filestore.js';
 import { renderOriginal } from './viewer.js';
 import { buildNotice, deliverBy, longDate, downloadNoticePDF, noticePDFBlob, NOTICE_FILE, NOTICE_FIELDS } from './notice.js';
@@ -657,7 +657,7 @@ function buildDatesCard(items, source, party, until) {
     add.type = 'button';
     add.className = 'chip';
     add.textContent = '📅 Add to calendar';
-    add.addEventListener('click', () => { addToCalendar(items, source, party, until); add.textContent = 'Calendar file ready ✓'; });
+    add.addEventListener('click', () => openCalendarView({ name: icsFileName(source), items, source, party, until }));
     const linked = document.createElement('button');
     linked.type = 'button';
     linked.className = 'chip chip-soon';
@@ -699,12 +699,12 @@ function buildFileCard(f) {
   if (isPDF) sub.textContent = 'PDF · tap to open';
   else {
     const n = calendarItems(f.items, todayISO(), f.until).length;
-    sub.textContent = `Calendar file · ${n} event${n === 1 ? '' : 's'} · tap to open in your calendar`;
+    sub.textContent = `Calendar file · ${n} event${n === 1 ? '' : 's'} · tap to open`;
   }
   text.append(name, sub);
   const open = document.createElement('span'); open.className = 'file-open'; open.textContent = 'Open';
   btn.append(icon, text, open);
-  btn.addEventListener('click', () => (isPDF ? openNoticePDF(f.about) : addToCalendar(f.items, f.source, f.party, f.until)));
+  btn.addEventListener('click', () => (isPDF ? openNoticePDF(f.about) : openCalendarView(f)));
   return btn;
 }
 
@@ -719,8 +719,40 @@ async function openNoticePDF(id) {
   }
 }
 
-function addToCalendar(items, source, party, until = null) {
-  saveICS(items, { source, party, until, todayISO: todayISO() });
+// The calendar file, opened inside the app: every event with its own "Add to Google Calendar"
+// button (opens the calendar with the event filled in), plus Save for Apple/Outlook calendars.
+function openCalendarView(f) {
+  const info = { source: f.source, party: f.party, until: f.until || null, todayISO: todayISO() };
+  const events = calendarItems(f.items, info.todayISO, info.until);
+  document.getElementById('viewer-title').textContent = f.name;
+  const save = document.getElementById('viewer-save');
+  save.hidden = false;
+  save.textContent = '⬇ Save calendar file';
+  save.href = URL.createObjectURL(icsBlob(f.items, info));
+  save.download = f.name;
+  const box = document.getElementById('viewer-pages');
+  box.innerHTML = '';
+  const list = document.createElement('div');
+  list.className = 'cal-list';
+  events.forEach((it) => {
+    const row = document.createElement('div');
+    row.className = 'card cal-event';
+    const when = document.createElement('p'); when.className = 'cal-when'; when.textContent = `📅 ${describeWhen(it)}`;
+    const what = document.createElement('p'); what.className = 'cal-what'; what.textContent = it.action;
+    const add = document.createElement('a');
+    add.className = 'chip';
+    add.href = googleCalendarLink(it, info);
+    add.target = '_blank';
+    add.rel = 'noopener';
+    add.textContent = 'Add to Google Calendar';
+    row.append(when, what, add);
+    list.append(row);
+  });
+  const note = document.createElement('p');
+  note.className = 'card-note';
+  note.textContent = `Each event notes it came from ${f.source}. On iPhone or with Outlook, tap Save calendar file to add them all at once.`;
+  box.append(list, note);
+  show('viewer');
 }
 
 // After storing: offer to put the agreement's upcoming dates in the calendar.
@@ -730,9 +762,10 @@ function offerCalendar(items, source, party, until) {
   agentSay(`Would you like me to add ${n === 1 ? 'this date' : `these ${n} dates`} to your calendar? 📅 Each one gets a reminder.`, [
     { label: 'Yes, add them', onClick: () => {
       userSay('Yes, add them');
-      addToCalendar(items, source, party, until);
-      agentSay('Your calendar file is ready 📅 Open it and tap Add to Calendar. Each event notes which agreement it came from.');
-      fileCard({ file: 'ics', name: icsFileName(source), items, source, party, until, about: current ? current.id : null });
+      agentSay('Here are your dates 📅 Tap Add on each one to put it in your calendar. The calendar file stays in the chat, so you can open it again any time.');
+      const f = { file: 'ics', name: icsFileName(source), items, source, party, until, about: current ? current.id : null };
+      fileCard(f);
+      openCalendarView(f);
     } },
     { label: 'No thanks', onClick: () => { userSay('No thanks'); agentSay("No problem 👍 You can add them any time from the agreement's page."); } },
   ]);
@@ -1256,6 +1289,7 @@ function buildOriginalCard(a) {
 async function openViewer(a, items) {
   document.getElementById('viewer-title').textContent = a.fileName;
   const save = document.getElementById('viewer-save');
+  save.textContent = '⬇ Save a copy';
   const first = items[0];
   if (items.length === 1) {
     save.hidden = false;
@@ -1409,9 +1443,13 @@ async function getPDF(id, btn) {
   const a = getAgreement(id);
   if (!a || !a.notice) return;
   try {
+    if (!btn) { // from the chat: show the file in the chat and open it in the app
+      fileCard({ file: 'notice', name: NOTICE_FILE, about: id });
+      await openNoticePDF(id);
+      return;
+    }
     await downloadNoticePDF(a.notice);
-    if (btn) btn.textContent = 'PDF ready ✓';
-    else fileCard({ file: 'notice', name: NOTICE_FILE, about: id });
+    btn.textContent = 'PDF ready ✓';
   } catch {
     agentSay("I couldn't make the PDF just now. Try again in a moment?");
   }
@@ -1426,9 +1464,10 @@ function noticeReady(id) {
   agentSay(`The notice is ready as a PDF to print and mail or drop off, or email if that's the agreed contact method 📬 Next step: deliver it to your landlord.${by}`, [
     { label: 'Get PDF', keep: true, onClick: () => getPDF(id) },
     ...(a.notice.deliverBy ? [{ label: '📅 Add to calendar', keep: true, onClick: () => {
-      addToCalendar(noticeDates(a), a.fileName, a.party);
-      agentSay('Your calendar file is ready 📅 Open it and tap Add to Calendar.');
-      fileCard({ file: 'ics', name: icsFileName(a.fileName), items: noticeDates(a), source: a.fileName, party: a.party, about: id });
+      agentSay('Here are your dates 📅 Tap Add on each one to put it in your calendar.');
+      const f = { file: 'ics', name: icsFileName(a.fileName), items: noticeDates(a), source: a.fileName, party: a.party, about: id };
+      fileCard(f);
+      openCalendarView(f);
     } }] : []),
   ]);
 }

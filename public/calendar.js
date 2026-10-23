@@ -45,7 +45,7 @@ export function whenIs(text, todayISO) {
     const day = m[3] ? Number(m[3]) : 1;
     let y = ty;
     if (ymd(y, mo, day) < today) y += 1;
-    return { start: [y, mo, Math.min(day, daysIn(y, mo))], rrule: `FREQ=YEARLY;BYMONTH=${mo};BYMONTHDAY=${day}` };
+    return { start: [y, mo, Math.min(day, daysIn(y, mo))], rrule: `FREQ=YEARLY;BYMONTH=${mo};BYMONTHDAY=${day}`, monthOnly: !m[3] };
   }
   return null;
 }
@@ -91,6 +91,38 @@ export function buildICS(items, { source, party, todayISO, until = null }) {
 
 export function icsFileName(source) {
   return `${String(source || 'dates').replace(/\.[a-z]+$/i, '').replace(/[^\w\- ]+/g, '').trim() || 'dates'}.ics`;
+}
+
+const DAY_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const ord = (n) => `${n}${[, 'st', 'nd', 'rd'][n % 100 >> 3 ^ 1 && n % 10] || 'th'}`;
+
+/** Plain words for when an event happens, e.g. "Every month on the 15th, until Oct 15, 2030". */
+export function describeWhen(it) {
+  const [y, m, d] = it.when.start;
+  const pretty = (yy, mm, dd) => `${DAY_NAMES[mm - 1].slice(0, 3)} ${dd}, ${yy}`;
+  const until = ((it.when.rrule || '').match(/UNTIL=(\d{4})(\d{2})(\d{2})/) || []).slice(1).map(Number);
+  const tail = until.length ? `, until ${pretty(...until)}` : '';
+  if (/FREQ=MONTHLY/.test(it.when.rrule || '')) return `Every month on the ${ord(d)}, from ${pretty(y, m, d)}${tail}`;
+  if (/FREQ=YEARLY/.test(it.when.rrule || '') && it.when.monthOnly) return `Every year in ${DAY_NAMES[m - 1]} (on the 1st), from ${y}${tail}`;
+  if (/FREQ=YEARLY/.test(it.when.rrule || '')) return `Every year on ${DAY_NAMES[m - 1]} ${d}, from ${y}${tail}`;
+  return pretty(y, m, d);
+}
+
+/** A link that opens Google Calendar with this event filled in (no file, no download). */
+export function googleCalendarLink(it, { source, party }) {
+  const [y, m, d] = it.when.start;
+  const p = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: it.action,
+    dates: `${ymd(y, m, d)}/${ymd(...addDays(y, m, d, 1))}`,
+    details: `From Fine Print: ${source}${party ? ` (${party})` : ''}.\nGuidance only, not legal advice. Check the agreement for details.`,
+  });
+  if (it.when.rrule) p.set('recur', `RRULE:${it.when.rrule}`);
+  return `https://calendar.google.com/calendar/render?${p.toString()}`;
+}
+
+export function icsBlob(items, info) {
+  return new Blob([buildICS(items, info)], { type: 'text/calendar;charset=utf-8' });
 }
 
 // Hand the file to the phone, the same way contact cards are saved.

@@ -473,7 +473,7 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 /* Original viewer */
 .screen-viewer { gap: 10px; }
 .viewer-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.viewer-top .btn { text-decoration: none; }
+.viewer-top .btn { text-decoration: none; color: var(--ink); }
 .viewer-title { margin: 0; font-weight: 600; font-size: .9rem; color: var(--muted); overflow-wrap: anywhere; }
 .viewer-pages { display: flex; flex-direction: column; gap: 12px; align-items: center; padding-bottom: 24px; }
 .viewer-page { display: block; max-width: 100%; height: auto; background: #fff; border-radius: 4px; box-shadow: 0 6px 18px -10px rgba(0,0,0,.45); }
@@ -486,3 +486,11 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 .file-card .file-text strong { overflow-wrap: anywhere; }
 .file-card .file-text .muted { font-size: .78rem; }
 .file-card .file-open { font-weight: 600; color: var(--accent); white-space: nowrap; }
+
+/* Calendar file opened in the app */
+.cal-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.cal-event { gap: 6px; }
+.cal-event .chip { align-self: flex-start; text-decoration: none; }
+.cal-when { margin: 0; font-weight: 700; font-size: .9rem; }
+.cal-what { margin: 0; }
+.screen-viewer > .viewer-pages > .card-note { align-self: stretch; }

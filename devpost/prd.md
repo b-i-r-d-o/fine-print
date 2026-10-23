@@ -107,7 +107,7 @@ Added during the build at Joann's request.
 ### Add Dates to Calendar
 After an agreement is stored, the agent asks: "Would you like me to add these N dates to your calendar? Each one gets a reminder." Yes gives a calendar file (.ics) the phone opens with "Add to Calendar", and No says they can add the dates any time from the agreement's page. The agreement page's dates card has the same **📅 Add to calendar** button. The move-out notice offers its deliver-by date and the tenancy end date the same way. Only upcoming or repeating dates go in, and past dates are left out. Repeating dates (monthly payments, yearly tasks) repeat until the agreement's term ends. Each event says which agreement it came from and that it's guidance, not legal advice. Linking straight into Google or Outlook calendar is a coming-soon chip, because it needs a calendar sign-in.
 
-Whenever the agent makes a file (the notice PDF or a calendar file), the chat shows it as a file card with its name and **Open**, so it can be reopened later: the PDF in the app's viewer, and the calendar file in the phone's calendar.
+Whenever the agent makes a file (the notice PDF or a calendar file), the chat shows it as a file card with its name and **Open**, and it opens inside the app, with no trip to Downloads. The PDF shows in the viewer with Save a copy. The calendar file lists each event in plain words with an **Add to Google Calendar** button (the calendar opens with the event filled in), plus **Save calendar file** for iPhone and Outlook.
 
 ### Rental Agreement: Move-Out Help
 Source: `scope.md > The Unique Kernel`.
