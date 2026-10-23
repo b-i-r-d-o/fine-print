@@ -413,7 +413,7 @@ function actionCheck(a) {
 }
 
 // A suggested action (blue): a helpful tip from the agreement, with How? and a tick-off box.
-function suggestionCheck(a, { inList }) {
+function suggestionCheck(a, { inList, onChange = null }) {
   const s = a.suggested;
   if (!s || !s.label) return null;
   const done = !!a.suggestedDone;
@@ -435,7 +435,8 @@ function suggestionCheck(a, { inList }) {
     updateAgreement(a.id, { suggestedDone: box.checked ? todayISO() : null });
     if (box.checked) agentSay(`Nice ✅ ${s.label} (${a.fileName}).`);
     renderHome();
-    if (!inList) renderAgreement(a.id);
+    if (onChange) onChange();
+    else if (!inList) renderAgreement(a.id);
   });
   line.append(label);
   if (s.how && !done) {
@@ -456,6 +457,28 @@ function suggestionCheck(a, { inList }) {
   }
   wrap.append(line);
   return wrap;
+}
+
+// The suggestion as a card in the chat, so it's seen right when the agreement is stored.
+function suggestCard(id) {
+  const card = buildSuggestCard(id);
+  if (!card) return;
+  chatEl.appendChild(card);
+  scrollDown();
+  chatLog.push({ role: 'agent', kind: 'suggest', about: id });
+  save('chat', chatLog);
+}
+
+function buildSuggestCard(id) {
+  const a = getAgreement(id);
+  if (!a || !a.suggested) return null;
+  const card = document.createElement('div');
+  card.className = 'card card-suggest';
+  const t = document.createElement('p'); t.className = 'card-title'; t.textContent = '💡 Suggested next step';
+  const tip = suggestionCheck(a, { inList: false, onChange: () => { const fresh = buildSuggestCard(id); if (fresh) card.replaceWith(fresh); } });
+  const note = document.createElement('p'); note.className = 'card-note'; note.textContent = `Optional · from ${a.fileName}. Tick it when it's done.`;
+  card.append(t, tip, note);
+  return card;
 }
 
 function setActionDone(id, done) {
@@ -583,6 +606,7 @@ function renderLog(messages) {
     if (m.kind === 'contacts') { const c = buildContactsCard(m.contacts, m.source); if (c) chatEl.appendChild(c); return; }
     if (m.kind === 'dates') { const c = buildDatesCard(m.items, m.source, m.party, m.until); if (c) chatEl.appendChild(c); return; }
     if (m.kind === 'post') { const p = document.createElement('div'); p.className = 'card post-card'; const t = document.createElement('p'); t.className = 'post-text'; t.textContent = m.post; p.append(t); chatEl.appendChild(p); return; }
+    if (m.kind === 'suggest') { const c = buildSuggestCard(m.about); if (c) chatEl.appendChild(c); return; }
     if (m.kind === 'file') { const c = buildFileCard(m); if (c) chatEl.appendChild(c); return; }
     if (m.kind === 'notice') { const a = getAgreement(m.about); if (a && a.notice) chatEl.appendChild(buildNoticeCard(a)); return; }
     if (!m.text) return;
@@ -1187,7 +1211,7 @@ function handleReadReply(r, sourceName, hash = null, updateId = null) {
         if (findSameAgreement(fileName, r)) { agentSay(`${fileName} is already stored 🗂️`); return; }
         storeAgreement(agreement, r, originals);
         agentSay(`Stored as ${fileName} 🗂️ You'll find it under ${(CATEGORIES.find((c) => c.id === agreement.category) || { label: 'All agreements' }).label}.`);
-        if (r.suggested_action) agentSay(`💡 Suggested next step: ${r.suggested_action.label}. It's on the agreement's page with how to do it, and you can tick it off when it's done.`);
+        if (r.suggested_action) suggestCard(agreement.id);
         if (r.is_new_home_purchase) celebrate(r);
         offerCalendar(r.key_dates_and_actions, fileName, r.party_name, r.term_end);
       } },

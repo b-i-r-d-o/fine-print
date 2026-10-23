@@ -513,3 +513,6 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 .row-suggest.is-done { color: var(--muted); font-weight: 500; }
 .suggest-how { border: 1px solid var(--suggest); color: var(--suggest); background: transparent; border-radius: 999px; padding: 2px 10px; font: inherit; font-size: .78rem; font-weight: 600; cursor: pointer; }
 .suggest-detail { margin: 0 0 0 28px; font-size: .85rem; color: var(--ink); }
+.card-suggest { border-color: var(--suggest); }
+.card-suggest .card-title { color: var(--suggest); }
+.card-suggest .suggest-wrap { margin-top: 0; }
