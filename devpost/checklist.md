@@ -68,6 +68,7 @@ Build mode: learn
 
 ## Final Review
 
+- [ ] Pending action can be marked complete: a checkbox beside "⚑ Action pending" on the home and category lists and on the agreement page. Ticking it shows "✓ Done: … · date", and unticking makes it pending again (Joann, kick-the-tires)
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

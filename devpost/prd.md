@@ -104,6 +104,9 @@ Added during the build at Joann's request.
 - [ ] **Save to phone contacts** works for real. It gives the phone a contact card that, when opened, offers "Add to contacts," with a note saying which agreement it came from (e.g. "Saved by Fine Print from: 2025-08-15-drop-tine-residential-lease.pdf (Property manager)").
 - [ ] **Email contacts** (Gmail, Outlook) is a visible "coming soon" button.
 
+### Completing an Action
+A pending action ("⚑ Action pending: deliver notice to landlord") has a checkbox wherever it shows: the home and category lists, and the agreement page. Ticking it marks it complete ("✓ Done: deliver notice to landlord · Oct 23, 2026"), clears the pending flag, and the agent confirms in the chat. Ticking it in the list doesn't open the agreement. Unticking makes it pending again.
+
 ### Add a Forgotten Page
 A photographed agreement's page has **📷 Add a page** under its pages ("Forgot a page? Add it and I'll update the dates and contacts."). It opens the camera tray in the chat with the stored pages already in it (titled "Adding pages to <file name>"). The user photographs the missing page(s), and **Done, update it** reads them all again in the contract's page order. The agreement is updated in place, not duplicated: earlier dates and contacts are kept and new ones added. The agent says how many pages it now has, shows only the new dates and contacts (or says there were none), and offers to add new dates to the calendar.
 

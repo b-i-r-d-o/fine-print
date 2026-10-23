@@ -494,3 +494,8 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 .cal-when { margin: 0; font-weight: 700; font-size: .9rem; }
 .cal-what { margin: 0; }
 .screen-viewer > .viewer-pages > .card-note { align-self: stretch; }
+
+/* Pending action with a "mark complete" checkbox */
+.action-check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 0; }
+.action-check input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); flex: none; cursor: pointer; }
+.action-check.is-done { color: var(--muted); font-weight: 500; }

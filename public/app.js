@@ -376,12 +376,8 @@ export function renderList(items) {
     sub.className = 'row-sub';
     sub.textContent = [a.typeLabel, a.party].filter(Boolean).join(' · ');
     body.append(name, sub);
-    if (a.pendingAction) {
-      const act = document.createElement('p');
-      act.className = 'row-action';
-      act.textContent = `⚑ Action pending: ${a.pendingAction}`;
-      body.append(act);
-    }
+    const act = actionCheck(a);
+    if (act) body.append(act);
     const status = document.createElement('span');
     status.className = 'row-status';
     status.textContent = a.status;
@@ -393,6 +389,38 @@ export function renderList(items) {
     row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAgreement(a.id); } });
     list.appendChild(row);
   });
+}
+
+// A pending action with a checkbox to mark it complete (and untick to undo).
+function actionCheck(a) {
+  const done = !a.pendingAction && a.doneAction;
+  if (!a.pendingAction && !done) return null;
+  const label = document.createElement('label');
+  label.className = 'row-action action-check' + (done ? ' is-done' : '');
+  const box = document.createElement('input');
+  box.type = 'checkbox';
+  box.checked = !!done;
+  box.setAttribute('aria-label', done ? `Completed: ${a.doneAction.action}. Untick to mark it pending again` : `Mark complete: ${a.pendingAction}`);
+  const text = document.createElement('span');
+  text.textContent = done ? `✓ Done: ${a.doneAction.action} · ${prettyDate(a.doneAction.date)}` : `⚑ Action pending: ${a.pendingAction}`;
+  label.append(box, text);
+  // ticking it shouldn't also open the agreement
+  ['click', 'keydown'].forEach((ev) => label.addEventListener(ev, (e) => e.stopPropagation()));
+  box.addEventListener('change', () => setActionDone(a.id, box.checked));
+  return label;
+}
+
+function setActionDone(id, done) {
+  const a = getAgreement(id);
+  if (!a) return;
+  if (done && a.pendingAction) {
+    updateAgreement(id, { pendingAction: null, doneAction: { action: a.pendingAction, date: todayISO() } });
+    agentSay(`Marked done ✅ ${a.pendingAction} (${a.fileName}). One less thing on your mind.`);
+  } else if (!done && a.doneAction) {
+    updateAgreement(id, { pendingAction: a.doneAction.action, doneAction: null });
+  }
+  renderHome();
+  if (load('openAgreement', null) === id && !document.getElementById('screen-agreement').hidden) renderAgreement(id);
 }
 
 /* ---------- Chat (agent messages shown in the app) ---------- */
@@ -1243,10 +1271,8 @@ function renderAgreement(id) {
   head.append(icon, titles, st);
   box.append(head);
 
-  if (a.pendingAction) {
-    const act = document.createElement('p'); act.className = 'row-action'; act.textContent = `⚑ Action pending: ${a.pendingAction}`;
-    box.append(act);
-  }
+  const act = actionCheck(a);
+  if (act) box.append(act);
   if (f.summary) { const p = document.createElement('p'); p.className = 'detail-summary'; p.textContent = f.summary; box.append(p); }
 
   const dl = document.createElement('dl');
@@ -1557,7 +1583,7 @@ async function getPDF(id, btn) {
 function noticeReady(id) {
   const a = getAgreement(id);
   if (!a || !a.notice) return;
-  updateAgreement(id, { pendingAction: 'deliver notice to landlord' });
+  updateAgreement(id, { pendingAction: 'deliver notice to landlord', doneAction: null });
   renderHome();
   const by = a.notice.deliverBy ? ` Make sure ${a.notice.to || 'your landlord'} gets it by ${longDate(a.notice.deliverBy)} so your tenancy ends ${longDate(a.notice.endISO)}.` : '';
   agentSay(`The notice is ready as a PDF to print and mail or drop off, or email if that's the agreed contact method 📬 Next step: deliver it to your landlord.${by}`, [
