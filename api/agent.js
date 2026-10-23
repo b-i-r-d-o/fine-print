@@ -60,10 +60,24 @@ async function chat(body) {
   return { status: 502, json: { error: 'Something went wrong. Try again?' } };
 }
 
+// Several photos are labelled "Photo 1", "Photo 2"… in the order they were taken,
+// so the AI can say which order the pages really go in.
 function filesToContent(files) {
-  return files.map((f) => (f.type === 'application/pdf'
-    ? { kind: 'pdf', data: f.data }
-    : { kind: 'image', data: f.data, mediaType: f.type || 'image/jpeg' }));
+  const many = files.length > 1;
+  return files.flatMap((f, i) => {
+    const block = f.type === 'application/pdf'
+      ? { kind: 'pdf', data: f.data }
+      : { kind: 'image', data: f.data, mediaType: f.type || 'image/jpeg' };
+    return many ? [{ kind: 'text', text: `Photo ${i + 1}:` }, block] : [block];
+  });
+}
+
+// page_order must list every photo number exactly once; otherwise it's dropped.
+export function validPageOrder(order, count) {
+  if (!Array.isArray(order) || order.length !== count) return null;
+  const seen = new Set(order.map(Number));
+  for (let n = 1; n <= count; n++) if (!seen.has(n)) return null;
+  return order.map(Number);
 }
 
 async function read(body) {
@@ -71,7 +85,7 @@ async function read(body) {
   if (!files.length) return { status: 400, json: { error: 'No file was received. Please try uploading again.' } };
   if (!hasKey()) return { status: 200, json: { practice: true, reply: practiceRead(files) } };
 
-  const content = [...filesToContent(files), { kind: 'text', text: readUserText(body) }];
+  const content = [...filesToContent(files), { kind: 'text', text: readUserText({ ...body, photos: files.length > 1 ? files.length : 0 }) }];
   for (let attempt = 1; attempt <= 2; attempt++) {
     const text = await askAI({
       speed: 'careful',
@@ -80,7 +94,10 @@ async function read(body) {
       maxTokens: 2000,
     });
     const reply = parseReply(text);
-    if (validRead(reply)) return { status: 200, json: { practice: false, reply } };
+    if (validRead(reply)) {
+      reply.page_order = files.length > 1 ? validPageOrder(reply.page_order, files.length) : null;
+      return { status: 200, json: { practice: false, reply } };
+    }
   }
   return { status: 502, json: { error: 'Something went wrong reading that. Try again?' } };
 }

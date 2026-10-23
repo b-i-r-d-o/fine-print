@@ -81,7 +81,7 @@ PRD ref: `prd.md > Theme Switching`.
 `public/index.html`, `public/app.js`, `public/styles.css`. Implements `prd.md > Side Menu`. A drawer opened from the home logo, with Home, Profile (with summary), All agreements (expandable to the five categories with counts) and Sign out (demo). Choosing a category sets a filter on the home list and shows "None yet in [category]" when it's empty. Agreements carry a `category` (`housing`, `medical`, `financial`, `marriage`, `estate`, `work`, `other`) set by the AI's `read` reply.
 
 ### Upload and Camera
-`public/upload.js`. The (+) button opens the phone's file picker for a PDF or image. The camera button uses the phone camera (`<input type="file" accept="image/*" capture="environment">`), repeated for "next page" until "done." Photos get resized to about 1600px wide and compressed so the whole upload stays under Vercel's request size limit. The email option is a "coming soon" tag.
+`public/upload.js`. The (+) button opens the phone's file picker for a PDF or image. The camera button uses the phone camera (`<input type="file" accept="image/*" capture="environment">`), repeated for "next page" until "done." Photos get resized to about 1600px wide and compressed so the whole upload stays under Vercel's request size limit. The email option is a "coming soon" tag. Several photos go to the AI labelled "Photo 1, Photo 2…" in the order taken. The reply includes `page_order` (the real page order), and the app saves the photos in that order.
 PRD ref: `prd.md > Agreement Upload`.
 
 ### Agent Client

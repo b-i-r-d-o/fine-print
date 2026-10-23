@@ -981,8 +981,16 @@ function statusFor(r) {
   return 'Signed';
 }
 
+// The AI says which order photographed pages really go in; keep them in that order.
+function inPageOrder(files, order) {
+  if (!files || files.length < 2 || !Array.isArray(order) || order.length !== files.length) return files;
+  const sorted = order.map((n) => files[n - 1]);
+  if (!sorted.every(Boolean) || new Set(sorted).size !== files.length) return files;
+  return sorted.map((f, i) => ({ ...f, name: `page-${i + 1}.jpg` }));
+}
+
 function handleReadReply(r, sourceName, hash = null) {
-  const originals = pendingOriginals;
+  const originals = inPageOrder(pendingOriginals, r.page_order);
   pendingOriginals = null;
   if (r.readable === false) { retakePrompt(r.message); return; }
   if (r.is_agreement === false) { offerToStoreOther(r, sourceName, hash, originals); return; }
