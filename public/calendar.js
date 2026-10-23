@@ -89,6 +89,10 @@ export function buildICS(items, { source, party, todayISO, until = null }) {
   return lines.join('\r\n') + '\r\n';
 }
 
+export function icsFileName(source) {
+  return `${String(source || 'dates').replace(/\.[a-z]+$/i, '').replace(/[^\w\- ]+/g, '').trim() || 'dates'}.ics`;
+}
+
 // Hand the file to the phone, the same way contact cards are saved.
 export function saveICS(items, info) {
   const text = buildICS(items, info);
@@ -96,7 +100,7 @@ export function saveICS(items, info) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${String(info.source || 'dates').replace(/\.[a-z]+$/i, '').replace(/[^\w\- ]+/g, '').trim() || 'dates'}.ics`;
+  a.download = icsFileName(info.source);
   document.body.appendChild(a);
   a.click();
   a.remove();

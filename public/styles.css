@@ -478,3 +478,11 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 .viewer-pages { display: flex; flex-direction: column; gap: 12px; align-items: center; padding-bottom: 24px; }
 .viewer-page { display: block; max-width: 100%; height: auto; background: #fff; border-radius: 4px; box-shadow: 0 6px 18px -10px rgba(0,0,0,.45); }
 .original-pages .page-thumb { border: 0; padding: 0; background: none; }
+
+/* A file the agent made, shown in the chat like an attachment */
+.file-card { display: flex; flex-direction: row; align-items: center; gap: 12px; width: 100%; max-width: 100%; text-align: left; cursor: pointer; font: inherit; color: inherit; }
+.file-card .file-icon { font-size: 1.6rem; line-height: 1; }
+.file-card .file-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.file-card .file-text strong { overflow-wrap: anywhere; }
+.file-card .file-text .muted { font-size: .78rem; }
+.file-card .file-open { font-weight: 600; color: var(--accent); white-space: nowrap; }

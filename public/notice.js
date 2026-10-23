@@ -122,7 +122,7 @@ function loadJsPDF() {
 }
 
 /** Make the PDF and hand it to the phone to save or print. Returns the file name. */
-export async function downloadNoticePDF(n) {
+async function buildNoticeDoc(n) {
   await loadJsPDF();
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'pt', format: 'letter' });
@@ -144,7 +144,19 @@ export async function downloadNoticePDF(n) {
   line('Tenant signature: ______________________________', { gap: 4 });
   line(`Tenant name: ${n.from}`, { gap: 4 });
   line('Date signed: ____________________', { gap: 4 });
-  const fileName = 'Notice-to-End-Tenancy.pdf';
-  doc.save(fileName);
-  return { fileName, text: noticeLines(n).join('\n') };
+  return doc;
+}
+
+export const NOTICE_FILE = 'Notice-to-End-Tenancy.pdf';
+
+export async function downloadNoticePDF(n) {
+  const doc = await buildNoticeDoc(n);
+  doc.save(NOTICE_FILE);
+  return { fileName: NOTICE_FILE, text: noticeLines(n).join('\n') };
+}
+
+// The same PDF as a file, for opening inside the app.
+export async function noticePDFBlob(n) {
+  const doc = await buildNoticeDoc(n);
+  return doc.output('blob');
 }

@@ -6,10 +6,10 @@ import { load, save, clearAll } from './storage.js';
 import { askHelper, todayISO } from './agent.js';
 import { prepareFile, preparePages } from './upload.js';
 import { saveVCard, contactLabel } from './contacts.js';
-import { saveICS, calendarItems } from './calendar.js';
+import { saveICS, calendarItems, icsFileName } from './calendar.js';
 import { saveOriginals, getOriginals, deleteOriginals, clearOriginals } from './filestore.js';
 import { renderOriginal } from './viewer.js';
-import { buildNotice, deliverBy, longDate, downloadNoticePDF, NOTICE_FIELDS } from './notice.js';
+import { buildNotice, deliverBy, longDate, downloadNoticePDF, noticePDFBlob, NOTICE_FILE, NOTICE_FIELDS } from './notice.js';
 
 /* ---------- Themes ---------- */
 const THEME_COLOURS = { linen: '#F3EDE4', midnight: '#0B0D12', heirloom: '#2A1823', popstar: '#FFF3FA', large: '#041E42' };
@@ -507,6 +507,7 @@ function renderLog(messages) {
     if (m.kind === 'contacts') { const c = buildContactsCard(m.contacts, m.source); if (c) chatEl.appendChild(c); return; }
     if (m.kind === 'dates') { const c = buildDatesCard(m.items, m.source, m.party, m.until); if (c) chatEl.appendChild(c); return; }
     if (m.kind === 'post') { const p = document.createElement('div'); p.className = 'card post-card'; const t = document.createElement('p'); t.className = 'post-text'; t.textContent = m.post; p.append(t); chatEl.appendChild(p); return; }
+    if (m.kind === 'file') { const c = buildFileCard(m); if (c) chatEl.appendChild(c); return; }
     if (m.kind === 'notice') { const a = getAgreement(m.about); if (a && a.notice) chatEl.appendChild(buildNoticeCard(a)); return; }
     if (!m.text) return;
     bubble(m.role, m.text);
@@ -674,6 +675,50 @@ function buildDatesCard(items, source, party, until) {
   return card;
 }
 
+/* A file the agent made (notice PDF, calendar file), shown in the chat like an attachment.
+   Tapping it opens it again: the PDF in the app's viewer, the calendar file in the phone's calendar. */
+function fileCard(f) {
+  const card = buildFileCard(f);
+  if (!card) return;
+  chatEl.appendChild(card);
+  scrollDown();
+  chatLog.push({ role: 'agent', kind: 'file', ...f });
+  save('chat', chatLog);
+}
+
+function buildFileCard(f) {
+  const isPDF = f.file === 'notice';
+  if (isPDF && !(getAgreement(f.about) || {}).notice) return null;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'card file-card';
+  const icon = document.createElement('span'); icon.className = 'file-icon'; icon.textContent = isPDF ? '📄' : '📅';
+  const text = document.createElement('span'); text.className = 'file-text';
+  const name = document.createElement('strong'); name.textContent = f.name;
+  const sub = document.createElement('span'); sub.className = 'muted';
+  if (isPDF) sub.textContent = 'PDF · tap to open';
+  else {
+    const n = calendarItems(f.items, todayISO(), f.until).length;
+    sub.textContent = `Calendar file · ${n} event${n === 1 ? '' : 's'} · tap to open in your calendar`;
+  }
+  text.append(name, sub);
+  const open = document.createElement('span'); open.className = 'file-open'; open.textContent = 'Open';
+  btn.append(icon, text, open);
+  btn.addEventListener('click', () => (isPDF ? openNoticePDF(f.about) : addToCalendar(f.items, f.source, f.party, f.until)));
+  return btn;
+}
+
+async function openNoticePDF(id) {
+  const a = getAgreement(id);
+  if (!a || !a.notice) return;
+  try {
+    const blob = await noticePDFBlob(a.notice);
+    openViewer({ fileName: NOTICE_FILE }, [{ blob, name: NOTICE_FILE, type: 'application/pdf' }]);
+  } catch {
+    agentSay("I couldn't open the PDF just now. Try again in a moment?");
+  }
+}
+
 function addToCalendar(items, source, party, until = null) {
   saveICS(items, { source, party, until, todayISO: todayISO() });
 }
@@ -687,6 +732,7 @@ function offerCalendar(items, source, party, until) {
       userSay('Yes, add them');
       addToCalendar(items, source, party, until);
       agentSay('Your calendar file is ready 📅 Open it and tap Add to Calendar. Each event notes which agreement it came from.');
+      fileCard({ file: 'ics', name: icsFileName(source), items, source, party, until, about: current ? current.id : null });
     } },
     { label: 'No thanks', onClick: () => { userSay('No thanks'); agentSay("No problem 👍 You can add them any time from the agreement's page."); } },
   ]);
@@ -1365,6 +1411,7 @@ async function getPDF(id, btn) {
   try {
     await downloadNoticePDF(a.notice);
     if (btn) btn.textContent = 'PDF ready ✓';
+    else fileCard({ file: 'notice', name: NOTICE_FILE, about: id });
   } catch {
     agentSay("I couldn't make the PDF just now. Try again in a moment?");
   }
@@ -1381,6 +1428,7 @@ function noticeReady(id) {
     ...(a.notice.deliverBy ? [{ label: '📅 Add to calendar', keep: true, onClick: () => {
       addToCalendar(noticeDates(a), a.fileName, a.party);
       agentSay('Your calendar file is ready 📅 Open it and tap Add to Calendar.');
+      fileCard({ file: 'ics', name: icsFileName(a.fileName), items: noticeDates(a), source: a.fileName, party: a.party, about: id });
     } }] : []),
   ]);
 }
