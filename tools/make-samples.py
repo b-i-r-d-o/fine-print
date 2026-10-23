@@ -1,7 +1,8 @@
 """Generates FICTIONAL sample agreements for the Fine Print demo.
 The lease's property manager uses Joann's own name (Quan Yuan) at her request, with a made-up
 company (Drop Tine Properties Ltd.), phone and email; every other detail is invented.
-Run: python3 tools/make-samples.py  -> samples/sample-alberta-lease.pdf, samples/sample-mortgage.pdf
+Run: python3 tools/make-samples.py  -> samples/sample-alberta-lease.pdf, samples/sample-mortgage.pdf,
+     samples/sample-employment-contract.pdf
 """
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -209,10 +210,88 @@ def mortgage():
     print("wrote", path)
 
 
+# ---------------------------------------------------------------- EMPLOYMENT
+def employment():
+    path = "samples/sample-employment-contract.pdf"
+    doc = SimpleDocTemplate(path, pagesize=letter, leftMargin=0.75 * inch, rightMargin=0.75 * inch,
+                            topMargin=0.7 * inch, bottomMargin=0.8 * inch,
+                            title="Employment Agreement - SAMPLE", author="Tralalero Tralala Seafood Co. (fictional)")
+    s = []
+    s.append(Paragraph("EMPLOYMENT AGREEMENT", H1))
+    s.append(Paragraph("Full-Time, Permanent · Province of Alberta", ParagraphStyle("sub", parent=P, alignment=1, fontSize=11)))
+    s.append(Paragraph("Agreement No. TTS-HR-2026-118", ParagraphStyle("sub2", parent=SMALL, alignment=1)))
+    s.append(Spacer(1, 8))
+    s.append(Paragraph("This Agreement is made on <b>October 19, 2026</b> between the Employer and the Employee named below.", P))
+    s.append(table([
+        ("Employer", "Tralalero Tralala Seafood Co."),
+        ("Employer address", "7720 – 100 Street, Grande Prairie, Alberta T8V 6K9"),
+        ("Manager", "Lirili Larila, Operations Manager"),
+        ("HR contact", "Phone: 780-000-0000 · Email: hiring@tralalero.example"),
+        ("Employee", "Ballerina Cappucina"),
+        ("Position", "Inventory Coordinator"),
+        ("Start date", "<b>November 2, 2026</b>"),
+        ("Hours", "40 hours per week, Monday to Friday, 8:00 a.m. to 4:30 p.m."),
+        ("Salary", "<b>$58,500.00 per year</b>, paid every second Friday by direct deposit"),
+    ]))
+    s += clauses([
+        ("Probation", [
+            "The first <b>three (3) months</b> of employment are a probationary period, ending on <b>February 2, 2027</b>. "
+            "Your manager will meet with you before that date to review your progress.",
+        ]),
+        ("Benefits", [
+            "You will be eligible for the company health and dental plan after <b>90 days</b> of employment. "
+            "You must <b>enrol by February 15, 2027</b>, or wait until the next open enrolment in November.",
+            "The Employer matches RRSP contributions up to 3% of salary after one year of service.",
+        ]),
+        ("Vacation and Holidays", [
+            "You will earn <b>three (3) weeks</b> of paid vacation per year, starting from your start date. "
+            "Vacation requests must be submitted at least <b>two weeks in advance</b>. Up to five unused days may carry over to the next year.",
+            "You are entitled to general holidays under the <i>Employment Standards Code</i> (Alberta).",
+        ]),
+        ("Performance Review", [
+            "Your performance and salary will be reviewed each year in <b>November</b>, starting November 2027.",
+        ]),
+        ("Confidentiality", [
+            "You will keep the Employer's supplier pricing, customer lists and recipes confidential, during and after your employment.",
+        ]),
+        ("Non-Solicitation", [
+            "For <b>six (6) months</b> after your employment ends, you will not ask the Employer's customers or staff to move to a competitor.",
+        ]),
+        ("Ending Employment", [
+            "<b>If you resign</b>, you must give written notice of at least <b>one (1) week</b> once you have worked more than 90 days, "
+            "and <b>two (2) weeks</b> once you have worked two years or more.",
+            "<b>If the Employer ends your employment</b> without cause, it will give you notice or pay instead of notice as required by the "
+            "<i>Employment Standards Code</i> (Alberta). No notice is required during the first 90 days.",
+            "On your last day you must return your keys, access card and company phone.",
+        ]),
+        ("Entire Agreement", [
+            "This Agreement, together with the Employee Handbook, is the entire agreement between you and the Employer. "
+            "Any change must be in writing and signed by both parties.",
+        ]),
+    ])
+    s.append(Spacer(1, 10))
+    s.append(Paragraph("SIGNATURES", H2))
+    sig = Table([
+        [Paragraph("<b>Employer</b>", P), Paragraph("<b>Employee</b>", P)],
+        [Paragraph("Lirili Larila", SIG), Paragraph("Ballerina Cappucina", SIG)],
+        [Paragraph("Lirili Larila, for Tralalero Tralala Seafood Co.", P), Paragraph("Ballerina Cappucina", P)],
+        [Paragraph("Date: October 19, 2026", P), Paragraph("Date: October 20, 2026", P)],
+    ], colWidths=(3.35 * inch, 3.35 * inch))
+    sig.setStyle(TableStyle([("LINEBELOW", (0, 1), (-1, 1), 0.6, colors.black), ("VALIGN", (0, 0), (-1, -1), "TOP")]))
+    s.append(sig)
+    s.append(Spacer(1, 14))
+    s.append(Paragraph("FICTIONAL SAMPLE DOCUMENT created for the Fine Print hackathon demo. All names, companies, addresses, "
+                       "phone numbers and emails are invented. Not a legal form.", SMALL))
+    note = footer("Employment Agreement · TTS-HR-2026-118 · FICTIONAL SAMPLE")
+    doc.build(s, onFirstPage=note, onLaterPages=note)
+    print("wrote", path)
+
+
 if __name__ == "__main__":
     import shutil, os
     lease()
     mortgage()
+    employment()
     os.makedirs("public/samples", exist_ok=True)  # so they can be opened/saved from the live app link
-    for f in ("sample-alberta-lease.pdf", "sample-mortgage.pdf"):
+    for f in ("sample-alberta-lease.pdf", "sample-mortgage.pdf", "sample-employment-contract.pdf"):
         shutil.copy(f"samples/{f}", f"public/samples/{f}")

@@ -21,9 +21,10 @@ Created by Joann Dobish for Devpost's **Build With AI: Basics** hackathon, Octob
 
 ### Try it with the demo agreements
 
-The sign-in screen links to two **fictional** sample agreements. You can also find them in [`samples/`](samples/):
+The sign-in screen links to three **fictional** sample agreements. You can also find them in [`samples/`](samples/):
 - `sample-alberta-lease.pdf`: a one-year Alberta lease that has ended. The landlord's address is deliberately missing.
 - `sample-mortgage.pdf`: a signed home mortgage.
+- `sample-employment-contract.pdf`: a two-page job offer, good for trying the camera (photograph both pages).
 
 Every name, company, address and number in them is invented.
 
