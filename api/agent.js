@@ -18,7 +18,34 @@ export function parseReply(text) {
   const start = cleaned.indexOf('{');
   const end = cleaned.lastIndexOf('}');
   if (start === -1 || end <= start) return null;
-  try { return JSON.parse(cleaned.slice(start, end + 1)); } catch { return null; }
+  try { return JSON.parse(cleaned.slice(start, end + 1)); } catch { /* try harder below */ }
+  // Extra text or a second object around the answer: take the first complete {...} that parses.
+  for (let i = start; i !== -1; i = cleaned.indexOf('{', i + 1)) {
+    let depth = 0; let inStr = false; let esc = false;
+    for (let j = i; j < cleaned.length; j++) {
+      const ch = cleaned[j];
+      if (inStr) { if (esc) esc = false; else if (ch === '\\') esc = true; else if (ch === '"') inStr = false; continue; }
+      if (ch === '"') inStr = true;
+      else if (ch === '{') depth++;
+      else if (ch === '}' && --depth === 0) {
+        try { const obj = JSON.parse(cleaned.slice(i, j + 1)); if (obj && typeof obj === 'object' && 'message' in obj) return obj; } catch { /* keep looking */ }
+        break;
+      }
+    }
+  }
+  return null;
+}
+
+// Last resort for chat: the AI answered but not as clean JSON. Keep its words rather than failing.
+export function salvageChat(text) {
+  if (!text || !text.trim()) return null;
+  const m = text.match(/"message"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+  let message;
+  if (m) { try { message = JSON.parse(`"${m[1]}"`); } catch { message = m[1]; } }
+  else if (!text.includes('{')) message = text.trim();
+  if (!message || !message.trim()) return null;
+  const offer = /draft (the|a|your) notice\?/i.test(message);
+  return { message: message.trim().slice(0, 1500), choices: offer ? ['Yes, draft it', 'No thanks'] : null, action: offer ? 'offer_draft' : 'none', explains_rule: /Residential Tenancies Act/i.test(message) };
 }
 
 // The reply must have what the app needs before it's allowed through.
@@ -51,16 +78,21 @@ async function chat(body) {
   const facts = body.facts && typeof body.facts === 'object' ? body.facts : null;
   const conversation = Array.isArray(body.conversation) ? body.conversation.filter((m) => m && typeof m.text === 'string').slice(-10) : [];
   const content = [{ kind: 'text', text: chatUserText({ today: body.today, facts, conversation, message, profile: body.profile }) }];
+  let last = '';
   for (let attempt = 1; attempt <= 2; attempt++) {
     const text = await askAI({
       speed: 'quick',
       system: CHAT_PROMPT + (attempt === 2 ? '\n\nIMPORTANT: Your last reply was not valid. Reply with the JSON object only.' : ''),
       content,
-      maxTokens: 800,
+      maxTokens: 1200,
     });
+    last = text;
     const reply = parseReply(text);
     if (validChat(reply)) return { status: 200, json: { practice: false, reply } };
+    console.error('chat reply not valid (attempt ' + attempt + '):', String(text).slice(0, 600));
   }
+  const salvaged = salvageChat(last);
+  if (salvaged && validChat(salvaged)) return { status: 200, json: { practice: false, reply: salvaged } };
   return { status: 502, json: { error: 'Something went wrong. Try again?' } };
 }
 
@@ -98,6 +130,7 @@ async function read(body) {
       maxTokens: 2000,
     });
     const reply = parseReply(text);
+    if (!validRead(reply)) console.error('read reply not valid (attempt ' + attempt + '):', String(text).slice(0, 600));
     if (validRead(reply)) {
       reply.page_order = files.length > 1 ? validPageOrder(reply.page_order, files.length) : null;
       const photos = files.every((f) => f.type !== 'application/pdf');
