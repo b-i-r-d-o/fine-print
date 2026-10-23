@@ -41,7 +41,7 @@ Build mode: learn
   Learner check: On your phone, reply "No, I want to move out." Does the rule explanation read right to you as a contracts person? Does the notice have everything a valid notice needs? Edit a word, save the PDF, and open it. Does your home list now show the action pending?
   Commit: `Draft editable Alberta move-out notice with PDF and pending action`
 
-- [ ] **4. Take photos of a paper contract, with a retake prompt for blurry pages**
+- [x] **4. Take photos of a paper contract, with a retake prompt for blurry pages**
   Becomes usable: The camera button takes photos page by page with "next page" and "done." Photos are shrunk before sending, and a blurry or unreadable photo gets "This photo is unfocused 📷, please retake it for clear text."
   Why now: Photo intake is part of the demo but depends on the reading path from slice 2. It's isolated here so the main flow never breaks while camera handling is being worked out.
   PRD ref: `prd.md > Agreement Upload`, `prd.md > States and Boundaries` (blurry photo)
