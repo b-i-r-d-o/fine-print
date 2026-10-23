@@ -64,7 +64,7 @@ def lease():
         ("Landlord contact", "Phone: 587-000-0000 · Email: demotest@droptine.example"),
         ("Tenant(s)", "Ballerina Cappucina"),
         ("Tenant contact", "Phone: 780-555-0199 · Email: ballerina.cappucina@mail.example"),
-        ("Rental premises", "Unit 204, 10123 – 99 Avenue, Grande Prairie, Alberta T8V 0R5"),
+        ("Rental premises", "Unit 204, 123 Sample Street, Grande Prairie, Alberta TXX 0ZZ"),
         ("Parking", "One assigned stall, #17 (included)"),
     ]))
     s += clauses([
@@ -153,9 +153,11 @@ def mortgage():
     s.append(table([
         ("Lender", "Roulette Interest Rate Mortgage Corp."),
         ("Lender contact", "Squidward Tentacles, Mortgage Specialist · Phone: 1-800-000-0000 · Email: latepayments@rouletteinterest.example"),
-        ("Lender address", "Suite 900, 4400 Gateway Boulevard NW, Edmonton, Alberta T6H 0A1"),
+        ("Lender address", "Suite 000, 456 Example Boulevard NW, Edmonton, Alberta TXX 0ZZ"),
         ("Borrower(s)", "Ballerina Cappucina"),
-        ("Mortgaged property", "4812 – 37 Street, Grande Prairie, Alberta T8W 1C4"),
+        ("Mortgaged property", "00000 Range Road 00, County of Grande Prairie No. 1, Alberta TXX 0ZZ"),
+        ("Legal land description", "NE-00-00-00-W0M (Northeast quarter of Section 00, Township 00, Range 00, West of the 0 Meridian), "
+                                   "excepting thereout all mines and minerals"),
         ("Principal amount", "$385,000.00"),
         ("Interest rate", "4.79% per year, fixed, compounded semi-annually, not in advance"),
         ("Term", "5 years, from October 15, 2025 to <b>October 15, 2030</b> (maturity / renewal date)"),
@@ -224,7 +226,7 @@ def employment():
     s.append(Paragraph("This Agreement is made on <b>October 19, 2026</b> between the Employer and the Employee named below.", P))
     s.append(table([
         ("Employer", "Tralalero Tralala Seafood Co."),
-        ("Employer address", "7720 – 100 Street, Grande Prairie, Alberta T8V 6K9"),
+        ("Employer address", "789 Placeholder Avenue, Grande Prairie, Alberta TXX 0ZZ"),
         ("Manager", "Lirili Larila, Operations Manager"),
         ("HR contact", "Phone: 780-000-0000 · Email: hiring@tralalero.example"),
         ("Employee", "Ballerina Cappucina"),
