@@ -4,7 +4,7 @@
 
 import { load, save, clearAll } from './storage.js';
 import { askHelper, todayISO } from './agent.js';
-import { prepareFile } from './upload.js';
+import { prepareFile, preparePages } from './upload.js';
 import { saveVCard, contactLabel } from './contacts.js';
 import { buildNotice, deliverBy, longDate, downloadNoticePDF, NOTICE_FIELDS } from './notice.js';
 
@@ -672,11 +672,87 @@ const cameraInput = document.getElementById('camera-input');
 document.getElementById('btn-upload').addEventListener('click', () => fileInput.click());
 document.getElementById('empty-upload').addEventListener('click', () => fileInput.click());
 document.getElementById('btn-camera').addEventListener('click', () => cameraInput.click());
-[fileInput, cameraInput].forEach((input) => input.addEventListener('change', () => {
-  const file = input.files && input.files[0];
-  input.value = '';
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files && fileInput.files[0];
+  fileInput.value = '';
   if (file) readAgreement(file);
-}));
+});
+cameraInput.addEventListener('change', () => {
+  const file = cameraInput.files && cameraInput.files[0];
+  cameraInput.value = '';
+  if (file) addPage(file);
+});
+
+/* ---------- Photographing a paper agreement, page by page ---------- */
+const MAX_PAGES = 8;
+let camera = null; // { pages: [File], card: Element }
+
+function addPage(file) {
+  circleUploadIcons(false);
+  if (filter) { filter = null; renderHome(); }
+  if (!camera) camera = { pages: [], card: null };
+  if (camera.pages.length >= MAX_PAGES) { agentSay(`That's ${MAX_PAGES} pages, the most I can read at once. Tap Done when you're ready.`); return; }
+  camera.pages.push(file);
+  renderCameraCard();
+}
+
+function renderCameraCard() {
+  if (!camera) return;
+  if (!camera.card) {
+    camera.card = document.createElement('div');
+    camera.card.className = 'card camera-card';
+    chatEl.appendChild(camera.card);
+  }
+  const card = camera.card;
+  card.innerHTML = '';
+  const n = camera.pages.length;
+  const t = document.createElement('p'); t.className = 'card-title'; t.textContent = `📷 Photographing your agreement · ${n} page${n === 1 ? '' : 's'}`;
+  const tips = document.createElement('p'); tips.className = 'card-note';
+  tips.textContent = 'Tips: lay each page flat in good light, fill the frame, and keep the text sharp.';
+  const strip = document.createElement('div'); strip.className = 'page-strip';
+  camera.pages.forEach((f, i) => {
+    const fig = document.createElement('figure'); fig.className = 'page-thumb';
+    const img = document.createElement('img'); img.alt = `Page ${i + 1}`;
+    img.src = URL.createObjectURL(f); img.onload = () => URL.revokeObjectURL(img.src);
+    const cap = document.createElement('figcaption'); cap.textContent = `${i + 1}`;
+    const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'thumb-remove'; rm.setAttribute('aria-label', `Remove page ${i + 1}`); rm.textContent = '×';
+    rm.addEventListener('click', () => { camera.pages.splice(i, 1); if (!camera.pages.length) { cancelCamera(); return; } renderCameraCard(); });
+    fig.append(img, cap, rm);
+    strip.append(fig);
+  });
+  const actions = document.createElement('div'); actions.className = 'contact-actions';
+  const next = document.createElement('button'); next.type = 'button'; next.className = 'chip'; next.textContent = '📷 Next page';
+  next.addEventListener('click', () => cameraInput.click());
+  const done = document.createElement('button'); done.type = 'button'; done.className = 'chip chip-strong'; done.textContent = `Done, read ${n === 1 ? 'it' : `all ${n}`}`;
+  done.addEventListener('click', finishCamera);
+  const cancel = document.createElement('button'); cancel.type = 'button'; cancel.className = 'chip chip-soon'; cancel.textContent = 'Cancel';
+  cancel.addEventListener('click', cancelCamera);
+  actions.append(next, done, cancel);
+  card.append(t, strip, actions, tips);
+  scrollDown();
+}
+
+function cancelCamera() {
+  if (camera && camera.card) camera.card.remove();
+  camera = null;
+}
+
+async function finishCamera() {
+  if (!camera || !camera.pages.length) return;
+  const photos = camera.pages;
+  camera.card.remove();
+  camera = null;
+  userSay(`📷 ${photos.length} photographed page${photos.length === 1 ? '' : 's'}`);
+  const prepared = await preparePages(photos);
+  if (prepared.error) { agentSay(prepared.error); return; }
+  await sendForReading(prepared.files);
+}
+
+function retakePrompt(message) {
+  agentSay(message || 'This photo is unfocused 📷 Please retake it for clear text.', [
+    { label: '📷 Retake photos', onClick: () => cameraInput.click() },
+  ]);
+}
 
 let current = load('current', null); // the agreement the conversation is about
 
@@ -757,7 +833,7 @@ function statusFor(r) {
 }
 
 function handleReadReply(r, sourceName, hash = null) {
-  if (r.readable === false) { agentSay(r.message); return; }
+  if (r.readable === false) { retakePrompt(r.message); return; }
   if (r.is_agreement === false) { offerToStoreOther(r, sourceName, hash); return; }
   const fileName = makeFileName(r);
   const same = findSameAgreement(fileName, r);

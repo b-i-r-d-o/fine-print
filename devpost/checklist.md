@@ -84,6 +84,7 @@ Activity mode:
 
 ## Revisions
 
+- Slice 4 built: the camera opens the back camera one page at a time into a page tray in the chat (thumbnails, remove a page, Next page, Done, Cancel, framing tips), up to 8 pages. Photos are shrunk in steps until the whole request fits (3 phone photos of ~10 MB went out as ~1 MB). Unreadable photos get a retake prompt with a Retake button. Phone-native framing guides aren't possible from a web page, so tips are shown instead.
 - Large Script recoloured to Edmonton-style navy (#041E42) and orange (#FF4C00) at Joann's request, keeping high contrast (text is navy-on-white at 16.5:1; orange is used for decoration only). It uses colours only, with no team name or logo.
 - Categories updated (Joann): added **Work** (employment, contractor agreements, NDAs) and **Other**, and renamed Estate planning → **Estate**. Stored non-agreements (e.g. a receipt) are filed under Other, and an unrecognized AI category falls back to Other instead of Housing.
 - Slice 5 built **before slice 4** at Joann's request (she wasn't free to take photos), so the order changed with no dependency impact. Slice 5 also fixed tapping Review (coming soon) greying out Store; Store stays available. The celebration post is AI-written but checked in code, and falls back to a safe post if it contains an address, amount, lender or long numbers. Joann's phone check of the mortgage, celebration and non-agreement flow is still to do and will be covered in the final review.

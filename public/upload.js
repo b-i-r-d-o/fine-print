@@ -61,3 +61,23 @@ export async function prepareFile(file) {
   }
   return { error: 'Fine Print can read PDFs and photos. Try one of those?' };
 }
+
+/**
+ * Several photographed pages → images the helper can read in one go.
+ * Shrinks harder if the pages together would be too big for one request.
+ * @returns {Promise<{files:Array, totalBytes:number}|{error:string}>}
+ */
+export async function preparePages(photos) {
+  const budget = MAX_BYTES * 0.7; // base64 adds about a third
+  for (const [side, quality] of [[MAX_SIDE, 0.82], [1300, 0.72], [1000, 0.62]]) {
+    const files = [];
+    let total = 0;
+    for (let i = 0; i < photos.length; i++) {
+      const { blob } = await shrinkImage(photos[i], side, quality);
+      total += blob.size;
+      files.push({ name: `page-${i + 1}.jpg`, type: 'image/jpeg', data: await toBase64(blob), size: blob.size, hash: null });
+    }
+    if (total <= budget) return { files, totalBytes: total };
+  }
+  return { error: "That's a lot of pages for one go. Try photographing just the key pages." };
+}
