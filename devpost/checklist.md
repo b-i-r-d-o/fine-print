@@ -64,13 +64,13 @@ Build mode: learn
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 2 (first real AI read on her phone), where feedback can still shape the notice and remaining slices
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
 
-- [ ] Blue suggested action: the read reply has an optional `suggested_action` {label, how}, for example "Set up automatic payments with your bank" for the mortgage. After Store it shows in the chat as a blue card (how-to plus checkbox, in sync with the list and page, added after Joann saw only a plain sentence in the chat). It shows in blue on the home list (with How?, which explains in the chat) and on the agreement page (with the how-to underneath), with a checkbox to tick it done (Joann, kick-the-tires)
-- [ ] Pending action can be marked complete: a checkbox beside "⚑ Action pending" on the home and category lists and on the agreement page. Ticking it shows "✓ Done: … · date", and unticking makes it pending again (Joann, kick-the-tires)
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Blue suggested action: the read reply has an optional `suggested_action` {label, how}, for example "Set up automatic payments with your bank" for the mortgage. After Store it shows in the chat as a blue card (how-to plus checkbox, in sync with the list and page, added after Joann saw only a plain sentence in the chat). It shows in blue on the home list (with How?, which explains in the chat) and on the agreement page (with the how-to underneath), with a checkbox to tick it done (Joann, kick-the-tires)
+- [x] Pending action can be marked complete: a checkbox beside "⚑ Action pending" on the home and category lists and on the agreement page. Ticking it shows "✓ Done: … · date", and unticking makes it pending again (Joann, kick-the-tires)
+- [x] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 
