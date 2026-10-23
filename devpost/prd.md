@@ -147,7 +147,7 @@ Added during the build at Joann's request.
 - [ ] The sign-in screen has an **About Fine Print** section: what it does; "Please test this app with the following fictional demo agreements" with download links for the sample lease and mortgage; a note that security features (two-factor sign-in), storage choices (cloud or on the phone) and bring-your-own-AI privacy were left out on purpose and are next; and "Created by Joann Dobish for Devpost's Build With AI: Basics hackathon."
 
 ### Large Script Theme
-- [ ] A fifth theme, **Large Script**: everything noticeably larger, high contrast (near-black on warm white, strong blue accent, thicker outlines). For accessibility.
+- [ ] A fifth theme, **Large Script**: everything noticeably larger, high contrast, in hockey-night colours (Joann's request): deep navy text and buttons with bright orange highlights, stripes and outlines. Orange is never used for small text, and every text colour meets at least 4.5:1 contrast. No team name or logo is used.
 
 ### Read Aloud and Mic
 - [ ] Each agent message has a 🔊 button that reads it aloud with the phone's built-in voice (tap again to stop). Hidden where the phone doesn't support it.

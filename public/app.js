@@ -9,7 +9,7 @@ import { saveVCard, contactLabel } from './contacts.js';
 import { buildNotice, deliverBy, longDate, downloadNoticePDF, NOTICE_FIELDS } from './notice.js';
 
 /* ---------- Themes ---------- */
-const THEME_COLOURS = { linen: '#F3EDE4', midnight: '#0B0D12', heirloom: '#2A1823', popstar: '#FFF3FA', large: '#FFFDF8' };
+const THEME_COLOURS = { linen: '#F3EDE4', midnight: '#0B0D12', heirloom: '#2A1823', popstar: '#FFF3FA', large: '#041E42' };
 
 function applyTheme(name) {
   if (!THEME_COLOURS[name]) name = 'linen';
