@@ -809,7 +809,7 @@ cameraInput.addEventListener('change', () => {
 
 /* ---------- Photographing a paper agreement, page by page ---------- */
 const MAX_PAGES = 8;
-let camera = null; // { pages: [File], card: Element }
+let camera = null; // { pages: [File|Blob], card: Element, target?: agreement id, existing?: pages already stored }
 
 function addPage(file) {
   circleUploadIcons(false);
@@ -830,7 +830,9 @@ function renderCameraCard() {
   const card = camera.card;
   card.innerHTML = '';
   const n = camera.pages.length;
-  const t = document.createElement('p'); t.className = 'card-title'; t.textContent = `📷 Photographing your agreement · ${n} page${n === 1 ? '' : 's'}`;
+  const target = camera.target && getAgreement(camera.target);
+  const t = document.createElement('p'); t.className = 'card-title';
+  t.textContent = target ? `📷 Adding pages to ${target.fileName} · ${n} page${n === 1 ? '' : 's'}` : `📷 Photographing your agreement · ${n} page${n === 1 ? '' : 's'}`;
   const tips = document.createElement('p'); tips.className = 'card-note';
   tips.textContent = 'Tips: lay each page flat in good light, fill the frame, and keep the text sharp.';
   const strip = document.createElement('div'); strip.className = 'page-strip';
@@ -847,7 +849,9 @@ function renderCameraCard() {
   const actions = document.createElement('div'); actions.className = 'contact-actions';
   const next = document.createElement('button'); next.type = 'button'; next.className = 'chip'; next.textContent = '📷 Next page';
   next.addEventListener('click', () => cameraInput.click());
-  const done = document.createElement('button'); done.type = 'button'; done.className = 'chip chip-strong'; done.textContent = `Done, read ${n === 1 ? 'it' : `all ${n}`}`;
+  const added = n - (camera.existing || 0);
+  const done = document.createElement('button'); done.type = 'button'; done.className = 'chip chip-strong'; done.textContent = target ? `Done, update it` : `Done, read ${n === 1 ? 'it' : `all ${n}`}`;
+  if (target && added < 1) done.disabled = true;
   done.addEventListener('click', finishCamera);
   const cancel = document.createElement('button'); cancel.type = 'button'; cancel.className = 'chip chip-soon'; cancel.textContent = 'Cancel';
   cancel.addEventListener('click', cancelCamera);
@@ -864,14 +868,71 @@ function cancelCamera() {
 async function finishCamera() {
   if (!camera || !camera.pages.length) return;
   const photos = camera.pages;
+  const { target, existing = 0 } = camera;
   camera.card.remove();
   camera = null;
-  userSay(`📷 ${photos.length} photographed page${photos.length === 1 ? '' : 's'}`);
+  if (target) {
+    const added = photos.length - existing;
+    userSay(`📷 Added ${added} page${added === 1 ? '' : 's'} (${photos.length} in all)`);
+  } else {
+    userSay(`📷 ${photos.length} photographed page${photos.length === 1 ? '' : 's'}`);
+  }
   const prepared = await preparePages(photos);
   if (prepared.error) { agentSay(prepared.error); return; }
   // keep the (shrunk) page photos so they can be viewed later
   pendingOriginals = prepared.files.map((f) => ({ blob: base64ToBlob(f.data, 'image/jpeg'), name: f.name, type: 'image/jpeg' }));
-  await sendForReading(prepared.files);
+  await sendForReading(prepared.files, target || null);
+}
+
+// Forgot a page? Open the camera tray with the agreement's stored pages already in it.
+function startAddPages(a, items) {
+  current = { id: a.id, awaiting: null };
+  save('current', current);
+  show('home');
+  if (camera && camera.card) camera.card.remove();
+  camera = { pages: items.map((it) => it.blob), card: null, target: a.id, existing: items.length };
+  agentSay(`Let's add to ${a.fileName} 📷 Your ${items.length} page${items.length === 1 ? ' is' : 's are'} in the tray. Photograph the missing page, in any order, and I'll read them all again and tell you what's new.`);
+  renderCameraCard();
+}
+
+// The re-read of an agreement with added pages: keep what was known, add what's new, say what changed.
+function updateFromPages(id, r, originals) {
+  const a = getAgreement(id);
+  if (!a) return;
+  if (r.readable === false) {
+    agentSay(r.message || 'One of the photos is unfocused 📷 Remove it from the tray and retake it.');
+    camera = { pages: originals.map((o) => o.blob), card: null, target: id, existing: 0 };
+    renderCameraCard();
+    return;
+  }
+  const norm = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const f = a.facts || {};
+  const oldDates = f.key_dates_and_actions || [];
+  const oldContacts = f.contacts || [];
+  const newDates = (r.key_dates_and_actions || []).filter((d) => !oldDates.some((o) => norm(o.date) === norm(d.date)));
+  const sameContact = (x, y) => (x.email && norm(x.email) === norm(y.email)) || (x.phone && norm(x.phone) === norm(y.phone)) || (x.name && norm(x.name) === norm(y.name));
+  const newContacts = (r.contacts || []).filter((c) => !oldContacts.some((o) => sameContact(o, c)));
+  const facts = { ...f };
+  // fill in anything the new pages added, without losing what was already known
+  ['party_name', 'party_role', 'user_name', 'agreement_date', 'signed', 'term_type', 'term_start', 'term_end', 'rent_amount', 'rent_day',
+    'rental_address', 'jurisdiction', 'other_party_address', 'lease_identifiers', 'summary']
+    .forEach((k) => { if (r[k] !== null && r[k] !== undefined && r[k] !== '') facts[k] = r[k]; });
+  facts.key_dates_and_actions = [...oldDates, ...newDates];
+  facts.contacts = [...oldContacts, ...newContacts];
+  saveOriginals(id, originals);
+  updateAgreement(id, { facts, hasOriginal: true, status: statusFor(facts) });
+  renderHome();
+  agentSay(`Updated ${a.fileName} 📄 It now has ${originals.length} page${originals.length === 1 ? '' : 's'}, in the contract's own order.`);
+  if (newDates.length) {
+    agentSay(`I found ${newDates.length === 1 ? 'a new date' : `${newDates.length} new dates`} 🗓️`);
+    datesCard(newDates);
+  }
+  if (newContacts.length) {
+    agentSay(`And ${newContacts.length === 1 ? 'a new contact' : `${newContacts.length} new contacts`} 📇`);
+    contactsCard(newContacts, a.fileName);
+  }
+  if (!newDates.length && !newContacts.length) agentSay('No new dates or contacts on the added page. Everything else is up to date 👍');
+  if (newDates.length) offerCalendar(newDates, a.fileName, facts.party_name, facts.term_end);
 }
 
 function retakePrompt(message) {
@@ -949,18 +1010,19 @@ function storeAgreement(agreement, r, originals = null) {
   for (let i = chatLog.length - 1; i >= 0; i--) { if (chatLog[i].role === 'user') { chatLog[i].about = agreement.id; break; } }
 }
 
-async function sendForReading(files) {
+// updateId: the agreement these pages are being added to (null for a new upload)
+async function sendForReading(files, updateId = null) {
   const loader = loaderBubble('Reading your agreement… 📄');
   // The fingerprint stays on the phone; only the file itself goes to the helper.
   const result = await askHelper({ mode: 'read', files: files.map(({ hash, ...f }) => f), today: todayISO(), profile: load('profile', null) });
   loader.remove();
   if (result.error) {
     agentSay(result.slow ? 'This is taking longer than usual. Try again?' : result.error, [
-      { label: 'Try again', onClick: () => sendForReading(files) },
+      { label: 'Try again', onClick: () => sendForReading(files, updateId) },
     ]);
     return;
   }
-  handleReadReply(result.reply, files[0].name, files.length === 1 ? files[0].hash : null);
+  handleReadReply(result.reply, files[0].name, files.length === 1 ? files[0].hash : null, updateId);
 }
 
 function slug(text, words = 2) {
@@ -989,9 +1051,10 @@ function inPageOrder(files, order) {
   return sorted.map((f, i) => ({ ...f, name: `page-${i + 1}.jpg` }));
 }
 
-function handleReadReply(r, sourceName, hash = null) {
+function handleReadReply(r, sourceName, hash = null, updateId = null) {
   const originals = inPageOrder(pendingOriginals, r.page_order);
   pendingOriginals = null;
+  if (updateId) { updateFromPages(updateId, r, originals); return; }
   if (r.readable === false) { retakePrompt(r.message); return; }
   if (r.is_agreement === false) { offerToStoreOther(r, sourceName, hash, originals); return; }
   const fileName = makeFileName(r);
@@ -1288,6 +1351,14 @@ function buildOriginalCard(a) {
         strip.append(fig);
       });
       body.append(strip);
+      const more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'chip';
+      more.textContent = '📷 Add a page';
+      more.addEventListener('click', () => { startAddPages(a, items); cameraInput.click(); });
+      const hint = document.createElement('p'); hint.className = 'card-note';
+      hint.textContent = 'Forgot a page? Add it and I\'ll update the dates and contacts.';
+      body.append(more, hint);
     }
   });
   return card;

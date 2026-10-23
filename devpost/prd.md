@@ -104,6 +104,9 @@ Added during the build at Joann's request.
 - [ ] **Save to phone contacts** works for real. It gives the phone a contact card that, when opened, offers "Add to contacts," with a note saying which agreement it came from (e.g. "Saved by Fine Print from: 2025-08-15-drop-tine-residential-lease.pdf (Property manager)").
 - [ ] **Email contacts** (Gmail, Outlook) is a visible "coming soon" button.
 
+### Add a Forgotten Page
+A photographed agreement's page has **📷 Add a page** under its pages ("Forgot a page? Add it and I'll update the dates and contacts."). It opens the camera tray in the chat with the stored pages already in it (titled "Adding pages to <file name>"). The user photographs the missing page(s), and **Done, update it** reads them all again in the contract's page order. The agreement is updated in place, not duplicated: earlier dates and contacts are kept and new ones added. The agent says how many pages it now has, shows only the new dates and contacts (or says there were none), and offers to add new dates to the calendar.
+
 ### Add Dates to Calendar
 After an agreement is stored, the agent asks: "Would you like me to add these N dates to your calendar? Each one gets a reminder." Yes gives a calendar file (.ics) the phone opens with "Add to Calendar", and No says they can add the dates any time from the agreement's page. The agreement page's dates card has the same **📅 Add to calendar** button. The move-out notice offers its deliver-by date and the tenancy end date the same way. Only upcoming or repeating dates go in, and past dates are left out. Repeating dates (monthly payments, yearly tasks) repeat until the agreement's term ends. Each event says which agreement it came from and that it's guidance, not legal advice. Linking straight into Google or Outlook calendar is a coming-soon chip, because it needs a calendar sign-in.
 
