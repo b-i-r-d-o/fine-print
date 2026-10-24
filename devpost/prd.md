@@ -235,7 +235,7 @@ Theme switching, demo sign-in, profile setup, agreement upload (file or page-by-
 - **Pre-signing review:** 5 highlights tied to the profile, relevance taps, "are you okay with this?" questions, and an issuer summary.
 - **Linked calendar integration** (Google, Outlook) for key dates, linked to the contract and clause. The demo makes a calendar file instead.
 - **Learning over time** from answers and usage.
-- **Profile answers that drive actions:** rethink the intake profile questions so each answer links to what the app does (which agreements to expect, which suggestions and reminders to show). Joann's note from the final review, left for later.
+- **Profile answers that drive actions:** rethink the intake profile questions so each answer links to what the app does: which agreements to expect, which agent suggestions and reminders to show, how conversations are threaded (for example per household member), and which other agent offerings or services to offer. Joann's note from the final review, left for later. The demo labels the profile as an example of intake only.
 - **Folder linking and cloud storage** with Dropbox, Google Drive, or phone files.
 - **Version comparison** for new contract versions.
 - **Every province and contract type,** with deep built-in knowledge.

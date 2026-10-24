@@ -127,7 +127,7 @@ document.getElementById('start-composer').addEventListener('submit', (e) => {
 // "Household" asks how many people, each person's age range, and how to organize.
 const AGES_SELF = ['18–25', '25–35', '35–45', '45–65', '65+'];
 const AGES_PERSON = ['1–20', '20–40', '40–60', '60+'];
-const SIZES = ['2', '3', '4', '5', '6'];
+const SIZES = ['2', '3', '4', '5', '6', '12'];
 // Where the user lives decides which laws apply, so the agent can name the jurisdiction.
 const REGIONS = ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon', 'Outside Canada'];
 
@@ -135,7 +135,7 @@ function buildSteps(p) {
   const steps = [{ key: 'for', text: 'Are you looking to be supported with your contracts for yourself or your household?', options: ['Self', 'Household'] }];
   if (p.for === 'Household') {
     steps.push({ key: 'size', text: 'How many people are in your household?', options: SIZES });
-    const n = Math.min(parseInt(p.size, 10) || 0, 10);
+    const n = Math.min(parseInt(p.size, 10) || 0, 12);
     for (let i = 1; i <= n; i++) {
       steps.push({ key: `person${i}`, text: `Person ${i}: what is their age range?`, options: AGES_PERSON });
     }
@@ -184,6 +184,8 @@ function renderQuestion() {
     b.addEventListener('click', () => answer(q.key, opt));
     grid.appendChild(b);
   });
+  // Demo note on the first profile question: the answers are examples of intake only.
+  document.getElementById('profile-demo-note').hidden = q.key !== 'for';
 }
 
 function answer(key, value) {

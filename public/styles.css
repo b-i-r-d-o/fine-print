@@ -516,3 +516,4 @@ body.drawer-open .drawer-scrim { opacity: 1; }
 .card-suggest { border-color: var(--suggest); }
 .card-suggest .card-title { color: var(--suggest); }
 .card-suggest .suggest-wrap { margin-top: 0; }
+.profile-demo-note { margin-top: 14px; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 12px; }
