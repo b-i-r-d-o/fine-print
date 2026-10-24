@@ -9,7 +9,7 @@ import { saveVCard, contactLabel } from './contacts.js';
 import { calendarItems, icsFileName, icsBlob, describeWhen, googleCalendarLink } from './calendar.js';
 import { saveOriginals, getOriginals, deleteOriginals, clearOriginals } from './filestore.js';
 import { renderOriginal } from './viewer.js';
-import { buildNotice, deliverBy, longDate, downloadNoticePDF, noticePDFBlob, NOTICE_FILE, NOTICE_FIELDS } from './notice.js';
+import { buildNotice, deliverBy, longDate, noticePDFBlob, NOTICE_FILE, NOTICE_FIELDS } from './notice.js';
 
 /* ---------- Themes ---------- */
 const THEME_COLOURS = { linen: '#F3EDE4', midnight: '#0B0D12', heirloom: '#2A1823', popstar: '#FFF3FA', large: '#041E42' };
@@ -830,6 +830,7 @@ function openCalendarView(f) {
   save.textContent = '⬇ Save calendar file';
   save.href = URL.createObjectURL(icsBlob(f.items, info));
   save.download = f.name;
+  viewerFile = null; // calendar files keep the plain download (the phone hands it to the calendar)
   const box = document.getElementById('viewer-pages');
   box.innerHTML = '';
   const list = document.createElement('div');
@@ -1486,6 +1487,20 @@ function buildOriginalCard(a) {
   return card;
 }
 
+// "Save a copy" opens the phone's share sheet (Save to Files, Print, Mail) where it can,
+// which returns to the app afterwards. Opening the file directly would leave a home-screen
+// app with no way back. Falls back to a plain download.
+let viewerFile = null;
+document.getElementById('viewer-save').addEventListener('click', async (e) => {
+  if (!viewerFile || !navigator.share || !navigator.canShare) return;
+  try {
+    const file = new File([viewerFile.blob], viewerFile.name, { type: viewerFile.type });
+    if (!navigator.canShare({ files: [file] })) return;
+    e.preventDefault();
+    await navigator.share({ files: [file], title: viewerFile.name });
+  } catch { /* closed the share sheet: nothing to do */ }
+});
+
 // Show the original inside the app, with a Save a copy button for the phone's own viewer.
 async function openViewer(a, items) {
   document.getElementById('viewer-title').textContent = a.fileName;
@@ -1496,8 +1511,10 @@ async function openViewer(a, items) {
     save.hidden = false;
     save.href = URL.createObjectURL(first.blob);
     save.download = /pdf/.test(first.type) ? a.fileName : a.fileName.replace(/\.pdf$/, '.jpg');
+    viewerFile = { blob: first.blob, name: save.download, type: first.type || 'application/pdf' };
   } else {
     save.hidden = true;
+    viewerFile = null;
   }
   const box = document.getElementById('viewer-pages');
   box.innerHTML = '<p class="card-note">Opening…</p>';
@@ -1649,8 +1666,7 @@ async function getPDF(id, btn) {
       await openNoticePDF(id);
       return;
     }
-    await downloadNoticePDF(a.notice);
-    btn.textContent = 'PDF ready ✓';
+    await openNoticePDF(id); // always inside the app, so Back works from the home-screen app
   } catch {
     agentSay("I couldn't make the PDF just now. Try again in a moment?");
   }
