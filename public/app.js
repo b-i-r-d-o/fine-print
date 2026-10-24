@@ -128,6 +128,10 @@ document.getElementById('start-composer').addEventListener('submit', (e) => {
 const AGES_SELF = ['18–25', '25–35', '35–45', '45–65', '65+'];
 const AGES_PERSON = ['1–20', '20–40', '40–60', '60+'];
 const SIZES = ['2', '3', '4', '5', '6', '12'];
+const PROFILE_NOTES = {
+  for: '<strong>Demo:</strong> these profile questions show how intake would work, and the answers are examples only. In a future version, your profile would shape the agent\'s suggestions, how conversations are threaded, and which services the app offers you.',
+  size: '<strong>Demo:</strong> Household is for people who look after their household\'s contracts, as its custodian or administrator. In a future version, this is where you\'d set up profiles for each person with their own preferences, share agreements or whole profiles with others, and choose who can see or change what.',
+};
 // Where the user lives decides which laws apply, so the agent can name the jurisdiction.
 const REGIONS = ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon', 'Outside Canada'];
 
@@ -184,8 +188,10 @@ function renderQuestion() {
     b.addEventListener('click', () => answer(q.key, opt));
     grid.appendChild(b);
   });
-  // Demo note on the first profile question: the answers are examples of intake only.
-  document.getElementById('profile-demo-note').hidden = q.key !== 'for';
+  // Demo notes: what this question would lead to in a future version.
+  const note = document.getElementById('profile-demo-note');
+  note.hidden = !PROFILE_NOTES[q.key];
+  if (PROFILE_NOTES[q.key]) note.innerHTML = PROFILE_NOTES[q.key];
 }
 
 function answer(key, value) {

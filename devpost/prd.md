@@ -229,7 +229,7 @@ Theme switching, demo sign-in, profile setup, agreement upload (file or page-by-
 - **AI-generated celebration images** to go with the new-home announcement post.
 - **Privacy and AI data handling, including bring your own AI.** Users choose which AI reads their agreements to keep them confidential: their own API key, a private or business AI account, or a model running on their own device or computer. Also: control over where documents are stored, encryption, delete-anytime, a clear no-training-on-your-data policy, and retention settings. The demo uses one hosted AI on fictional documents; this is what a real version needs before people trust it with their own contracts (Joann's call).
 - **A refined in-chat guidance reminder,** for example based on how often it's shown or whether the user has acknowledged it.
-- **Household accounts:** one custodian managing agreements for several people, shareable with other users.
+- **Household accounts:** for people who are custodians or administrators of their household. One person manages agreements for several, with multiple profiles and individual preferences, shareable agreements or profiles, and permission settings for who can see or change what. The demo labels this on the household-size question.
 - **Age range:** tunes which agreements to expect and how much to explain, without being presumptuous.
 - **Learn path:** contract topics matched to life stage, such as RRSP agreements versus truck lease payments.
 - **Pre-signing review:** 5 highlights tied to the profile, relevance taps, "are you okay with this?" questions, and an issuer summary.
