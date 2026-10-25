@@ -4,7 +4,16 @@
 
 const TIME_LIMIT_MS = 60000;
 
+// A dropped connection (a signal blip, or the phone pausing the app) gets one quiet retry.
 export async function askHelper(payload) {
+  const first = await askOnce(payload);
+  if (!first.offline) return first;
+  await new Promise((r) => setTimeout(r, 1500));
+  const second = await askOnce(payload);
+  return second.offline ? { error: second.error } : second;
+}
+
+async function askOnce(payload) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIME_LIMIT_MS);
   try {
@@ -21,7 +30,7 @@ export async function askHelper(payload) {
     return data;
   } catch (err) {
     if (err.name === 'AbortError') return { error: 'This is taking longer than usual.', slow: true };
-    return { error: "Couldn't reach Fine Print. Check your connection and try again." };
+    return { error: "Couldn't reach Fine Print. Check your connection and try again.", offline: true };
   } finally {
     clearTimeout(timer);
   }
